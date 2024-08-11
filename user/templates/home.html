@@ -8,9 +8,13 @@
   <body>
     <h1>Welcome back, {{request.user}}</h1>
 
+    {% if request.user.is_authenticated %}
     <form method="post" action="{% url 'user:logout' %}">
       {% csrf_token %}
       <button type="submit">Logout</button>
     </form>
+    {% else %}
+    <p><a href="{% url 'user:sign-in' %}">Sign in</a></p>
+    {% endif %}
   </body>
 </html>
