@@ -9,10 +9,9 @@ class CustomUserCreationForm(UserCreationForm):
 
         model = CustomUser
         fields = {
-            "username",
             "email",
-            "department",
-            "date_of_birth",
+            "password1",
+            "password2",
         }
 
 

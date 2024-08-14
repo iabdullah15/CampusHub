@@ -45,7 +45,11 @@ class SignUpView(View):
         return render(request, 'sign-up.html', {'form':CustomUserCreationForm()})
 
 
-class HomePageView(View, LoginRequiredMixin):
+
+
+
+
+class HomePageView(View):
 
     template_name = "home.html"
 

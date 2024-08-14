@@ -6,13 +6,14 @@
     <title>Sign In</title>
   </head>
   <body>
-    <form action="">
+    <form method="post">
         {{form.as_p}} 
         {% csrf_token %} 
         <button type="submit">submit</button>
     </form>
 
     <p>{% lorem 50 w %}</p>
+    <p><a href="{% url 'user:sign-up' %}">Or sign-up</a></p>
 
   </body>
 </html>

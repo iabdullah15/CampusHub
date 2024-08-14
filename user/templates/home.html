@@ -16,5 +16,6 @@
     {% else %}
     <p><a href="{% url 'user:sign-in' %}">Sign in</a></p>
     {% endif %}
+    <p>{{request.user.is_active}}</p>
   </body>
 </html>

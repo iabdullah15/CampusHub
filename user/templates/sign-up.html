@@ -7,9 +7,11 @@
   </head>
   <body>
     <form method="post">
-        {{form.as_p}} 
-        {% csrf_token %} 
-        <button type="submit">Register</button>
+      {% csrf_token %}
+      <p>{{ form.email.label_tag }} {{ form.email }}</p>
+      <p>{{ form.password1.label_tag }} {{ form.password1 }}</p>
+      <p>{{ form.password2.label_tag }} {{ form.password2 }}</p>
+      <button type="submit">Register</button>
     </form>
 <br>
 <br>
