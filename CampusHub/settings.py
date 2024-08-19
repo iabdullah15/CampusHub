@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
-
+from django.urls import reverse_lazy
 import os
 
 
@@ -47,8 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user',
-    
+    'user',    
 ]
 
 MIDDLEWARE = [
@@ -66,7 +65,7 @@ ROOT_URLCONF = 'CampusHub.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -139,12 +138,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Authentication
-
-LOGIN_URL = 'user:sign-in'
-LOGIN_REDIRECT_URL = 'user:home'
-LOGOUT_REDIRECT_URL = 'user:sign-in'
-
 mail = os.environ.get('MAIL')
 password = os.environ.get('PASSWORD')
 
@@ -157,3 +150,21 @@ EMAIL_HOST_USER = mail
 EMAIL_HOST_PASS = password
 ACCOUNT_EMAIL_SUBJECT_PREFIX = ''
 DEFAULT_FROM_EMAIL = mail
+
+
+
+# Email Templates
+# HTML_MESSAGE_TEMPLATE = "path/to/html_template.html"
+
+VERIFICATION_SUCCESS_TEMPLATE = "sign-in.html"
+
+# VERIFICATION_FAILED_TEMPLATE = "path/to/failed.html"
+
+# REQUEST_NEW_EMAIL_TEMPLATE = "path/to/email.html"
+
+# LINK_EXPIRED_TEMPLATE = 'path/to/expired.html'
+
+# NEW_EMAIL_SENT_TEMPLATE  = 'path/to/new_email_sent.html'
+
+
+# Authentication

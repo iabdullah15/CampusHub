@@ -6,6 +6,8 @@
     <title>Sign In</title>
   </head>
   <body>
+    {% if not request.user.is_authenticated %}
+
     <form method="post">
         {{form.as_p}} 
         {% csrf_token %} 
@@ -14,6 +16,9 @@
 
     <p>{% lorem 50 w %}</p>
     <p><a href="{% url 'user:sign-up' %}">Or sign-up</a></p>
+    {% endif %}
 
+    <p>hi</p>
+    <a href="{% url 'user:home' %}">Home</a>
   </body>
 </html>

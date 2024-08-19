@@ -6,13 +6,60 @@
     <title>Sign Up</title>
   </head>
   <body>
+    {% if not request.user.is_authenticated %}
     <form method="post">
       {% csrf_token %}
-      <p>{{ form.email.label_tag }} {{ form.email }}</p>
-      <p>{{ form.password1.label_tag }} {{ form.password1 }}</p>
-      <p>{{ form.password2.label_tag }} {{ form.password2 }}</p>
+      <p>
+        {{ form.email.label_tag }} {{ form.email }}
+        {% if form.email.errors %}
+          <ul class="errorlist">
+            {% for error in form.email.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </p>
+      
+      <!-- Username Field with Errors -->
+      <p>
+        {{ form.username.label_tag }} {{ form.username }}
+        {% if form.username.errors %}
+          <ul class="errorlist">
+            {% for error in form.username.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </p>
+
+      <!-- Password1 Field with Errors -->
+      <p>
+        {{ form.password1.label_tag }} {{ form.password1 }}
+        {% if form.password1.errors %}
+          <ul class="errorlist">
+            {% for error in form.password1.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </p>
+
+      <!-- Password2 Field with Errors -->
+      <p>
+        {{ form.password2.label_tag }} {{ form.password2 }}
+        {% if form.password2.errors %}
+          <ul class="errorlist">
+            {% for error in form.password2.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </p>
+
       <button type="submit">Register</button>
     </form>
+
+    {% endif %}
 <br>
 <br>
     <p>{% lorem 50 w %}</p>

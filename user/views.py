@@ -1,7 +1,8 @@
-from django.forms import BaseModelForm
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
+from django.views.generic import TemplateView
+
 from django.views.generic.edit import CreateView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.views import LoginView, LogoutView
@@ -12,40 +13,24 @@ from .models import CustomUser
 from .forms import CustomUserChangeForm, CustomUserCreationForm
 
 # Create your views here.
+from verify_email.email_handler import send_verification_email
 
 
 class SignUpView(View):
-
-    def post(self, request:HttpRequest):
-
+    def post(self, request: HttpRequest):
         form = CustomUserCreationForm(request.POST)
-
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
-        print(f"Password 1: {password1}")
-        print(f"Password 2: {password2}")
 
         if form.is_valid():
 
-            form.save()
-
-            email = form.cleaned_data.get(('email'))
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(email=email, password=raw_password)
-
+            user = form.save()
             login(request, user)
 
-            return redirect(reverse_lazy('user:home'))
-        
-        return render(request, 'sign-up.html', {'form': form})
+            return redirect(reverse_lazy('home'))
 
-    
-    def get(self, request:HttpRequest):
+        return render(request, "sign-up.html", {"form": form})
 
-        return render(request, 'sign-up.html', {'form':CustomUserCreationForm()})
-
-
-
+    def get(self, request: HttpRequest):
+        return render(request, "sign-up.html", {"form": CustomUserCreationForm()})
 
 
 
