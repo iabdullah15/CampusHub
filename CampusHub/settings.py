@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user',    
+    'django_email_verification',  # you have to add this
+    
+
 ]
 
 MIDDLEWARE = [
@@ -142,29 +145,46 @@ mail = os.environ.get('MAIL')
 password = os.environ.get('PASSWORD')
 
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+def email_verified_callback(user):
+    user.is_active = True
+
+
+def password_change_callback(user, password):
+    user.set_password(password)
+
+
+# Global Package Settings
+EMAIL_FROM_ADDRESS = os.environ.get('MAIL', 'abduzubair2001@gmail.com')  # mandatory
+EMAIL_PAGE_DOMAIN = 'http://127.0.0.1:8000'  # mandatory (unless you use a custom link)
+EMAIL_MULTI_USER = False  # optional (defaults to False)
+
+# Email Verification Settings (mandatory for email sending)
+EMAIL_MAIL_SUBJECT = 'Confirm your email {{ user.username }}'
+EMAIL_MAIL_HTML = 'email/mail_body.html'
+EMAIL_MAIL_PLAIN = 'email/mail_body.txt'
+EMAIL_MAIL_TOKEN_LIFE = 60 * 60  # one hour
+
+# Email Verification Settings (mandatory for builtin view)
+EMAIL_MAIL_PAGE_TEMPLATE = 'email_success_template.html'
+EMAIL_MAIL_CALLBACK = email_verified_callback
+
+# Password Recovery Settings (mandatory for email sending)
+EMAIL_PASSWORD_SUBJECT = 'Change your password {{ user.username }}'
+EMAIL_PASSWORD_HTML = 'password_body.html'
+EMAIL_PASSWORD_PLAIN = 'password_body.txt'
+EMAIL_PASSWORD_TOKEN_LIFE = 60 * 10  # 10 minutes
+
+# Password Recovery Settings (mandatory for builtin view)
+EMAIL_PASSWORD_PAGE_TEMPLATE = 'password_changed_template.html'
+EMAIL_PASSWORD_CHANGE_PAGE_TEMPLATE = 'password_change_template.html'
+EMAIL_PASSWORD_CALLBACK = password_change_callback
+
+
+
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.mail.gmail.com'
 EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+# EMAIL_USE_TLS = True
 EMAIL_HOST_USER = mail
 EMAIL_HOST_PASS = password
-ACCOUNT_EMAIL_SUBJECT_PREFIX = ''
-DEFAULT_FROM_EMAIL = mail
-
-
-
-# Email Templates
-# HTML_MESSAGE_TEMPLATE = "path/to/html_template.html"
-
-VERIFICATION_SUCCESS_TEMPLATE = "sign-in.html"
-
-# VERIFICATION_FAILED_TEMPLATE = "path/to/failed.html"
-
-# REQUEST_NEW_EMAIL_TEMPLATE = "path/to/email.html"
-
-# LINK_EXPIRED_TEMPLATE = 'path/to/expired.html'
-
-# NEW_EMAIL_SENT_TEMPLATE  = 'path/to/new_email_sent.html'
-
-
-# Authentication

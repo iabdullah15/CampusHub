@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "==5.1"
+asgiref = "==3.8.1"
+mysqlclient = "==2.2.4"
+python-dotenv = "==1.0.1"
+six = "==1.16.0"
+sqlparse = "==0.5.1"
+tzdata = "==2024.1"
+django-email-verification = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"

@@ -12,8 +12,8 @@ from django.http import HttpResponse, HttpRequest
 from .models import CustomUser
 from .forms import CustomUserChangeForm, CustomUserCreationForm
 
-# Create your views here.
-from verify_email.email_handler import send_verification_email
+from django_email_verification import send_email
+
 
 
 class SignUpView(View):
@@ -21,16 +21,21 @@ class SignUpView(View):
         form = CustomUserCreationForm(request.POST)
 
         if form.is_valid():
+            user = form.save(commit=False)
+            user.is_active = False  # User is inactive until email verification
+            user.save()
+            
+            send_email(user)  # Send verification email
+            return redirect(reverse_lazy('user:verification-sent'))  # Redirect to the new template
 
-            user = form.save()
-            login(request, user)
-
-            return redirect(reverse_lazy('home'))
 
         return render(request, "sign-up.html", {"form": form})
 
     def get(self, request: HttpRequest):
         return render(request, "sign-up.html", {"form": CustomUserCreationForm()})
+
+class VerificationSentView(TemplateView):
+    template_name = "verification-sent.html"
 
 
 

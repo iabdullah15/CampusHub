@@ -4,6 +4,7 @@ from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin,
 )
+import datetime as dt
 
 # Create your models here.
 
@@ -45,9 +46,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_("email_address"), unique=True)
     department = models.CharField(max_length=50, blank=False)
     date_of_birth = models.DateField(null=True, blank=True)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    last_login = models.DateTimeField(auto_now=True)
+    last_login = models.DateTimeField(default=dt.datetime.now())
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "department"]
 

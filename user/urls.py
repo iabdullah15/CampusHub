@@ -15,4 +15,6 @@ urlpatterns = [
         LogoutView.as_view(next_page='/sign-in'),
         name="logout",
     ),
+    path("verification-sent", views.VerificationSentView.as_view(), name="verification-sent"),  # Add this line
+
 ]

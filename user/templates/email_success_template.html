@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verified</title>
+</head>
+<body>
+    <h1>Email Verification Successful</h1>
+    <p>Thank you, {{ user.username }}! Your email has been successfully verified.</p>
+    <p>You can now <a href="{% url 'user:sign-in' %}">log in</a> and start using your account.</p>
+</body>
+</html>
