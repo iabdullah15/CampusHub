@@ -154,7 +154,7 @@ def password_change_callback(user, password):
 
 
 # Global Package Settings
-EMAIL_FROM_ADDRESS = os.environ.get('MAIL', 'abduzubair2001@gmail.com')  # mandatory
+EMAIL_FROM_ADDRESS = 'abduzubair2001@gmail.com'  # mandatory
 EMAIL_PAGE_DOMAIN = 'http://127.0.0.1:8000'  # mandatory (unless you use a custom link)
 EMAIL_MULTI_USER = False  # optional (defaults to False)
 
@@ -181,10 +181,11 @@ EMAIL_PASSWORD_CALLBACK = password_change_callback
 
 
 
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST = 'smtp.mail.gmail.com'
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-EMAIL_HOST_USER = mail
-EMAIL_HOST_PASS = password
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'abduzubair2001@gmail.com'
+EMAIL_HOST_PASSWORD = "paea uypn hpyi honl"

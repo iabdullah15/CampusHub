@@ -1,7 +1,12 @@
 asgiref==3.8.1
+deprecation==2.1.0
 Django==5.1
+django-email-verification==0.3.3
 mysqlclient==2.2.4
+packaging==24.1
+PyJWT==2.9.0
 python-dotenv==1.0.1
 six==1.16.0
 sqlparse==0.5.1
 tzdata==2024.1
+validators==0.33.0

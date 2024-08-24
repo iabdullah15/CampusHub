@@ -59,10 +59,14 @@
       <button type="submit">Register</button>
     </form>
 
-    {% endif %}
+    <p><a href="{% url 'user:sign-in' %}">Or sign in if you already have an account</a></p>
+
 <br>
 <br>
+    {% else %}
     <p>{% lorem 50 w %}</p>
 
+
+    {% endif %}
   </body>
 </html>

@@ -17,9 +17,10 @@
 
     <p>{% lorem 50 w %}</p>
     <p><a href="{% url 'user:sign-up' %}">Or sign-up</a></p>
+    {% else %}
+    <a href="{% url 'user:home' %}">Home</a>
+
     {% endif %}
 
-    <p>hi</p>
-    <a href="{% url 'user:home' %}">Home</a>
   </body>
 </html>
