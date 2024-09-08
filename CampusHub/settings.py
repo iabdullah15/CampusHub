@@ -19,7 +19,6 @@ import os
 load_dotenv()
 
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -47,10 +46,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user',    
+    'user',
     'django_email_verification',  # you have to add this
-    
-
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -135,6 +133,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    BASE_DIR / "user" / "static",
+
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -155,7 +158,8 @@ def password_change_callback(user, password):
 
 # Global Package Settings
 EMAIL_FROM_ADDRESS = 'abduzubair2001@gmail.com'  # mandatory
-EMAIL_PAGE_DOMAIN = 'http://127.0.0.1:8000'  # mandatory (unless you use a custom link)
+# mandatory (unless you use a custom link)
+EMAIL_PAGE_DOMAIN = 'http://127.0.0.1:8000'
 EMAIL_MULTI_USER = False  # optional (defaults to False)
 
 # Email Verification Settings (mandatory for email sending)
@@ -178,8 +182,6 @@ EMAIL_PASSWORD_TOKEN_LIFE = 60 * 10  # 10 minutes
 EMAIL_PASSWORD_PAGE_TEMPLATE = 'password_changed_template.html'
 EMAIL_PASSWORD_CHANGE_PAGE_TEMPLATE = 'password_change_template.html'
 EMAIL_PASSWORD_CALLBACK = password_change_callback
-
-
 
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

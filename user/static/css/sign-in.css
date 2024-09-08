@@ -1,0 +1,120 @@
+body {
+    font-family: "Montserrat", sans-serif;
+}
+
+
+.description-container{
+    background-color: #121212;
+    color: white;
+    padding-bottom: 10rem;
+}
+
+.description-heading {
+    font-weight: 600;
+}
+
+
+.description-btn {
+    margin-top: 2rem;
+
+}
+
+.second-description-heading-container {
+    margin-top: 2rem;
+    width: 70%;
+}
+
+.second-description-heading-container>h3{
+    font-size: 3rem;
+    font-weight: 600;
+}
+
+.second-description-heading-container>p{
+    font-size: 1rem;
+}
+
+
+.sign-up-container{
+
+}
+
+.sign-up-column {
+    margin-top: 5rem;
+    text-align: center;
+}
+
+.sign-up-heading>h1 {
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+.email-field, .password-field, .horizontal-line, .submit-btn-container {
+    width: 55%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.email-field::placeholder{
+    opacity: 0.5;
+}
+
+.sign-in-link {
+    font-weight: bold;
+}
+
+.forgot-password-text {
+    color: blue;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.forgot-password-text:hover{
+    text-decoration: underline;
+}
+
+.sign-in-text {
+    color: brown;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.sign-in-text:hover{
+    text-decoration: underline;
+}
+
+
+/* Media queries */
+@media (min-width: 767.98px) and (max-width: 849.98px) {
+    .second-description-heading-container {
+        width: 100%;
+    }
+
+
+}
+@media (min-width: 767.98px) and (max-width: 1300px) {
+    .email-field, .password-field, .horizontal-line, .submit-btn-container {
+        width: 90%;
+    }
+
+    .description-column{
+        flex: 0 0 auto;
+        width: 50.33333333%;
+    }
+
+}
+
+
+
+@media (max-width: 767.98px) {
+    .email-field, .password-field, .horizontal-line, .submit-btn-container {
+        width: 75%;
+    }
+
+}
+
+@media (max-width: 400px) {
+    .email-field, .password-field, .horizontal-line, .submit-btn-container {
+        width: 100%;
+    }
+
+}

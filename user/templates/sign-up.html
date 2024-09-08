@@ -1,72 +1,179 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sign Up</title>
-  </head>
-  <body>
-    {% if not request.user.is_authenticated %}
-    <form method="post">
-      {% csrf_token %}
-      <p>
-        {{ form.email.label_tag }} {{ form.email }}
-        {% if form.email.errors %}
-          <ul class="errorlist">
-            {% for error in form.email.errors %}
-              <li>{{ error }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </p>
-      
-      <!-- Username Field with Errors -->
-      <p>
-        {{ form.username.label_tag }} {{ form.username }}
-        {% if form.username.errors %}
-          <ul class="errorlist">
-            {% for error in form.username.errors %}
-              <li>{{ error }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </p>
+{% extends 'base/base.html' %}
+{% load static %}
 
-      <!-- Password1 Field with Errors -->
-      <p>
-        {{ form.password1.label_tag }} {{ form.password1 }}
-        {% if form.password1.errors %}
-          <ul class="errorlist">
-            {% for error in form.password1.errors %}
-              <li>{{ error }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </p>
+{% block title %}
+<title>Sign-Up to CampusHub!</title>
+{% endblock %}
 
-      <!-- Password2 Field with Errors -->
-      <p>
-        {{ form.password2.label_tag }} {{ form.password2 }}
-        {% if form.password2.errors %}
-          <ul class="errorlist">
-            {% for error in form.password2.errors %}
-              <li>{{ error }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </p>
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/sign-up.css' %}">
+{% endblock %}
 
-      <button type="submit">Register</button>
-    </form>
+{% block js %}
+<script defer>
 
-    <p><a href="{% url 'user:sign-in' %}">Or sign in if you already have an account</a></p>
+  document.addEventListener("DOMContentLoaded", function(){
+    const email_field = document.getElementById("id_email");
+    const username_field = document.getElementById("id_username");
+    const password1_field = document.getElementById("id_password1");
+    const password2_field = document.getElementById("id_password2");
 
-<br>
-<br>
-    {% else %}
-    <p>{% lorem 50 w %}</p>
+    email_field.placeholder = 'example@ucp.edu.pk';
+    email_field.setAttribute('aria-describedBy', 'emailHelp')
+    email_field.classList.add('form-control', 'email-field');
+    username_field.classList.add('form-control', 'username-field');
+    password1_field.classList.add('form-control', 'password-field');
+    password2_field.classList.add('form-control', 'password-field');
+  });
+
+</script>
+{% endblock %}
+
+{% block main %}
+
+{% if not request.user.is_authenticated %}
+
+    <div class="container-fluid sign-up-container">
+      <div class="row">
+        <div class="col-5 carousel-column">
+          <div class="carousel-container">
+            <div
+              id="carouselExampleAutoplaying"
+              class="carousel slide"
+              data-bs-ride="carousel"
+            >
+              <div class="carousel-inner">
+                <div class="carousel-item active">
+                  <h5 class="ps-5 pt-5">
+                    Connect with verified UCP students & Faculty!
+                  </h5>
+                  <p class="ps-5 pt-5 w-75">
+                    Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                    Modi incidunt minima laborum, quaerat est dolor asperiores
+                    neque Corrupti, est labore.
+                  </p>
+                  <img
+                    src="{% static 'img/community2.png' %}"
+                    class="d-block carousel-image community-img-carousel"
+                    alt="..."
+                  />
+                </div>
+                <div class="carousel-item">
+                  <h5 class="ps-5 pt-5">
+                    Maintain your Anonymity while connecting with likeminded
+                    people!
+                  </h5>
+                  <p class="ps-5 pt-5 w-75">
+                    Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                    Modi incidunt minima laborum, quaerat est dolor asperiores
+                    neque Corrupti, est labore.
+                  </p>
+                  <img
+                    src="{% static 'img/community1.png' %}"
+                    class="d-block carousel-image community-img-carousel"
+                    alt="..."
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-7 sign-up-column">
+          <div class="sign-up-heading mb-5">
+            <h1>Sign-Up for CampusHub</h1>
+          </div>
+
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label"
+                >Please use your UCP email address</label
+              >
+              {{ form.email }}
+              {% if form.email.errors %}
+              <ul class="errorlist">
+                {% for error in form.email.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+              <div id="emailHelp" class="form-text">
+                We'll never share your email with anyone else.
+              </div>
+            </div>
 
 
-    {% endif %}
-  </body>
-</html>
+            <div class="mb-3">
+              <label for="exampleInputUserName" class="form-label"
+                >Username</label
+              >
+              {{ form.username }}
+              {% if form.username.errors %}
+                <ul class="errorlist">
+                  {% for error in form.username.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+
+              <div id="emailHelp" class="form-text">
+                We'll never share your username with anyone else.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="exampleInputPassword1" class="form-label"
+                >Password</label
+              >
+
+              {{ form.password1 }}
+              {% if form.password1.errors %}
+            <ul class="errorlist">
+              {% for error in form.password1.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputPassword2" class="form-label"
+                >Confirm Password</label
+              >
+
+              {{ form.password2 }}
+              {% if form.password2.errors %}
+              <ul class="errorlist">
+                {% for error in form.password2.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            </div>
+            <div class="submit-btn-container d-grid mt-4">
+              <button type="submit" class="btn btn-dark">Continue</button>
+            </div>
+          </form>
+          <hr class="horizontal-line" />
+          <div class="sign-in-link">
+            <p>Already a member? <a class="sign-in-text" href="{% url 'user:sign-in' %}">Sign In</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  {% else %}
+    <div class="container mt-5">
+      <p>You are already signed in</p>
+      <p><a href="{% url 'user:home' %}">Home</a></p>
+        
+    </div>
+  
+{% endif %}
+
+
+
+
+{% endblock %}

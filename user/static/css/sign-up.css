@@ -1,0 +1,75 @@
+body {
+    font-family: "Montserrat", sans-serif;
+}
+
+.sign-up-container{
+
+}
+
+.sign-up-column {
+    margin-top: 5rem;
+    text-align: center;
+}
+
+.sign-up-heading>h1 {
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+.email-field, .password-field, .horizontal-line, .submit-btn-container, .username-field {
+    width: 55%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.email-field::placeholder{
+    opacity: 0.5;
+}
+
+.sign-in-link {
+    font-weight: bold;
+}
+
+.sign-in-text {
+    color: brown;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.sign-in-text:hover{
+    text-decoration: underline;
+}
+
+.carousel-column {
+    padding: 0;
+    padding-bottom: 500px;
+    background-color: rgb(255, 254, 252);
+}
+
+.community-img-carousel{
+
+    width: 90%;
+    height: 600px;
+    object-fit: contain;
+}
+
+@media (max-width: 1250px) {
+
+    .carousel-column {
+        display: none;
+    }
+
+    .sign-up-column{
+        flex: 0 0 auto;
+        width: 100%;
+    }
+
+}
+
+@media (max-width: 800px) {
+    .email-field, .password-field, .horizontal-line, .submit-btn-container, .username-field {
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}

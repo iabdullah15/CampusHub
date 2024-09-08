@@ -6,7 +6,7 @@
     <title>Document</title>
   </head>
   <body>
-    <h1>Welcome back, {{request.user}}</h1>
+    <h1>Welcome back, {{request.user.username}}</h1>
 
     {% if request.user.is_authenticated %}
     <form method="post" action="{% url 'user:logout' %}">
@@ -14,8 +14,8 @@
       <button type="submit">Logout</button>
     </form>
     {% else %}
+    <p>Please sign in to continue</p>
     <p><a href="{% url 'user:sign-in' %}">Sign in</a></p>
     {% endif %}
-    <p>{{request.user.is_active}}</p>
   </body>
 </html>

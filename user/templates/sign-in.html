@@ -1,26 +1,118 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sign In</title>
-  </head>
-  <body>
-    {% if not request.user.is_authenticated %}
+{% extends 'base/base.html' %}
+{% load static %}
 
-    <form method="post">
-        {{form.as_p}} 
-        {% csrf_token %} 
-        <button type="submit">submit</button>
-        
-    </form>
+  {% block title %}
+  <title>Sign-In to CampusHub!</title>
+  {% endblock %}
 
-    <p>{% lorem 50 w %}</p>
-    <p><a href="{% url 'user:sign-up' %}">Or sign-up</a></p>
+  {% block css %}
+    <link rel="stylesheet" href="{% static 'css/sign-in.css' %}">
+  {% endblock %}
+
+  {% block js %}
+  <script defer>
+    document.addEventListener("DOMContentLoaded", function(){
+      const username_field = document.getElementById("id_username");
+      const password_field = document.getElementById("id_password");
+
+  
+      username_field.placeholder = 'example@ucp.edu.pk';
+      username_field.classList.add('form-control', 'email-field');
+      password_field.classList.add('form-control', 'password-field');
+    });
+  </script>
+  {% endblock %}
+
+  {% block main %}
+
+  {% if not request.user.is_authenticated %}
+    <div class="container-fluid sign-up-container">
+      <div class="row">
+        <div class="col-md-7 description-column ps-0 d-none d-md-block">
+          <div class="container-fluid description-container ps-5 pt-5">
+            <h1 class="description-heading">CampusHub</h1>
+            <div class="small-description-container">
+              <button class="btn btn-outline-light description-btn">
+                Seamless solutions to enhace your workflow
+              </button>
+            </div>
+            <div class="second-description-heading-container">
+              <h3>Lorem ipsum dolor sit amet consectetur adipisicing.</h3>
+              <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Et
+                quod, possimus ullam aperiam autem soluta molestias inventore
+                delectus corporis cumque rerum provident libero totam
+                consectetur impedit, aspernatur est, distinctio ex.
+              </p>
+            </div>
+            <img
+              src="{% static 'img/Header_CommunityEngagement.png' %}"
+              class="img-fluid"
+              alt="..."
+            />
+          </div>
+        </div>
+
+        <div class="col-md-5 sign-up-column">
+          <div class="sign-up-heading mb-5">
+            <h1>Sign-In</h1>
+          </div>
+
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label"
+                >Please use your UCP email address</label
+              >
+
+              {{ form.username }}  <!-- Renders the input field for email/username -->
+              {% if form.username.errors %}  <!-- Check if there are errors for the email/username field -->
+                <ul class="errorlist">
+                  {% for error in form.username.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputPassword1" class="form-label"
+                >Password</label
+              >
+
+              {{ form.password }}  <!-- Renders the password input field -->
+              {% if form.password.errors %}  <!-- Check if there are errors for the password field -->
+                <ul class="errorlist">
+                  {% for error in form.password.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+            <div class="submit-btn-container d-grid mt-4">
+              <button type="submit" class="btn btn-dark">Sign In</button>
+              <p class="ms-auto me-0 mt-3">
+                <a class="forgot-password-text" href="">Fogot password?</a>
+              </p>
+            </div>
+          </form>
+          <hr class="horizontal-line" />
+          <div class="sign-in-link">
+            <p>
+              Don't have an account? <a class="sign-in-text" href="{% url 'user:sign-up' %}">Sign Up</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     {% else %}
-    <a href="{% url 'user:home' %}">Home</a>
+    <div class="container mt-5">
+      <p>You are already signed in</p>
+      <p><a href="{% url 'user:home' %}">Home</a></p>
+        
+    </div>
 
     {% endif %}
 
-  </body>
-</html>
+
+  {% endblock %}
