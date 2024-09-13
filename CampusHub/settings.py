@@ -172,16 +172,14 @@ EMAIL_MAIL_TOKEN_LIFE = 60 * 60  # one hour
 EMAIL_MAIL_PAGE_TEMPLATE = 'email_success_template.html'
 EMAIL_MAIL_CALLBACK = email_verified_callback
 
-# Password Recovery Settings (mandatory for email sending)
-EMAIL_PASSWORD_SUBJECT = 'Change your password {{ user.username }}'
-EMAIL_PASSWORD_HTML = 'password_body.html'
-EMAIL_PASSWORD_PLAIN = 'password_body.txt'
-EMAIL_PASSWORD_TOKEN_LIFE = 60 * 10  # 10 minutes
-
-# Password Recovery Settings (mandatory for builtin view)
-EMAIL_PASSWORD_PAGE_TEMPLATE = 'password_changed_template.html'
-EMAIL_PASSWORD_CHANGE_PAGE_TEMPLATE = 'password_change_template.html'
-EMAIL_PASSWORD_CALLBACK = password_change_callback
+# Password recovery settings
+EMAIL_PASSWORD_CALLBACK = password_change_callback  # Called after password recovery
+EMAIL_PASSWORD_SUBJECT = 'Reset your password for {{ user.username }}'
+EMAIL_PASSWORD_HTML = 'password/password_reset_email.html'
+EMAIL_PASSWORD_PLAIN = 'password/password_reset_email.txt'
+EMAIL_PASSWORD_TOKEN_LIFE = 60 * 10  # Token expires in 10 minutes
+EMAIL_PASSWORD_PAGE_TEMPLATE = 'password/password_reset_done.html'
+EMAIL_PASSWORD_CHANGE_PAGE_TEMPLATE = 'password/password_reset_form.html'
 
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

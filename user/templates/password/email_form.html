@@ -1,0 +1,11 @@
+<h2>Reset Your Password</h2>
+<form method="post">
+  {% csrf_token %}
+  <label for="email">Enter your email:</label>
+  <input type="email" name="email" id="email" required>
+  <button type="submit">Send Password Reset Email</button>
+  
+  {% if error %}
+    <p style="color: red;">{{ error }}</p>
+  {% endif %}
+</form>

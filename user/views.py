@@ -12,7 +12,10 @@ from django.http import HttpResponse, HttpRequest
 from .models import CustomUser
 from .forms import CustomUserChangeForm, CustomUserCreationForm
 
-from django_email_verification import send_email
+from django_email_verification import send_email, send_password
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class SignUpView(View):
@@ -32,6 +35,26 @@ class SignUpView(View):
 
     def get(self, request: HttpRequest):
         return render(request, "sign-up.html", {"form": CustomUserCreationForm()})
+    
+    
+class PasswordResetView(View):
+    template_name = 'password/email_form.html'  # The form template
+
+    def get(self, request: HttpRequest):
+        # Render the password reset form (GET request)
+        return render(request, self.template_name)
+
+    def post(self, request: HttpRequest):
+        # Handle form submission (POST request)
+        email = request.POST.get('email')
+        try:
+            # Try to find the user by email
+            user = User.objects.get(email=email)
+            send_password(user)  # Send password recovery email
+            return redirect(reverse_lazy('user:email-sent'))  # Redirect to a success page
+        except User.DoesNotExist:
+            # If the user does not exist, show an error message on the form
+            return render(request, self.template_name, {'error': 'User with this email does not exist'})
 
 
 class VerificationSentView(TemplateView):
