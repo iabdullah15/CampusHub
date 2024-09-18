@@ -37,7 +37,7 @@ class SignUpView(View):
         return render(request, "sign-up.html", {"form": CustomUserCreationForm()})
     
     
-class PasswordResetView(View):
+class ForgotPasswordView(View):
     template_name = 'password/email_form.html'  # The form template
 
     def get(self, request: HttpRequest):

@@ -1,0 +1,11 @@
+.password-reset-container, .heading-container{
+    width: 30%;
+}
+
+.heading-container {
+    margin-top: 5rem;
+}
+
+.password-reset-container{
+    margin-top: 3rem;
+}

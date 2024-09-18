@@ -19,7 +19,7 @@ urlpatterns = [
     ),
     path("verification-sent", views.VerificationSentView.as_view(),
          name="verification-sent"),
-    path('password/reset', views.PasswordResetView.as_view(), name='password_reset'),
+    path('password/reset', views.ForgotPasswordView.as_view(), name='password_reset'),
     path('password/reset-done', TemplateView.as_view(template_name='password/password_reset_done.html'), name='password_reset_done'),
     path('password/reset-email-sent', TemplateView.as_view(template_name='password/email_sent.html'), name='email-sent')
 
