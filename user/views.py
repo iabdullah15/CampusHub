@@ -59,12 +59,3 @@ class ForgotPasswordView(View):
 
 class VerificationSentView(TemplateView):
     template_name = "verification-sent.html"
-
-
-class HomePageView(View):
-
-    template_name = "home.html"
-
-    def get(self, request: HttpRequest):
-
-        return render(request, self.template_name, {})

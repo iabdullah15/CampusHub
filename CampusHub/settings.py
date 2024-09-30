@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'user',
     'django_email_verification',  # you have to add this
     'crispy_forms',
+    'forum'
 ]
 
 MIDDLEWARE = [
@@ -135,7 +136,7 @@ STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / "user" / "static",
-
+    BASE_DIR / "forum" / "static",
 ]
 
 # Default primary key field type

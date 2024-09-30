@@ -48,7 +48,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     date_of_birth = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    last_login = models.DateTimeField(default=dt.datetime.now())
+    last_login = models.DateTimeField(auto_now_add=True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "department"]
 
