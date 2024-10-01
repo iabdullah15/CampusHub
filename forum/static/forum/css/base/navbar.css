@@ -1,0 +1,48 @@
+.navbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 20px 50px;
+    box-shadow: 0 1px 8px #ddd;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #fff; /* Ensure the navbar has a background color */
+    z-index: 1000; /* Make sure the navbar is on top of other content */
+}
+  
+#nav-title {
+margin-right: auto;
+font-size: 1.5em;
+}
+
+.navbar li {
+list-style: none;
+display: inline-block;
+padding: 0 20px;
+}
+
+.navbar a {
+text-decoration: none;
+color: #555;
+transition: all 0.3s ease 0s;
+}
+
+.navbar a:hover {
+color: gray;
+}
+
+.search-bar-form {
+    display: flex;
+}
+
+.form-control {
+    max-width: 300px; /* Adjust the max-width as needed */
+  }
+
+  @media (max-width: 700px){
+    .search-bar-form {
+        display: none;
+    }
+  }
+

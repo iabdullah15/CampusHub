@@ -9,8 +9,8 @@ from django.http import HttpResponse, HttpRequest
 
 class HomePageView(View):
 
-    template_name = "home/home.html"
+    template_name = "forum/home/home-v2.html"
 
     def get(self, request: HttpRequest):
-
+        print("Home page is accessed")
         return render(request, self.template_name, {})
