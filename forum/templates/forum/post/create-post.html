@@ -1,0 +1,50 @@
+{% extends 'forum/base/base.html' %}
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block title %}
+<title>Create Post</title>
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'forum/css/post/create-post.css' %}">
+
+{% endblock %}
+
+{% block js %}
+    <script defer>
+        var textarea = document.querySelector(".textarea");
+
+        var largeRows = 20;
+        var largeCols = 100;
+        var normalRows = 5;
+        var normalCols = 50;
+
+        window.onload = function() {
+            // Change the size of the textarea when the page loads
+            textarea.rows = largeRows;
+            textarea.cols = largeCols;
+        };
+    </script>
+{% endblock %}
+
+{% block main %}
+
+    <div class="create-post-container container">
+
+        <form action="{% url 'forum:create_post' %}" method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+
+            <div class="submit-btn-container mt-4">
+                <button type="submit" class="btn btn-dark">Cancel</button>
+
+                <button type="submit" class="btn btn-outline-dark">Post</button>
+            </div>
+        </form>
+
+    </div>
+
+
+{% endblock %}

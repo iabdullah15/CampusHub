@@ -1,0 +1,38 @@
+.create-post-container {
+    margin-top: 7rem;
+    
+}
+/*  */
+
+.form-control, #div_id_title input, .submit-btn-container, .select-text, #div_id_category {
+    max-width: 60%;
+}
+
+#div_id_category, .submit-btn-container, .select-text{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#div_id_title {
+    display: flex;
+    justify-content: center;
+}
+
+#div_id_body {
+    display: flex;
+
+    justify-content: center;
+}
+
+.post-title-container{
+    margin-bottom: 5rem;
+    margin-top: 3rem;
+}
+
+.submit-btn-container{
+    text-align: right;
+}
+
+.title, .body{
+    border-radius: 20px;
+}

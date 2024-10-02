@@ -46,11 +46,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'user',
-    'django_email_verification',  # you have to add this
+    'forum',
+    'django_email_verification',
     'crispy_forms',
-    'forum'
+    "crispy_bootstrap5",
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -174,7 +180,8 @@ EMAIL_MAIL_PAGE_TEMPLATE = 'email_success_template.html'
 EMAIL_MAIL_CALLBACK = email_verified_callback
 
 # Password recovery settings
-EMAIL_PASSWORD_CALLBACK = password_change_callback  # Called after password recovery
+# Called after password recovery
+EMAIL_PASSWORD_CALLBACK = password_change_callback
 EMAIL_PASSWORD_SUBJECT = 'Reset your password for {{ user.username }}'
 EMAIL_PASSWORD_HTML = 'password/password_reset_email.html'
 EMAIL_PASSWORD_PLAIN = 'password/password_reset_email.txt'
