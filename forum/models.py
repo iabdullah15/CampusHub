@@ -1,13 +1,26 @@
 from django.db import models
 from django.conf import settings
 
-# Create your models here.
+
+class PostCommunity(models.Model):
+
+    community_name = models.CharField(max_length=50)
+
+    def __str__(self) -> str:
+        return self.community_name
+
+    class Meta:
+
+        db_table = "forum_postcommunity"
+
+
 class PostCategory(models.Model):
-    
+
     category_name = models.CharField(max_length=50)
 
     def __str__(self) -> str:
         return self.category_name
+
 
 class Post(models.Model):
 
@@ -17,7 +30,7 @@ class Post(models.Model):
     body = models.TextField()
     time_created = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
-    category = models.ForeignKey(PostCategory, on_delete=models.CASCADE)
-    
+    category = models.ForeignKey(PostCommunity, on_delete=models.CASCADE)
+
     def __str__(self) -> str:
         return self.title

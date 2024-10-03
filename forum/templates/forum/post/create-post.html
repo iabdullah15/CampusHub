@@ -1,10 +1,9 @@
 {% extends 'forum/base/base.html' %}
 {% load crispy_forms_tags %}
-
 {% load static %}
 
 {% block title %}
-<title>Create Post</title>
+    <title>Create Post</title>
 {% endblock %}
 
 {% block css %}
@@ -38,7 +37,6 @@
             {{ form|crispy }}
 
             <div class="submit-btn-container mt-4">
-                <button type="submit" class="btn btn-dark">Cancel</button>
 
                 <button type="submit" class="btn btn-outline-dark">Post</button>
             </div>
