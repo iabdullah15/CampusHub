@@ -61,3 +61,20 @@ class CreatePostView(View):
         form = PostForm()
 
         return render(request, self.template_name, {'form': form})
+
+
+class PostDetailView(View):
+    
+    template_name = 'forum/post/post-detail.html'
+    
+    def get(self, request:HttpRequest, pk:int):
+        
+        try:
+            
+            post = Post.objects.get(id=pk)
+
+            return render(request, self.template_name, {"post":post})
+        
+        except:
+            
+            return render(request, self.template_name, {})

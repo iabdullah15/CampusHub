@@ -338,7 +338,7 @@
 
               <div class="user-post-card card">
                 <div class="card-body user-post-card-body">
-                  <a class="user-post-link" href="">
+                  <a class="user-post-link" href="{% url 'forum:post_detail' post.id %}">
                     <div class="card-title-container">
                       <h5 class="card-title">
                         {{post.title}}
