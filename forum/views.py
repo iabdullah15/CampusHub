@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpRequest
 
 from .models import PostCommunity, Post
-from .forms import PostForm
+from .forms import PostForm, PostCommentForm
 from django.contrib import messages
 
 
@@ -17,7 +17,7 @@ class HomePageView(View):
 
         communities = PostCommunity.objects.all().order_by('community_name')
         cs_category = PostCommunity.objects.get(community_name='FOIT and CS')
-        cs_posts = Post.objects.filter(category=cs_category)
+        cs_posts = Post.objects.filter(community=cs_category)
 
         return render(request, self.template_name, {'posts': cs_posts, 'communities': communities})
 
@@ -32,17 +32,17 @@ class CreatePostView(View):
 
         if form.is_valid():
 
-            category = form.cleaned_data.get('category')
-            print(category)
+            community = form.cleaned_data.get('category')
+            print(community)
             title = form.cleaned_data.get('title')
             body = form.cleaned_data.get('body')
-            post_category = PostCommunity.objects.get(community_name=category)
+            post_category = PostCommunity.objects.get(community_name=community)
             author = request.user
 
             post = form.save(commit=False)
 
             # Set additional fields
-            post.category = post_category
+            post.community = post_category
             post.author = author
 
             # Now save the post instance to the database
@@ -64,17 +64,48 @@ class CreatePostView(View):
 
 
 class PostDetailView(View):
-    
-    template_name = 'forum/post/post-detail.html'
-    
-    def get(self, request:HttpRequest, pk:int):
-        
-        try:
-            
-            post = Post.objects.get(id=pk)
 
-            return render(request, self.template_name, {"post":post})
-        
+    template_name = 'forum/post/post-detail.html'
+
+    def get(self, request: HttpRequest, pk: int):
+
+        try:
+
+            post = Post.objects.get(id=pk)
+            comment_form = PostCommentForm()
+
+            return render(request, self.template_name, {"post": post, "comment_form": comment_form})
+
         except:
-            
+
             return render(request, self.template_name, {})
+
+
+class PostCommentView(View):
+
+    def post(self, request: HttpRequest, post_id: int):
+
+        form = PostCommentForm(request.POST)
+        
+        post = Post.objects.get(id=post_id)
+
+        if form.is_valid():
+
+            comment_body = form.cleaned_data.get('comment_body')
+            author = request.user
+            
+            comment = form.save(commit=False)
+            
+            # Add other fields 
+            comment.author = author
+            comment.post = post
+            
+            # Save comment
+            
+            comment.save()
+            messages.success(request, 'Comment added successfully')
+            
+
+            return redirect(reverse_lazy('forum:post_detail', args=[post_id]))
+        
+        return render(request, 'forum/post/post_detail', {"post":post, "comment_form": form})

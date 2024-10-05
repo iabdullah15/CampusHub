@@ -1,4 +1,6 @@
 {% extends 'forum/base/base.html' %}
+{% load crispy_forms_tags %}
+
 {% load static %}
 {% load humanize %}
 
@@ -223,23 +225,23 @@
     </div>
 
     <div class="main-feed">
+
+      {% if post %}
+
       <div class="card mb-3 post-card">
         <div class="card-body">
           <h5 class="card-title">
             <a class="back-link btn btn-outline-light" href="">
               <i class="fa-solid fa-arrow-left back-icon"> </i>
             </a>
-            Category_name .
-            <span style="font-weight: 300; font-size: 1rem">3 hr. ago</span>
+            {{post.community.community_name}}
+            <span style="font-weight: 300; font-size: 1rem"> {{post.time_created|naturaltime}} </span>
           </h5>
           <h5 class="card-title">
-            Lorem ipsum dolor sit amet, consectetur adipisicing.
+            {{post.title}}
           </h5>
           <p class="card-text">
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-            Accusamus ab cumque deleniti reiciendis, sit, maxime, obcaecati
-            debitis consectetur excepturi a numquam. Quibusdam sit vel
-            assumenda, debitis molestiae deleniti qui blanditiis?
+            {{post.body}}
           </p>
           <div class="interaction-container">
             <p class="card-text">
@@ -262,32 +264,44 @@
         </div>
 
         <div class="container-fluid comments-container">
-          <div class="post-comment-container mb-4">
-            <label for="CommentFormControlTextarea1" class="form-label"
-              >Comment</label
-            >
-            <textarea
-              class="form-control comment-textarea"
-              id="CommentFormControlTextarea1"
-              rows="2"
-            ></textarea>
-            <div class="comment-btn-container mt-4">
-              <a
-                id="CommentSubmitButton"
-                class="btn btn-outline-dark ms-2"
-                style="display: none"
+          <form action="{% url 'forum:post_comment' post.id %}" method="post">
+            <div class="post-comment-container mb-4">
+              {% csrf_token %}
+
+              {{comment_form|crispy}}
+              <!-- <label for="CommentFormControlTextarea1" class="form-label"
+                >Comment</label
               >
-                Comment
-              </a>
-              <a
-                id="CancelButton"
-                class="btn btn-outline-dark ms-2"
-                style="display: none"
-              >
-                Cancel
-              </a>
+              <textarea
+                class="form-control comment-textarea"
+                id="CommentFormControlTextarea1"
+                rows="2"
+              ></textarea> -->
+              <div class="comment-btn-container mt-4">
+
+                  <!-- Post comment button -->
+                  
+
+                  <button style="display: none" id="CommentSubmitButton" class="btn btn-outline-dark ms-2" type="submit">              
+                    Comment
+                  </button>
+
+                  <!-- Cancel comment button -->
+
+                  <a
+                  id="CancelButton"
+                  class="btn btn-outline-dark ms-2"
+                  style="display: none"
+                >
+                  Cancel
+                </a>
+
+
+              </div>
+
             </div>
-          </div>
+          </form>
+
           <hr class="w-100" />
 
           <div id="comments-container">
@@ -445,6 +459,8 @@
           </div>
         </div>
       </div>
+
+      {% endif %}
     </div>
 
     <div class="right-sidebar bg-light">

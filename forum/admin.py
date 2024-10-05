@@ -5,3 +5,4 @@ from .models import *
 
 admin.site.register(PostCommunity)
 admin.site.register(Post)
+admin.site.register(PostComment)
