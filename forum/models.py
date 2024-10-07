@@ -22,10 +22,26 @@ class PostCategory(models.Model):
         return self.category_name
 
 
-class Post(models.Model):
+class PostLikes(models.Model):
+    
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    post = models.ForeignKey('Post', related_name='likes', on_delete=models.CASCADE, blank=True, null=True)  # Add ForeignKey to Post
+    is_liked = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        
+        return f'{self.user.username} liked {self.post.title}'
+    
+    class Meta:
+        # Ensure a user can only like a post once
+        unique_together = ('user', 'post')
+        
 
-    author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+
+class Post(models.Model):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=55)
     body = models.TextField()
     time_created = models.DateTimeField(auto_now_add=True)
@@ -34,6 +50,12 @@ class Post(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+    @property
+    def total_likes(self):
+        # Now using the related name to count likes
+        return self.likes.filter(is_liked=True).count()
+
 
 
 class PostComment(models.Model):

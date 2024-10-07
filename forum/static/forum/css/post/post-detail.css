@@ -20,10 +20,17 @@
 
 }
 
-.interaction-button:hover{
-    cursor:pointer;
+.interaction-container .interaction-button:hover{
+    cursor:pointer !important;
 }
 
+.interaction-button .unlike-icon {
+    color: red;
+}
+
+/* .unlike-btn{
+    display: none;
+} */
 
 .heart-icon:hover{
     cursor: pointer;

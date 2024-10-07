@@ -10,15 +10,21 @@
 
 {% block css %}
     <link rel="stylesheet" href="{% static 'forum/css/home/home-page.css' %}">
-    <link rel="stylesheet" href="{% static 'forum/css/post/create-post.css' %}">
-
+    <link rel="stylesheet" href="{% static 'forum/css/post/post-detail.css' %}">
 {% endblock %}
 
 {% block js %}
 
 <script defer>
+  
     document.addEventListener("DOMContentLoaded", () => {
       // Event delegation for reply buttons
+      var toastEl = document.getElementById('toastMessage');
+      var toast = new bootstrap.Toast(toastEl);
+      {% if messages %}
+        toast.show();
+      {% endif %}
+
       document
         .getElementById("comments-container")
         .addEventListener("click", (event) => {
@@ -78,6 +84,7 @@
       });
     });
   </script>
+  <script defer src="{% static 'forum/js/post/like-function.js' %}"></script>
 
 {% endblock %}
 
@@ -228,31 +235,67 @@
 
       {% if post %}
 
+      <!-- Toast container -->
+      <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center w-100">
+        {% if messages %}
+          {% for message in messages %}
+            <div id="toastMessage" class="toast text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="15000">
+              <div class="d-flex">
+                <div class="toast-body">
+                  <!-- Display Django messages inside the toast -->
+                  {{ message }}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+
       <div class="card mb-3 post-card">
         <div class="card-body">
-          <h5 class="card-title">
-            <a class="back-link btn btn-outline-light" href="">
-              <i class="fa-solid fa-arrow-left back-icon"> </i>
+          <div class="card-title d-flex justify-content-between align-items-center">
+            <a class="back-link btn btn-outline-light" href="{% url 'forum:home' %}">
+                <i class="fa-solid fa-arrow-left back-icon"> </i>
             </a>
-            {{post.community.community_name}}
-            <span style="font-weight: 300; font-size: 1rem"> {{post.time_created|naturaltime}} </span>
-          </h5>
-          <h5 class="card-title">
+            <span class="mx-3" style="font-weight: 500; font-size: 1.4rem">{{ post.community.community_name }}</span>
+            <span class="ms-auto" style="font-weight: 400; font-size: 1rem">{{ post.time_created|naturaltime }}</span>
+        </div>
+          <h5 class="card-title mt-3">
             {{post.title}}
           </h5>
-          <p class="card-text">
+          <p class="card-text ">
             {{post.body}}
           </p>
-          <div class="interaction-container">
+          <div class="interaction-container" data-liked="{% if is_liked_by_user %}true{% else %}false{% endif %}">
             <p class="card-text">
               <small class="text-muted">
-                <span class="interaction-button">
-                  <i class="fa-regular fa-heart fa-xl heart-icon"></i> 9 likes
-                  ·
+                <!-- <span class="interaction-button like-btn">
+                  <i class="fa-regular fa-heart fa-xl like-icon"></i> 9 likes
                 </span>
+                <span class="interaction-button unlike-btn">
+                  <i class="fa-solid fa-heart fa-xl unlike-icon"></i> 9 likes
+                </span> -->
+
+            <!-- Like Button (shown if the post is not liked by the user) -->
+
+                <span class="interaction-button like-btn" id="like-button" data-url="{% url 'forum:like-post' post.id %}">
+                    <i class="fa-regular fa-heart fa-xl like-icon"></i>
+                    <span class="like-count">{{ post.total_likes }} likes</span>
+                </span>
+
+
+                <!-- Unlike Button (shown if the post is liked by the user) -->
+
+                <span class="interaction-button unlike-btn" id="unlike-button" data-url="{% url 'forum:like-post' post.id %}">
+                    <i class="fa-solid fa-heart fa-xl unlike-icon"></i>
+                    <span class="like-count">{{ post.total_likes }} likes</span>
+                </span>
+
+
                 <span class="interaction-button">
-                  <i class="fa-regular fa-message fa-xl comment-icon"></i> 104
-                  comments ·
+                  <i class="fa-regular fa-message fa-xl comment-icon"></i> {{comment_count}}
+                  comments
                 </span>
                 <span class="interaction-button">
                   <i class="fa-regular fa-eye fa-xl views-icon"></i> 1,935
@@ -305,155 +348,88 @@
           <hr class="w-100" />
 
           <div id="comments-container">
-            <div class="comment my-5" data-comment-id="1">
-              <div class="card comment-card">
-                <div class="card-body">
-                  <h6 class="card-title">
-                    Department <span>username</span> <span>time-posted</span>
-                  </h6>
-                  <p class="card-text">
-                    Some quick example text to build on the card title and
-                    make up the bulk of the card's content.
-                  </p>
-                </div>
-              </div>
-              <div class="comment-interaction-container">
-                <span class="interaction-button mt-2">
-                  <i class="fa-regular fa-heart fa-lg heart-icon"></i> 9
-                </span>
-                <span class="reply-link" data-comment-id="1">Reply</span>
 
-                <div
-                  class="mt-3 post-comment-reply-container mb-4"
-                  style="display: none"
-                >
-                  <textarea
-                    class="form-control reply-comment-textarea"
-                    style="display: none"
-                    rows="2"
-                  ></textarea>
-                  <div class="reply-btn-container mt-4" style="display: none">
-                    <a class="btn btn-outline-dark ms-2 reply-btn">
-                      Comment
-                    </a>
-                    <a class="btn btn-outline-dark ms-2 cancel-btn-reply">
-                      Cancel
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <div class="comment-replies-container">
-                <div class="card comment-reply-card">
-                  <div class="card-body">
-                    <h6 class="card-title">
-                      Department <span>username</span>
-                      <span>time-posted</span>
-                    </h6>
-                    <p class="card-text">
-                      Some quick example text to build on the card title and
-                      make up the bulk of the card's content.
-                    </p>
-                  </div>
-                </div>
-                <div class="comment-reply-interaction-container">
-                  <span class="interaction-button mt-2">
-                    <i class="fa-regular fa-heart fa-lg heart-icon"></i> 9
-                  </span>
-                </div>
-                <div class="card comment-reply-card">
-                  <div class="card-body">
-                    <h6 class="card-title">
-                      Department <span>username</span>
-                      <span>time-posted</span>
-                    </h6>
-                    <p class="card-text">
-                      Some quick example text to build on the card title and
-                      make up the bulk of the card's content.
-                    </p>
-                  </div>
-                </div>
-                <div class="comment-reply-interaction-container">
-                  <span class="interaction-button mt-2">
-                    <i class="fa-regular fa-heart fa-lg heart-icon"></i> 9
-                  </span>
-                </div>
-              </div>
-            </div>
+            {% if comments %}
 
-            <div class="comment my-5" data-comment-id="2">
-              <div class="card comment-card">
-                <div class="card-body">
-                  <h6 class="card-title">
-                    Department <span>username</span> <span>time-posted</span>
-                  </h6>
-                  <p class="card-text">
-                    Some quick example text to build on the card title and
-                    make up the bulk of the card's content.
-                  </p>
-                </div>
-              </div>
-              <div class="comment-interaction-container">
-                <span class="interaction-button mt-2">
-                  <i class="fa-regular fa-heart fa-lg heart-icon"></i> 9
-                </span>
-                <span class="reply-link" data-comment-id="1">Reply</span>
+              {% for comment in comments %}
 
-                <div
-                  class="mt-3 post-comment-reply-container mb-4"
-                  style="display: none"
-                >
-                  <textarea
-                    class="form-control reply-comment-textarea"
-                    style="display: none"
-                    rows="2"
-                  ></textarea>
-                  <div class="reply-btn-container mt-4" style="display: none">
-                    <a class="btn btn-outline-dark ms-2 reply-btn">
-                      Comment
-                    </a>
-                    <a class="btn btn-outline-dark ms-2 cancel-btn-reply">
-                      Cancel
-                    </a>
+                <div class="comment my-5" data-comment-id="1">
+                  <div class="card comment-card">
+                    <div class="card-body">
+                      <h6 class="card-title">
+                        Department name <span>{{comment.author.username}}</span> <span>{{comment.time_created|naturaltime}}</span>
+                      </h6>
+                      <p class="card-text">
+                        {{comment.comment_body}}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="comment-interaction-container">
+                    <span class="interaction-button mt-2">
+                      <i class="fa-regular fa-heart fa-lg heart-icon"></i> 9
+                    </span>
+                    <span class="reply-link" data-comment-id="1">Reply</span>
+
+                    <div
+                      class="mt-3 post-comment-reply-container mb-4"
+                      style="display: none"
+                    >
+                      <textarea
+                        class="form-control reply-comment-textarea"
+                        style="display: none"
+                        rows="2"
+                      ></textarea>
+                      <div class="reply-btn-container mt-4" style="display: none">
+                        <a class="btn btn-outline-dark ms-2 reply-btn">
+                          Comment
+                        </a>
+                        <a class="btn btn-outline-dark ms-2 cancel-btn-reply">
+                          Cancel
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="comment-replies-container">
+                    <div class="card comment-reply-card">
+                      <div class="card-body">
+                        <h6 class="card-title">
+                          Department <span>username</span>
+                          <span>time-posted</span>
+                        </h6>
+                        <p class="card-text">
+                          Some quick example text to build on the card title and
+                          make up the bulk of the card's content.
+                        </p>
+                      </div>
+                    </div>
+                    <div class="comment-reply-interaction-container">
+                      <span class="interaction-button mt-2">
+                        <i class="fa-regular fa-heart fa-lg heart-icon"></i> 9
+                      </span>
+                    </div>
+                    <div class="card comment-reply-card">
+                      <div class="card-body">
+                        <h6 class="card-title">
+                          Department <span>username</span>
+                          <span>time-posted</span>
+                        </h6>
+                        <p class="card-text">
+                          Some quick example text to build on the card title and
+                          make up the bulk of the card's content.
+                        </p>
+                      </div>
+                    </div>
+                    <div class="comment-reply-interaction-container">
+                      <span class="interaction-button mt-2">
+                        <i class="fa-regular fa-heart fa-lg heart-icon"></i> 9
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="comment-replies-container">
-                <div class="card comment-reply-card">
-                  <div class="card-body">
-                    <h6 class="card-title">
-                      Department <span>username</span>
-                      <span>time-posted</span>
-                    </h6>
-                    <p class="card-text">
-                      Some quick example text to build on the card title and
-                      make up the bulk of the card's content.
-                    </p>
-                  </div>
-                </div>
-                <div class="comment-reply-interaction-container">
-                  <span class="interaction-button mt-2">
-                    <i class="fa-regular fa-heart fa-lg heart-icon"></i> 9
-                  </span>
-                </div>
-                <div class="card comment-reply-card">
-                  <div class="card-body">
-                    <h6 class="card-title">
-                      Department <span>username</span>
-                      <span>time-posted</span>
-                    </h6>
-                    <p class="card-text">
-                      Some quick example text to build on the card title and
-                      make up the bulk of the card's content.
-                    </p>
-                  </div>
-                </div>
-                <div class="comment-reply-interaction-container">
-                  <span class="interaction-button mt-2">
-                    <i class="fa-regular fa-heart fa-lg heart-icon"></i> 9
-                  </span>
-                </div>
-              </div>
-            </div>
+
+              {% endfor %}
+
+           {% endif %}
 
             <!-- Repeat .comment structure for more comments -->
           </div>

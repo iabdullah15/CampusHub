@@ -134,23 +134,23 @@
 
       <!-- Toast container -->
       <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center w-100">
-        <div id="toastMessage" class="toast text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="15000">
-          <div class="d-flex">
-            <div class="toast-body">
-              <!-- Display Django messages inside the toast -->
-              {% if messages %}
-                {% for message in messages %}
+        {% if messages %}
+          {% for message in messages %}
+            <div id="toastMessage" class="toast text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="15000">
+              <div class="d-flex">
+                <div class="toast-body">
+                  <!-- Display Django messages inside the toast -->
                   {{ message }}
-                {% endfor %}
-              {% endif %}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
             </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-        </div>
+          {% endfor %}
+        {% endif %}
       </div>
 
         
-          <h4 class="mb-4 feed-title">Feed</h4>
+        <h4 class="mb-4 feed-title">Feed</h4>
 
           <!-- Offcanvas -->
           <div class="offcanvas-container mb-4">

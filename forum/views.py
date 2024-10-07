@@ -3,11 +3,14 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpRequest
-
-from .models import PostCommunity, Post
-from .forms import PostForm, PostCommentForm
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.contrib import messages
 
+
+from .models import PostCommunity, Post, PostComment, PostCategory, PostLikes
+from .forms import PostForm, PostCommentForm
+from .helpers import ask_assistant
 
 class HomePageView(View):
 
@@ -32,7 +35,7 @@ class CreatePostView(View):
 
         if form.is_valid():
 
-            community = form.cleaned_data.get('category')
+            community = form.cleaned_data.get('community')
             print(community)
             title = form.cleaned_data.get('title')
             body = form.cleaned_data.get('body')
@@ -40,6 +43,10 @@ class CreatePostView(View):
             author = request.user
 
             post = form.save(commit=False)
+            
+            # Format data to send to translation bot
+            content = f'{title}\n\n{body}'
+            ask_assistant(query=content)
 
             # Set additional fields
             post.community = post_category
@@ -64,20 +71,30 @@ class CreatePostView(View):
 
 
 class PostDetailView(View):
-
+    
     template_name = 'forum/post/post-detail.html'
 
     def get(self, request: HttpRequest, pk: int):
-
+        
         try:
-
             post = Post.objects.get(id=pk)
+            comments = PostComment.objects.filter(post=post).order_by('-time_created')
             comment_form = PostCommentForm()
+            
+            comment_count = comments.count()
 
-            return render(request, self.template_name, {"post": post, "comment_form": comment_form})
-
-        except:
-
+            # Check if the post is liked by the current user
+            is_liked_by_user = post.likes.filter(user=request.user, is_liked=True).exists()
+            print(is_liked_by_user)
+            return render(request, self.template_name, {
+                "post": post, 
+                "comment_form": comment_form, 
+                "comments": comments,
+                "is_liked_by_user": is_liked_by_user,  # Pass to the template
+                "comment_count":comment_count,
+            })
+            
+        except Post.DoesNotExist:
             return render(request, self.template_name, {})
 
 
@@ -109,3 +126,26 @@ class PostCommentView(View):
             return redirect(reverse_lazy('forum:post_detail', args=[post_id]))
         
         return render(request, 'forum/post/post_detail', {"post":post, "comment_form": form})
+
+
+class LikePostView(View):
+    
+    def post(self, request, post_id):
+        
+        post = get_object_or_404(Post, id=post_id)
+        user = request.user
+
+        # Get or create a PostLikes object
+        post_like, created = PostLikes.objects.get_or_create(user=user, post=post)
+
+        if not created:
+            # Toggle the 'is_liked' field if the like object already exists
+            post_like.is_liked = not post_like.is_liked
+            post_like.save()
+
+        print(post.likes.filter(is_liked=True).count())
+        # Return JSON response to update the frontend
+        return JsonResponse({
+            'liked': post_like.is_liked,
+            'total_likes': post.likes.filter(is_liked=True).count(),
+        })
