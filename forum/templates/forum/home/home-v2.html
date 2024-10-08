@@ -9,6 +9,7 @@
 {% block css %}
 {{block.super}}
 <link rel="stylesheet" href="{% static 'forum/css/home/home-page.css' %}">
+<script defer src="{% static 'forum/js/home/home-like.js' %}"></script>
 
 {% endblock %}
 
@@ -334,20 +335,20 @@
 
           <!-- Post section start -->
 
-          {% for post in posts %}
+          {% for post_with_status in posts_with_like_status %}
 
               <div class="user-post-card card">
                 <div class="card-body user-post-card-body">
-                  <a class="user-post-link" href="{% url 'forum:post_detail' post.id %}">
+                  <a class="user-post-link" href="{% url 'forum:post_detail' post_with_status.post.id %}">
                     <div class="card-title-container">
                       <h5 class="card-title">
-                        {{post.title}}
+                        {{post_with_status.post.title}}
                       </h5>
-                      <p class="text-muted pt-3">{{post.time_created|naturaltime}}</p>
+                      <p class="text-muted pt-3">{{post_with_status.post.time_created|naturaltime}}</p>
                       <i class="fa-solid fa-ellipsis post-options-icon"></i>
                     </div>
                     <p class="card-text">
-                      {{post.body}}
+                      {{post_with_status.post.body}}
                     </p>
                   </a>
                   <!-- Thumbnail -->
@@ -392,21 +393,35 @@
                   </div>
 
                   <div class="row pt-4 px-4 interaction-row">
+                    <div class="interaction-container" data-liked="{% if post_with_status.is_liked_by_user %}true{% else %}false{% endif %}" data-post-id="{{ post_with_status.post.id }}">
+            
+                        <!-- Like Button (shown if the post is not liked by the user) -->
+                        <div id="like-button-{{ post_with_status.post.id }}" class="col-4" {% if post_with_status.is_liked_by_user %}style="display: none;"{% endif %}>
+                            <span class="interaction-button like-btn" data-url="{% url 'forum:like-post' post_with_status.post.id %}">
+                                <i class="fa-regular fa-heart fa-xl like-icon"></i>
+                                <span id="like-count-{{ post_with_status.post.id }}" class="like-{{ post_with_status.post.id }}">{{ post_with_status.post.total_likes }} likes</span>
+                            </span>
+                        </div>
+            
+                        <!-- Unlike Button (shown if the post is liked by the user) -->
+                        <div id="unlike-button-{{ post_with_status.post.id }}" class="col-4" {% if not post_with_status.is_liked_by_user %}style="display: none;"{% endif %}>
+                            <span class="interaction-button unlike-btn" data-url="{% url 'forum:like-post' post_with_status.post.id %}">
+                                <i class="fa-solid fa-heart fa-xl unlike-icon"></i>
+                                <span id="like-count-{{ post_with_status.post.id }}" class="like-{{ post_with_status.post.id }}">{{ post_with_status.post.total_likes }} likes</span>
+                            </span>
+                        </div>
+                    </div>
+            
                     <div class="col-4">
-                      <i
-                        class="fa-solid fa-heart fa-xl like-btn interaction-btn"
-                      ></i>
-                      <small class="text-muted">9 likes</small>
+                        <i class="fa-regular fa-message fa-xl interaction-btn"></i>
+                        <small class="text-muted">9 comments</small>
                     </div>
                     <div class="col-4">
-                      <i class="fa-regular fa-message fa-xl interaction-btn"></i>
-                      <small class="text-muted">9 comments</small>
+                        <i class="fa-regular fa-eye fa-xl interaction-btn"></i>
+                        <small class="text-muted">9 views</small>
                     </div>
-                    <div class="col-4">
-                      <i class="fa-regular fa-eye fa-xl interaction-btn"></i>
-                      <small class="text-muted">9 views</small>
-                    </div>
-                  </div>
+                </div>
+                  
                 </div>
               </div>
 

@@ -5,16 +5,37 @@ from django.db.models.base import Model
 
 from django.forms.utils import ErrorList
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field
+from crispy_forms.layout import Layout, Field, Submit, Div, HTML
+
 
 from .models import Post, PostCommunity, PostComment, PostCategory
 
 
 class PostForm(forms.ModelForm):
-
     class Meta:
         model = Post
-        fields = ["title", "body", "community"]
+        fields = ["community", "category", "title", "body"]
+
+    def __init__(self, *args, **kwargs):
+        super(PostForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        
+        # Set form-level attributes
+        self.helper.form_id = 'id-postForm'
+        self.helper.form_class = 'blueForms create-post-form'
+        self.helper.form_method = 'post'
+        self.helper.form_action = ''  # URL for action, empty means submit to the same URL
+
+        # Configure layout and add classes
+        self.helper.layout = Layout(
+            Div(
+                Field('community', css_class='form-select form-select-lg mb-3'),
+                css_class='select-container mb-4'
+            ),
+            Field('title', css_class='form-control form-control-lg title'),
+            Field('body', css_class='form-control body'),
+            Submit('submit', 'Post', css_class='btn btn-outline-dark mt-4')
+        )
 
 
 class PostCommentForm(forms.ModelForm):

@@ -84,7 +84,7 @@
       });
     });
   </script>
-  <script defer src="{% static 'forum/js/post/like-function.js' %}"></script>
+  <script defer src="{% static 'forum/js/post/post-detail-like.js' %}"></script>
 
 {% endblock %}
 
@@ -270,12 +270,6 @@
           <div class="interaction-container" data-liked="{% if is_liked_by_user %}true{% else %}false{% endif %}">
             <p class="card-text">
               <small class="text-muted">
-                <!-- <span class="interaction-button like-btn">
-                  <i class="fa-regular fa-heart fa-xl like-icon"></i> 9 likes
-                </span>
-                <span class="interaction-button unlike-btn">
-                  <i class="fa-solid fa-heart fa-xl unlike-icon"></i> 9 likes
-                </span> -->
 
             <!-- Like Button (shown if the post is not liked by the user) -->
 
@@ -283,7 +277,6 @@
                     <i class="fa-regular fa-heart fa-xl like-icon"></i>
                     <span class="like-count">{{ post.total_likes }} likes</span>
                 </span>
-
 
                 <!-- Unlike Button (shown if the post is liked by the user) -->
 

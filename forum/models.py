@@ -47,6 +47,7 @@ class Post(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
     community = models.ForeignKey(PostCommunity, on_delete=models.CASCADE)
+    category = models.ForeignKey(PostCategory, on_delete=models.CASCADE, null=True)
 
     def __str__(self) -> str:
         return self.title

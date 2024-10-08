@@ -12,6 +12,7 @@ from .models import PostCommunity, Post, PostComment, PostCategory, PostLikes
 from .forms import PostForm, PostCommentForm
 from .helpers import ask_assistant
 
+
 class HomePageView(View):
 
     template_name = "forum/home/home-v2.html"
@@ -22,7 +23,19 @@ class HomePageView(View):
         cs_category = PostCommunity.objects.get(community_name='FOIT and CS')
         cs_posts = Post.objects.filter(community=cs_category)
 
-        return render(request, self.template_name, {'posts': cs_posts, 'communities': communities})
+        # Create a list of posts with their like status (Current user)
+        posts_with_like_status = []
+        for post in cs_posts:
+            is_liked_by_user = PostLikes.objects.filter(post=post, user=request.user, is_liked=True).exists()
+            posts_with_like_status.append({
+                'post': post,
+                'is_liked_by_user': is_liked_by_user
+            })
+
+        return render(request, self.template_name, {
+            'posts_with_like_status': posts_with_like_status,
+            'communities': communities,
+        })
 
 
 class CreatePostView(View):
@@ -43,7 +56,7 @@ class CreatePostView(View):
             author = request.user
 
             post = form.save(commit=False)
-            
+
             # Format data to send to translation bot
             content = f'{title}\n\n{body}'
             ask_assistant(query=content)
@@ -71,29 +84,31 @@ class CreatePostView(View):
 
 
 class PostDetailView(View):
-    
+
     template_name = 'forum/post/post-detail.html'
 
     def get(self, request: HttpRequest, pk: int):
-        
+
         try:
             post = Post.objects.get(id=pk)
-            comments = PostComment.objects.filter(post=post).order_by('-time_created')
+            comments = PostComment.objects.filter(
+                post=post).order_by('-time_created')
             comment_form = PostCommentForm()
-            
+
             comment_count = comments.count()
 
             # Check if the post is liked by the current user
-            is_liked_by_user = post.likes.filter(user=request.user, is_liked=True).exists()
+            is_liked_by_user = post.likes.filter(
+                user=request.user, is_liked=True).exists()
             print(is_liked_by_user)
             return render(request, self.template_name, {
-                "post": post, 
-                "comment_form": comment_form, 
+                "post": post,
+                "comment_form": comment_form,
                 "comments": comments,
                 "is_liked_by_user": is_liked_by_user,  # Pass to the template
-                "comment_count":comment_count,
+                "comment_count": comment_count,
             })
-            
+
         except Post.DoesNotExist:
             return render(request, self.template_name, {})
 
@@ -103,40 +118,40 @@ class PostCommentView(View):
     def post(self, request: HttpRequest, post_id: int):
 
         form = PostCommentForm(request.POST)
-        
+
         post = Post.objects.get(id=post_id)
 
         if form.is_valid():
 
             comment_body = form.cleaned_data.get('comment_body')
             author = request.user
-            
+
             comment = form.save(commit=False)
-            
-            # Add other fields 
+
+            # Add other fields
             comment.author = author
             comment.post = post
-            
+
             # Save comment
-            
+
             comment.save()
             messages.success(request, 'Comment added successfully')
-            
 
             return redirect(reverse_lazy('forum:post_detail', args=[post_id]))
-        
-        return render(request, 'forum/post/post_detail', {"post":post, "comment_form": form})
+
+        return render(request, 'forum/post/post_detail', {"post": post, "comment_form": form})
 
 
 class LikePostView(View):
-    
+
     def post(self, request, post_id):
-        
+
         post = get_object_or_404(Post, id=post_id)
         user = request.user
 
         # Get or create a PostLikes object
-        post_like, created = PostLikes.objects.get_or_create(user=user, post=post)
+        post_like, created = PostLikes.objects.get_or_create(
+            user=user, post=post)
 
         if not created:
             # Toggle the 'is_liked' field if the like object already exists
