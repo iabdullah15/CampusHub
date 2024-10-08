@@ -2,30 +2,22 @@
     margin-top: 7rem;
     
 }
-/*  */
 
-.form-control, #div_id_title input, .submit-btn-container, .select-text, #div_id_category, #div_id_community {
+.form-control, .select-container, .submit-btn-container, .select-text {
     max-width: 60%;
 }
 
-#div_id_community {
+.select-container, .submit-btn-container, .select-text{
     margin-left: auto;
     margin-right: auto;
 }
 
-#div_id_category, .submit-btn-container, .select-text{
-    margin-left: auto;
-    margin-right: auto;
-}
-
-#div_id_title {
+.post-title-container {
     display: flex;
     justify-content: center;
 }
 
-#div_id_body {
-    display: flex;
-
+.post-body-container .input-group {
     justify-content: center;
 }
 

@@ -1,6 +1,8 @@
 {% extends 'forum/base/base.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
+{% load widget_tweaks %}
+
 
 {% block title %}
     <title>Create Post</title>
@@ -11,12 +13,41 @@
 {% endblock %}
 
 {% block main %}
-    <div class="create-post-container container">
+    <div class="container create-post-container">
         <form action="{% url 'forum:create_post' %}" method="post">
             {% csrf_token %}
-            {{ form|crispy }}
-            <div class="submit-btn-container mt-4">
+            
+            <!-- Community Field -->
+            <div class="select-text">
+                <h4 class="mb-4">Select your community</h4>
+            </div>
+            <div class="select-container mb-4">
+                {{ form.community|add_class:"form-select form-select-lg mb-3" }}
+            </div>
 
+            <!-- Category Field -->
+            <div class="select-text">
+                <h4 class="mb-4">Select Category</h4>
+            </div>
+            <div class="select-container mb-4">
+                {{ form.category|add_class:"form-select form-select-lg mb-3" }}
+            </div>
+
+            <!-- Title Field -->
+            <div class="post-title-container">
+                {{ form.title|add_class:"form-control form-control-lg title" }}
+                <label for="id_title">Title</label>
+            </div>
+
+            <!-- Body Field -->
+            <div class="post-body-container">
+                <div class="input-group">
+                    {{ form.body|add_class:"form-control body" }}
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="submit-btn-container mt-4">
                 <button type="submit" class="btn btn-outline-dark">Post</button>
             </div>
         </form>

@@ -15,6 +15,7 @@ django-email-verification = "*"
 django-crispy-forms = "*"
 crispy-bootstrap5 = "*"
 openai = "*"
+django-widget-tweaks = "*"
 
 [dev-packages]
 
