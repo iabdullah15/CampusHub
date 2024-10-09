@@ -1,0 +1,91 @@
+.main-feed {
+  /* Adjust for navbar and sidebars width */
+  margin-top: 80px;
+  margin-right: 50px;
+  margin-left: 400px;
+  margin-bottom: 56px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.user-post-card {
+  width: 80%;
+  margin-bottom: 2rem;
+}
+
+.user-post-card-body {
+  padding-top: 0rem;
+}
+
+.user-post-link {
+  text-decoration: none;
+  color: black;
+}
+
+.card-title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  margin: 0; /* Ensure the title and icon are aligned properly */
+  flex: 1; /* This makes sure the title takes up available space */
+}
+
+.card-title:hover {
+  text-decoration: underline;
+}
+
+.custom-subtitle-container {
+  gap: 1rem; /* Optional: control spacing between the two subtitles */
+}
+
+.post-options-icon {
+  margin-left: 10px; /* Add some space between the title and the icon */
+}
+
+.post-option-icon-container:hover {
+  cursor: pointer; /* Optional: cursor change to indicate the icon is interactive */
+  opacity: 0.5;
+}
+
+.interaction-button {
+}
+
+.unlike-btn i {
+  color: red;
+}
+
+.interaction-button:hover,
+.interaction-button i:hover,
+.interaction-button small:hover {
+  cursor: pointer !important;
+}
+
+.community-img {
+  width: 100%;
+  height: 200px;
+}
+
+.community-card {
+  width: 80%;
+  margin-bottom: 3rem;
+}
+
+@media (max-width: 1250px) {
+  .community-card {
+    width: 100%;
+  }
+
+  .main-feed {
+    margin-top: 80px;
+    margin-right: 50px;
+    margin-left: 300px;
+    margin-bottom: 56px;
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+  }
+}

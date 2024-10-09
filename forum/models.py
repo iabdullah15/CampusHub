@@ -38,8 +38,6 @@ class PostLikes(models.Model):
         unique_together = ('user', 'post')
         
 
-
-
 class Post(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=55)
@@ -59,6 +57,27 @@ class Post(models.Model):
 
 
 
+class CommentLike(models.Model):
+    
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    comment = models.ForeignKey('PostComment', related_name='comment_likes', on_delete=models.CASCADE, blank=True, null=True)  # Add ForeignKey to Post
+    is_liked = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    @property
+    def total_likes(self):
+        # Now using the related name to count likes
+        return self.likes.filter(is_liked=True).count()
+    
+    def __str__(self):
+        
+        return f'{self.user.username} liked {self.comment.comment_body}'
+    
+    class Meta:
+        # Ensure a user can only like a comment once
+        unique_together = ('user', 'comment')
+
+
 class PostComment(models.Model):
 
     author = models.ForeignKey(
@@ -76,3 +95,15 @@ class PostComment(models.Model):
 
     def __str__(self) -> str:
         return f"Comment by {self.author.username} on {self.post.title}"
+
+
+
+class PostCommentReply(models.Model):
+    
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    reply_body = models.CharField(max_length=100)
+    time_created = models.DateTimeField(auto_now_add=True)
+    comment = models.ForeignKey(PostComment, on_delete=models.CASCADE, related_name='comment_reply')
+    
+    def __str__(self) -> str:
+        return f"Reply by {self.author.username} on {self.comment}"

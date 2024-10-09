@@ -1,0 +1,306 @@
+{% extends 'forum/base/base.html' %}
+{% load static %}
+{% load humanize %}
+
+    {% block title %}
+    <title>Community Name</title>
+    {% endblock %}
+    
+    {% block css %}
+    <link rel="stylesheet" href="{% static 'forum/css/home/home-page.css' %}">
+    <link rel="stylesheet" href="{% static 'forum/css/community/community-page.css' %}">
+    {% endblock %}
+
+    {% block js %}
+    <script defer src="{% static 'forum/js/home/home-like.js' %}"></script>
+    {% endblock %}
+
+  {% include 'forum/base/_header.html' %}
+
+    {% block main %}
+
+    <header class="navbar">
+        <h1 id="nav-title">CampusHub</h1>
+        <form class="d-flex mx-auto" role="search">
+          <input
+            class="form-control search-posts me-2"
+            type="search"
+            placeholder="Search"
+            aria-label="Search"
+          />
+          <button class="btn btn-outline-dark search-btn">search</button>
+        </form>
+        <nav>
+          <ul>
+            <li class="nav-item dropstart">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="fa-solid fa-user fa-xl"></i>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Home</a></li>
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li><a class="dropdown-item" href="#">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+      </header>
+  
+      <div class="content-wrapper">
+        <div class="sidebar bg-light p-3">
+          <h5>Feed</h5>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active left-sidebar-link" href="#">My Company</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Polls</a>
+            </li>
+          </ul>
+          <h5 class="mt-3">Communities</h5>
+          <ul class="nav flex-column">
+            {% if communities %}
+            {% for community in communities %}
+            <li class="nav-item">
+              <a class="nav-link active left-sidebar-link" href="{% url 'forum:community_page' community.id %}"
+                >{{community.community_name}}</a
+              >
+            </li>
+            {% endfor %}
+            {% endif %}
+          </ul>
+          <h5 class="mt-3">Job Groups</h5>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active left-sidebar-link" href="#"
+                >Software Engineering</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Product Managment</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Finance</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#"
+                >Management and Consulting</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#"
+                >Investment Banking & Sell Side</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Finance</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Data Science</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Security</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#"
+                >Information Technology</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Security</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Human Resources</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Operations</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Legal</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Supply Chain</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Customer Service</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Design</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Marketing</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Admin</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#"
+                >Information Technology</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#">Marketing</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="#"
+                >Hardware Engineering</a
+              >
+            </li>
+          </ul>
+        </div>
+  
+        <div class="main-feed">
+          <!-- Main Feed Content -->
+  
+          <div class="card community-card">
+            <div class="community-img-container">
+              <img
+                src="FOIT-community-img.jpg"
+                alt=""
+                class="card-img-top img-fluid community-img"
+              />
+            </div>
+            <div class="card-body">
+              <h3 class="card-title pb-3">IT & CS Community</h3>
+              <p class="card-text">Community Description:</p>
+              <p class="card-text">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Aspernatur eius odio labore numquam nisi facilis sed nobis amet
+                iste asperiores!
+              </p>
+            </div>
+          </div>
+  
+          {% for post_with_status in posts_with_like_status %}
+
+          <div class="user-post-card card">
+            <div class="card-body user-post-card-body">
+              <a class="user-post-link" href="{% url 'forum:post_detail' post_with_status.post.id %}">
+                <div class="card-title-container">
+                  <h5 class="card-title">
+                    {{post_with_status.post.title}}
+                  </h5>
+
+                  <p class="text-muted pt-3">{{post_with_status.post.time_created|naturaltime}}</p>
+                  <div class="post-option-icon-container">
+                    <i class="fa-solid fa-ellipsis post-options-icon fa-lg"></i>
+
+                  </div>
+                </div>
+
+ 
+                <div class="d-flex align-items-center custom-subtitle-container">
+                    {% if post_with_status.post.community %}
+                    <h6 class="card-subtitle mb-2 text-body-secondary">{{ post_with_status.post.community }}</h6>
+                    {% endif %}
+                    {% if post_with_status.post.community and  post_with_status.post.category%}
+                    <h6 class="card-subtitle mb-2 text-body-secondary">-</h6>
+                    {% endif %}
+                    {% if post_with_status.post.category %}
+                        <h6 class="card-subtitle mb-2 text-body-secondary">{{ post_with_status.post.category }}</h6>
+                    {% endif %}
+                </div>
+
+                
+
+                <p class="card-text">
+                  {{post_with_status.post.body|truncatewords:20 }}
+                </p>
+              </a>
+              <!-- Thumbnail -->
+              <div class="container-fluid mt-5 thumbnail-container">
+                <img
+                  src="random.jpg"
+                  alt="Thumbnail"
+                  class="img-thumbnail"
+                  data-bs-toggle="modal"
+                  data-bs-target="#likeImageModal"
+                  style="cursor: pointer"
+                />
+              </div>
+
+              <!-- Modal -->
+              <div
+                class="modal modal-lg fade"
+                id="likeImageModal"
+                tabindex="-1"
+                aria-labelledby="imageModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div class="modal-body">
+                      <img
+                        src="random.jpg"
+                        alt="Full-size Image"
+                        class="img-fluid"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row pt-4 px-4 interaction-row">
+                <div class="interaction-container col-4" data-liked="{% if post_with_status.is_liked_by_user %}true{% else %}false{% endif %}" data-post-id="{{ post_with_status.post.id }}">
+        
+                    <!-- Like Button (shown if the post is not liked by the user) -->
+                    <div id="like-button-{{ post_with_status.post.id }}" class="" {% if post_with_status.is_liked_by_user %}style="display: none;"{% endif %}>
+                        <span class="interaction-button like-btn" data-url="{% url 'forum:like-post' post_with_status.post.id %}">
+                            <i class="fa-regular fa-heart fa-xl like-icon"></i>
+                            <span id="like-count-{{ post_with_status.post.id }}" class="like-{{ post_with_status.post.id }}">{{ post_with_status.post.total_likes }} likes</span>
+                        </span>
+                    </div>
+        
+                    <!-- Unlike Button (shown if the post is liked by the user) -->
+                    <div id="unlike-button-{{ post_with_status.post.id }}" class="" {% if not post_with_status.is_liked_by_user %}style="display: none;"{% endif %}>
+                        <span class="interaction-button unlike-btn" data-url="{% url 'forum:like-post' post_with_status.post.id %}">
+                            <i class="fa-solid fa-heart fa-xl unlike-icon"></i>
+                            <span id="like-count-{{ post_with_status.post.id }}" class="like-{{ post_with_status.post.id }}">{{ post_with_status.post.total_likes }} likes</span>
+                        </span>
+                    </div>
+                </div>
+        
+                <div class="col-4">
+                  <span class="interaction-button">
+                    <i class="fa-regular fa-message fa-xl"></i>
+                    <small class="text-muted">9 comments</small>
+                  </span>
+                </div>
+                <div class="col-4">
+                  <span class="interaction-button">
+                    <i class="fa-regular fa-eye fa-xl interaction-btn"></i>
+                    <small class="text-muted">9 views</small>
+                  </span>
+                </div>
+            </div>
+              
+            </div>
+          </div>
+
+
+      {% endfor %}
+  
+          <!-- Add more feed items here -->
+        </div>
+      </div>
+
+
+
+    {% endblock %}
+
+

@@ -14,12 +14,15 @@
 
 {% block main %}
     <div class="container create-post-container">
+
+        <h4 class="heading-text mb-4">Create Post</h4>
+
         <form action="{% url 'forum:create_post' %}" method="post">
             {% csrf_token %}
             
             <!-- Community Field -->
             <div class="select-text">
-                <h4 class="mb-4">Select your community</h4>
+                <h4 class="mb-4 label-heading">Select your community</h4>
             </div>
             <div class="select-container mb-4">
                 {{ form.community|add_class:"form-select form-select-lg mb-3" }}
@@ -27,22 +30,29 @@
 
             <!-- Category Field -->
             <div class="select-text">
-                <h4 class="mb-4">Select Category</h4>
+                <h4 class="mb-4 label-heading">Select Category</h4>
             </div>
             <div class="select-container mb-4">
                 {{ form.category|add_class:"form-select form-select-lg mb-3" }}
             </div>
 
-            <!-- Title Field -->
+            <!-- Title Field
             <div class="post-title-container">
                 {{ form.title|add_class:"form-control form-control-lg title" }}
                 <label for="id_title">Title</label>
+            </div> -->
+
+            <!-- Title Field with Floating Label -->
+            <div class="form-floating mb-4 post-title-container">
+                {{ form.title|add_class:"form-control" }}
+                <label for="id_title">Title</label>
             </div>
 
-            <!-- Body Field -->
+            <!-- Body Field with Floating Label -->
             <div class="post-body-container">
-                <div class="input-group">
-                    {{ form.body|add_class:"form-control body" }}
+                <div class="form-floating mb-4">  <!-- form-floating should be directly on the container -->
+                    {{ form.body|add_class:"form-control" }}
+                    <label for="id_body">Body</label>
                 </div>
             </div>
 

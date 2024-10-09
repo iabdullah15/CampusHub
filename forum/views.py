@@ -8,8 +8,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib import messages
 
 
-from .models import PostCommunity, Post, PostComment, PostCategory, PostLikes
-from .forms import PostForm, PostCommentForm
+from .models import PostCommunity, Post, PostComment, PostCategory, PostLikes, PostCommentReply, CommentLike
+from .forms import PostForm, PostCommentForm, PostCommentReplyForm
 from .helpers import ask_assistant
 
 
@@ -26,12 +26,14 @@ class HomePageView(View):
         # Create a list of posts with their like status (Current user)
         posts_with_like_status = []
         for post in cs_posts:
-            is_liked_by_user = PostLikes.objects.filter(post=post, user=request.user, is_liked=True).exists()
+            is_liked_by_user = PostLikes.objects.filter(
+                post=post, user=request.user, is_liked=True).exists()
             posts_with_like_status.append({
                 'post': post,
                 'is_liked_by_user': is_liked_by_user
             })
 
+        print(communities)
         return render(request, self.template_name, {
             'posts_with_like_status': posts_with_like_status,
             'communities': communities,
@@ -93,20 +95,39 @@ class PostDetailView(View):
             post = Post.objects.get(id=pk)
             comments = PostComment.objects.filter(
                 post=post).order_by('-time_created')
+
             comment_form = PostCommentForm()
+            reply_form = PostCommentReplyForm()
 
             comment_count = comments.count()
 
+            # Check if each comment is liked by the user
+            comments_with_like_status = []
+            for comment in comments:
+                is_liked_by_user = CommentLike.objects.filter(
+                    comment=comment, user=request.user, is_liked=True).exists()
+                print(comment.comment_likes.filter(is_liked=True).count())
+                
+                comments_with_like_status.append({
+                    'comment': comment,
+                    'is_liked_by_user': is_liked_by_user,
+                    'total_likes': comment.comment_likes.filter(is_liked=True).count()  # Fetch total likes
+                })
+            
+            print(comments_with_like_status)
+            
             # Check if the post is liked by the current user
             is_liked_by_user = post.likes.filter(
                 user=request.user, is_liked=True).exists()
             print(is_liked_by_user)
+
             return render(request, self.template_name, {
                 "post": post,
                 "comment_form": comment_form,
-                "comments": comments,
+                "comments_with_like_status": comments_with_like_status,
                 "is_liked_by_user": is_liked_by_user,  # Pass to the template
                 "comment_count": comment_count,
+                'reply_form': reply_form
             })
 
         except Post.DoesNotExist:
@@ -142,6 +163,35 @@ class PostCommentView(View):
         return render(request, 'forum/post/post_detail', {"post": post, "comment_form": form})
 
 
+class PostReplyView(View):
+
+    def post(self, request: HttpRequest, comment_id: int):
+
+        form = PostCommentReplyForm(request.POST)
+
+        comment = PostComment.objects.get(id=comment_id)
+
+        if form.is_valid():
+
+            comment_body = form.cleaned_data.get('reply_body')
+            author = request.user
+
+            reply = form.save(commit=False)
+
+            # Add other fields
+            reply.author = author
+            reply.comment = comment
+
+            # Save comment
+
+            reply.save()
+            messages.success(request, 'Replied successfully')
+
+            return redirect(reverse_lazy('forum:post_detail', args=[comment.post.pk]))
+
+        return render(request, 'forum/post/post_detail', {"post": comment.post, "comment_form": form})
+
+
 class LikePostView(View):
 
     def post(self, request, post_id):
@@ -164,3 +214,65 @@ class LikePostView(View):
             'liked': post_like.is_liked,
             'total_likes': post.likes.filter(is_liked=True).count(),
         })
+
+
+class LikeCommentView(View):
+
+    def post(self, request, comment_id):
+        comment = get_object_or_404(PostComment, id=comment_id)
+        user = request.user
+
+        # Check if the user has already liked the comment
+        comment_like, created = CommentLike.objects.get_or_create(
+            user=user, comment=comment)
+
+        if not created:
+            # Toggle the 'is_liked' field if the like object already exists
+            comment_like.is_liked = not comment_like.is_liked
+            comment_like.save()
+        else:
+            # If it's a new like object, mark it as liked
+            comment_like.is_liked = True
+            comment_like.save()
+
+        # Return the current like status and total likes for the comment
+        total_likes = CommentLike.objects.filter(
+            comment=comment, is_liked=True).count()
+        print(total_likes)
+
+        return JsonResponse({
+            'liked': comment_like.is_liked,
+            'total_likes': total_likes,
+        })
+
+
+class CommunityView(View):
+
+    template_name = 'forum/community/community-page.html'
+
+    def get(self, request: HttpRequest, community_id: int):
+
+        try:
+            communities = PostCommunity.objects.all()
+            community = PostCommunity.objects.get(id=community_id)
+            posts = Post.objects.filter(
+                community=community).order_by("-time_created")
+
+            # Create a list of posts with their like status for the current user
+            posts_with_like_status = []
+            for post in posts:
+                is_liked_by_user = PostLikes.objects.filter(
+                    post=post, user=request.user, is_liked=True).exists()
+                posts_with_like_status.append({
+                    'post': post,
+                    'is_liked_by_user': is_liked_by_user
+                })
+
+            return render(request, self.template_name, {
+                "posts_with_like_status": posts_with_like_status,
+                "community": community,
+                "communities": communities,
+            })
+
+        except PostCommunity.DoesNotExist:
+            return render(request, self.template_name, {"error": "Community does not exist"})
