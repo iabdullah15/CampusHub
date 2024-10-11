@@ -99,13 +99,19 @@
       <h5>Feed</h5>
       <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link active left-sidebar-link" href="#">My Feed</a>
+          <a class="nav-link active left-sidebar-link" href="{% url 'forum:home' %}">
+            <i class="fa-solid fa-house fa-lg"></i> Home</a
+          >
         </li>
         <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Polls</a>
+          <a class="nav-link left-sidebar-link" href="#"
+            ><i class="fa-solid fa-square-poll-vertical fa-lg"></i> Polls</a
+          >
         </li>
         <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Popular</a>
+          <a class="nav-link left-sidebar-link" href="#"
+            ><i class="fa-solid fa-fire fa-lg"></i> Popular</a
+          >
         </li>
       </ul>
       <h5 class="mt-3">Communities</h5>

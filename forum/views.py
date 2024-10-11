@@ -11,6 +11,7 @@ from django.contrib import messages
 from .models import PostCommunity, Post, PostComment, PostCategory, PostLikes, PostCommentReply, CommentLike
 from .forms import PostForm, PostCommentForm, PostCommentReplyForm
 from .helpers import ask_assistant
+from user.models import CustomUser
 
 
 class HomePageView(View):
@@ -107,15 +108,16 @@ class PostDetailView(View):
                 is_liked_by_user = CommentLike.objects.filter(
                     comment=comment, user=request.user, is_liked=True).exists()
                 print(comment.comment_likes.filter(is_liked=True).count())
-                
+
                 comments_with_like_status.append({
                     'comment': comment,
                     'is_liked_by_user': is_liked_by_user,
-                    'total_likes': comment.comment_likes.filter(is_liked=True).count()  # Fetch total likes
+                    # Fetch total likes
+                    'total_likes': comment.comment_likes.filter(is_liked=True).count()
                 })
-            
+
             print(comments_with_like_status)
-            
+
             # Check if the post is liked by the current user
             is_liked_by_user = post.likes.filter(
                 user=request.user, is_liked=True).exists()
@@ -276,3 +278,16 @@ class CommunityView(View):
 
         except PostCommunity.DoesNotExist:
             return render(request, self.template_name, {"error": "Community does not exist"})
+
+
+class ProfileView(View):
+
+    template_name = 'forum/profile/profile-page.html'
+
+    def get(self, request: HttpRequest, username: str):
+
+        user_posts = Post.objects.filter(author=request.user).order_by("-time_created")
+        user_comments = PostComment.objects.filter(author=request.user)
+        user_commented_posts = Post.objects.filter(comments__author=request.user).distinct().order_by("-time_created")
+        
+        return render(request, self.template_name, {"posts": user_posts, "commented_posts": user_commented_posts})
