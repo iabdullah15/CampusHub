@@ -7,9 +7,9 @@ from django.forms.utils import ErrorList
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit, Div, HTML
 
-
+from django.contrib.auth.forms import PasswordChangeForm
 from .models import Post, PostCommunity, PostComment, PostCategory, PostCommentReply
-
+from user.models import CustomUser
 
 class PostForm(forms.ModelForm):
     class Meta:
@@ -74,3 +74,67 @@ class PostCommentReplyForm(forms.ModelForm):
                 'style': 'display: none;',
             }),
         }
+        
+        
+        
+        
+class UpdateProfileForm(forms.ModelForm):
+    
+    class Meta:
+        model = CustomUser
+        fields = ['email', 'username', 'department']
+        widgets = {
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'example@ucp.edu.pk',
+                'id': 'emailInputField',
+                'disabled': True  # Make the email field disabled
+            }),
+            'username': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'username123',
+                'id': 'usernameInputField',
+            }),
+            'department': forms.Select(attrs={
+                'class': 'form-select form-select-sm',
+                'id': 'departmentSelectField',
+                'aria-label': 'Small select example',
+            })
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['email'].disabled = True  # Keep the email field disabled
+        
+        
+        
+class CustomPasswordChangeForm(PasswordChangeForm):
+    old_password = forms.CharField(
+        label="Password",
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control profile-update-password',
+            'id': 'inputOldPassword',
+            'placeholder': 'Enter old password'
+        })
+    )
+    
+    new_password1 = forms.CharField(
+        label="Enter New Password",
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control profile-update-password',
+            'id': 'inputNewPassword',
+            'aria-describedby': 'passwordHelpBlock',
+            'placeholder': 'Enter new password'
+        }),
+        help_text="Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji."
+    )
+    
+    new_password2 = forms.CharField(
+        label="Re-Enter New Password",
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control profile-update-password',
+            'id': 'inputConfirmNewPassword',
+            'aria-describedby': 'passwordHelpBlock',
+            'placeholder': 'Confirm new password'
+        })
+    )

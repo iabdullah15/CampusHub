@@ -6,10 +6,12 @@ from django.http import HttpResponse, HttpRequest
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
-
+from django.contrib.auth.views import PasswordChangeView
 
 from .models import PostCommunity, Post, PostComment, PostCategory, PostLikes, PostCommentReply, CommentLike
-from .forms import PostForm, PostCommentForm, PostCommentReplyForm
+from .forms import PostForm, PostCommentForm, PostCommentReplyForm, UpdateProfileForm, CustomPasswordChangeForm
+
+from django.contrib.auth import update_session_auth_hash
 from .helpers import ask_assistant
 from user.models import CustomUser
 
@@ -280,14 +282,58 @@ class CommunityView(View):
             return render(request, self.template_name, {"error": "Community does not exist"})
 
 
+class CustomPasswordChangeView(PasswordChangeView):
+    form_class = CustomPasswordChangeForm
+    template_name = 'forum/profile/change_password.html'
+
+    def get_success_url(self):
+        # Return the URL for the profile view with the correct username
+        return reverse_lazy('forum:profile', kwargs={'username': self.request.user.username})
+
+    def form_valid(self, form):
+        messages.success(
+            self.request, "Your password was successfully updated!")
+        # Important to avoid logging the user out
+        update_session_auth_hash(self.request, form.user)
+        return super().form_valid(form)
+
+
 class ProfileView(View):
 
     template_name = 'forum/profile/profile-page.html'
 
     def get(self, request: HttpRequest, username: str):
 
-        user_posts = Post.objects.filter(author=request.user).order_by("-time_created")
+        user_posts = Post.objects.filter(
+            author=request.user).order_by("-time_created")
         user_comments = PostComment.objects.filter(author=request.user)
-        user_commented_posts = Post.objects.filter(comments__author=request.user).distinct().order_by("-time_created")
-        
-        return render(request, self.template_name, {"posts": user_posts, "commented_posts": user_commented_posts})
+        user_commented_posts = Post.objects.filter(
+            comments__author=request.user).distinct().order_by("-time_created")
+        profile_form = UpdateProfileForm(instance=request.user)
+        password_form = CustomPasswordChangeForm(
+            user=request.user)  # Use the custom form
+
+        return render(request, self.template_name, {"posts": user_posts, "commented_posts": user_commented_posts,
+                                                    "profile_form": profile_form, "password_form": password_form})
+
+    def post(self, request, username):
+        profile_form = UpdateProfileForm(instance=request.user, data=request.POST)
+        password_form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+
+        if 'update_profile' in request.POST and profile_form.is_valid():
+            profile_form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect(reverse_lazy('forum:profile', kwargs={'username': request.user.username}))
+
+        elif 'change_password' in request.POST and password_form.is_valid():
+            print("Hello")
+            user = password_form.save()
+            update_session_auth_hash(request, user)  # Keeps the user logged in after password change
+            messages.success(request, "Password changed successfully!")
+            return redirect(reverse_lazy('forum:profile', kwargs={'username': request.user.username}))
+
+        # If the forms are not valid, they will re-render with the errors
+        return render(request, self.template_name, {
+            'profile_form': profile_form,
+            'password_form': password_form
+        })

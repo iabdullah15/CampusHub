@@ -6,6 +6,7 @@ app_name = "forum"
 urlpatterns = [
     path("", views.HomePageView.as_view(), name="home"),
     path("<str:username>/profile", views.ProfileView.as_view(), name='profile'),
+    path('change-password/', views.CustomPasswordChangeView.as_view(), name='change_password'),
     path("new-post", views.CreatePostView.as_view(), name="create_post"),
     path("post/<int:pk>", views.PostDetailView.as_view(), name='post_detail'),
     path("community/<int:community_id>", views.CommunityView.as_view(), name='community_page'),
