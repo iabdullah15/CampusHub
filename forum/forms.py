@@ -6,10 +6,12 @@ from django.db.models.base import Model
 from django.forms.utils import ErrorList
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit, Div, HTML
+from django.forms import modelformset_factory, HiddenInput
 
 from django.contrib.auth.forms import PasswordChangeForm
-from .models import Post, PostCommunity, PostComment, PostCategory, PostCommentReply
+from .models import Post, PostCommunity, PostComment, PostCategory, PostCommentReply, PollChoice, PollVote
 from user.models import CustomUser
+
 
 class PostForm(forms.ModelForm):
     class Meta:
@@ -23,7 +25,7 @@ class PostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        
+
         # Set form-level attributes
         self.helper.form_id = 'id-postForm'
         self.helper.form_class = 'blueForms create-post-form'
@@ -58,10 +60,11 @@ class PostCommentForm(forms.ModelForm):
         super(PostCommentForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            Field('comment_body')  # No need to redefine css_class here since it's already in the widget
+            # No need to redefine css_class here since it's already in the widget
+            Field('comment_body')
         )
-        
-        
+
+
 class PostCommentReplyForm(forms.ModelForm):
     class Meta:
         model = PostCommentReply
@@ -74,12 +77,10 @@ class PostCommentReplyForm(forms.ModelForm):
                 'style': 'display: none;',
             }),
         }
-        
-        
-        
-        
+
+
 class UpdateProfileForm(forms.ModelForm):
-    
+
     class Meta:
         model = CustomUser
         fields = ['email', 'username', 'department']
@@ -105,9 +106,8 @@ class UpdateProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['email'].disabled = True  # Keep the email field disabled
-        
-        
-        
+
+
 class CustomPasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(
         label="Password",
@@ -117,7 +117,7 @@ class CustomPasswordChangeForm(PasswordChangeForm):
             'placeholder': 'Enter old password'
         })
     )
-    
+
     new_password1 = forms.CharField(
         label="Enter New Password",
         widget=forms.PasswordInput(attrs={
@@ -128,7 +128,7 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         }),
         help_text="Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji."
     )
-    
+
     new_password2 = forms.CharField(
         label="Re-Enter New Password",
         widget=forms.PasswordInput(attrs={
@@ -138,3 +138,25 @@ class CustomPasswordChangeForm(PasswordChangeForm):
             'placeholder': 'Confirm new password'
         })
     )
+
+
+class PollChoiceForm(forms.ModelForm):
+    class Meta:
+        model = PollChoice
+        fields = ['choice_text']
+        widgets = {
+            'choice_text': forms.TextInput(attrs={'placeholder': 'Enter choice text'}),
+        }
+
+
+
+
+PollChoiceFormSet = modelformset_factory(
+    PollChoice,
+    form=PollChoiceForm,
+    extra=2,
+    min_num=2,
+    validate_min=True,
+    can_delete=True,
+    widgets={'DELETE': HiddenInput()}
+)

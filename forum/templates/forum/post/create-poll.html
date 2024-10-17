@@ -1,0 +1,98 @@
+<!-- templates/forum/create_post_with_poll.html -->
+{% extends 'forum/base/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block title %}
+    <title>Create Poll</title>
+{% endblock %}
+
+{% block main %}
+<div class="container mt-5">
+    <h1>Create a New Post with Poll</h1>
+
+    <!-- Display Form Errors -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ post_form|crispy }}
+
+        <h2>Poll Choices</h2>
+
+        <!-- Display Formset Errors -->
+        {% if poll_choice_formset.non_form_errors %}
+            <div class="alert alert-danger">
+                {{ poll_choice_formset.non_form_errors }}
+            </div>
+        {% endif %}
+
+        <div id="formset-container">
+            {{ poll_choice_formset.management_form }}
+            {% for form in poll_choice_formset %}
+                <div class="form-row mb-3" id="form-{{ forloop.counter0 }}">
+                    {{ form.choice_text.label_tag }}
+                    {{ form.choice_text }}
+                    {{ form.DELETE }}
+                    <button type="button" class="btn btn-danger remove-form-button" onclick="removeForm({{ forloop.counter0 }})">
+                        Delete
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" class="btn btn-secondary" onclick="addForm()">Add Option</button>
+        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+    </form>
+</div>
+
+<!-- JavaScript to handle adding/removing forms -->
+<script>
+    var formIndex = {{ poll_choice_formset.total_form_count }};
+
+    function addForm() {
+        var formContainer = document.getElementById('formset-container');
+        var totalForms = document.getElementById('{{ poll_choice_formset.management_form.prefix }}-TOTAL_FORMS');
+        var newForm = document.createElement('div');
+        newForm.classList.add('form-row', 'mb-3');
+        newForm.id = 'form-' + formIndex;
+
+        var emptyFormTemplate = `{{ poll_choice_formset.empty_form|crispy|escapejs }}`;
+        var newFormHtml = emptyFormTemplate.replace(/__prefix__/g, formIndex);
+        newForm.innerHTML = newFormHtml;
+
+        // Add delete button to the new form
+        var deleteButton = document.createElement('button');
+        deleteButton.type = 'button';
+        deleteButton.classList.add('btn', 'btn-danger', 'remove-form-button');
+        deleteButton.onclick = function() { removeForm(formIndex); };
+        deleteButton.textContent = 'Delete';
+
+        newForm.appendChild(deleteButton);
+
+        formContainer.appendChild(newForm);
+
+        formIndex++;
+        totalForms.value = formIndex;
+    }
+
+    function removeForm(index) {
+        var form = document.getElementById('form-' + index);
+
+        // Set the DELETE field's value to 'on'
+        var deleteField = form.querySelector('input[name$="-DELETE"]');
+        deleteField.value = 'on';
+
+        // Hide the form
+        form.style.display = 'none';
+    }
+</script>
+{% endblock %}

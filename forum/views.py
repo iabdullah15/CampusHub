@@ -7,9 +7,11 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.views import PasswordChangeView
+from django.db import transaction
 
-from .models import PostCommunity, Post, PostComment, PostCategory, PostLikes, PostCommentReply, CommentLike
-from .forms import PostForm, PostCommentForm, PostCommentReplyForm, UpdateProfileForm, CustomPasswordChangeForm
+
+from .models import PostCommunity, Post, PostComment, PostCategory, PostLikes, PostCommentReply, CommentLike, Poll, PollChoice, PollVote
+from .forms import PostForm, PostCommentForm, PostCommentReplyForm, UpdateProfileForm, CustomPasswordChangeForm, PollChoiceFormSet
 
 from django.contrib.auth import update_session_auth_hash
 from .helpers import ask_assistant
@@ -86,6 +88,68 @@ class CreatePostView(View):
         form = PostForm()
 
         return render(request, self.template_name, {'form': form})
+
+
+
+
+class CreatePostWithPollView(View):
+    
+    template_name = 'forum/post/create-poll.html'
+    
+    def get(self, request:HttpRequest):
+        
+        print("Hello")
+        post_form = PostForm()
+        poll_choice_formset = PollChoiceFormSet(queryset=PollChoice.objects.none())
+        
+        return render(request, self.template_name, {
+            'post_form': post_form,
+            'poll_choice_formset': poll_choice_formset,
+        })
+        
+    def post(self, request):
+        post_form = PostForm(request.POST)
+        poll_choice_formset = PollChoiceFormSet(request.POST)
+
+        if post_form.is_valid() and poll_choice_formset.is_valid():
+            with transaction.atomic():
+                # Save the post
+                post = post_form.save(commit=False)
+                post.author = request.user
+                post.save()
+
+                # Create a poll linked to the post
+                poll = Poll.objects.create(post=post)
+
+                # Save poll choices
+                poll_choices = poll_choice_formset.save(commit=False)
+
+                # Assign the poll to each choice and save
+                for choice in poll_choices:
+                    choice.poll = poll
+                    choice.save()
+
+                # Handle deletions
+                for deleted_choice in poll_choice_formset.deleted_objects:
+                    deleted_choice.delete()
+
+                # Validate minimum number of choices
+                if PollChoice.objects.filter(poll=poll).count() < 2:
+                    messages.error(request, 'Please provide at least two choices for the poll.')
+                    transaction.set_rollback(True)
+                else:
+                    messages.success(request, 'Post with poll created successfully!')
+                    return redirect('forum:post_detail', pk=post.pk)
+        else:
+            messages.error(request, 'There was an error in your submission.')
+
+        return render(request, self.template_name, {
+            'post_form': post_form,
+            'poll_choice_formset': poll_choice_formset,
+        })
+
+
+
 
 
 class PostDetailView(View):
