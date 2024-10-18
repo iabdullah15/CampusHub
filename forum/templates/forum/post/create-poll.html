@@ -1,98 +1,205 @@
-<!-- templates/forum/create_post_with_poll.html -->
 {% extends 'forum/base/base.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
 {% load widget_tweaks %}
 
-
 {% block title %}
     <title>Create Poll</title>
 {% endblock %}
 
+{% block css %}
+<link rel="stylesheet" href="{% static 'forum/css/post/create-poll.css' %}">
+{% endblock %}
+
 {% block main %}
-<div class="container mt-5">
-    <h1>Create a New Post with Poll</h1>
+<div class="create-post-container container">
+    <h1 class="heading-text" >Create a Post</h1>
 
     <!-- Display Form Errors -->
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
+        <div id="form-error" class="toast align-items-center text-light bg-dark border-0 mt-2 mb-2" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="60000">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <!-- Display Django messages inside the toast -->
+                    {{ message }}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
+        </div>
         {% endfor %}
     {% endif %}
 
     <form method="post">
         {% csrf_token %}
-        {{ post_form|crispy }}
+        <!-- {{ post_form|crispy }} -->
 
-        <h2>Poll Choices</h2>
+        <!-- Community Field -->
+        <div class="select-text">
+            <h4 class="mb-4 label-heading">Select your community</h4>
+        </div>
+        <div class="select-container mb-4">
+            {{ post_form.community|add_class:"form-select mb-3" }}
+        </div>
 
-        <!-- Display Formset Errors -->
+        <!-- Category Field -->
+        <div class="select-text">
+            <h4 class="mb-4 label-heading">Select Category</h4>
+        </div>
+        <div class="select-container mb-4">
+            {{ post_form.category|add_class:"form-select mb-3" }}
+        </div>
+        
+        <!-- Title Field with Floating Label -->
+        <div class="form-floating mb-4 post-title-container">
+            {{ post_form.title|add_class:"form-control post-input" }}
+            <label for="id_title">Title</label>
+        </div>
+
+        <!-- Body Field with Floating Label -->
+        <div class="post-body-container">
+            <div class="form-floating mb-4">  <!-- form-floating should be directly on the container -->
+                {{ post_form.body|add_class:"form-control post-input" }}
+                <label for="id_body">Body</label>
+            </div>
+        </div>
+
+        <h2 class="heading-text">Poll Choices</h2>
+
         {% if poll_choice_formset.non_form_errors %}
-            <div class="alert alert-danger">
-                {{ poll_choice_formset.non_form_errors }}
+            <div id="toastMessage" class="toast align-items-center text-light bg-dark border-0 mt-3 mb-5" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="60000">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <!-- Display Django messages inside the toast -->
+                        {{ poll_choice_formset.non_form_errors }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
             </div>
         {% endif %}
+        
+        <div class="options-container">
+
 
         <div id="formset-container">
             {{ poll_choice_formset.management_form }}
             {% for form in poll_choice_formset %}
-                <div class="form-row mb-3" id="form-{{ forloop.counter0 }}">
-                    {{ form.choice_text.label_tag }}
-                    {{ form.choice_text }}
-                    {{ form.DELETE }}
-                    <button type="button" class="btn btn-danger remove-form-button" onclick="removeForm({{ forloop.counter0 }})">
-                        Delete
+                <div class="mb-3 d-flex align-items-center" id="form-{{ forloop.counter0 }}">
+                    <div class="inline-block">
+                        {{ form.choice_text }}
+                    </div>
+                    <button type="button" class="btn remove-form-button ms-2" onclick="removeForm({{ forloop.counter0 }})">
+                        <i class="fa-solid fa-trash fa-lg" style="color: #f04747;"></i>
                     </button>
+                    <!-- Include the hidden DELETE field -->
+                    {{ form.DELETE }}
+
                 </div>
             {% endfor %}
+
+        </div>
+        <button type="button" class="btn btn-secondary" onclick="addForm()">Add Option</button>
         </div>
 
-        <button type="button" class="btn btn-secondary" onclick="addForm()">Add Option</button>
-        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+        <div class="submit-btn-container mt-4">
+
+            <button type="submit" class="btn btn-outline-dark">Post</button>
+        </div>
     </form>
 </div>
 
 <!-- JavaScript to handle adding/removing forms -->
 <script>
-    var formIndex = {{ poll_choice_formset.total_form_count }};
+    var formIndex = {{ poll_choice_formset.total_form_count }}-1;
+    console.log(formIndex);
 
     function addForm() {
         var formContainer = document.getElementById('formset-container');
-        var totalForms = document.getElementById('{{ poll_choice_formset.management_form.prefix }}-TOTAL_FORMS');
+        //var totalForms = document.getElementById('{{ poll_choice_formset.management_form.prefix }}-TOTAL_FORMS');
+        let totalForms = document.getElementById("id_form-TOTAL_FORMS")
+
         var newForm = document.createElement('div');
-        newForm.classList.add('form-row', 'mb-3');
-        newForm.id = 'form-' + formIndex;
+        newForm.classList.add('mb-3', 'd-flex', 'align-items-center');
+        newForm.id = 'form-' + (formIndex+1);
 
-        var emptyFormTemplate = `{{ poll_choice_formset.empty_form|crispy|escapejs }}`;
+    
+        var emptyFormTemplate = `{{ poll_choice_formset.empty_form|safe|escapejs }}`;
         var newFormHtml = emptyFormTemplate.replace(/__prefix__/g, formIndex);
-        newForm.innerHTML = newFormHtml;
-
-        // Add delete button to the new form
+    
+        // Create a temporary div to manipulate the form HTML
+        var tempDiv = document.createElement('div');
+        tempDiv.innerHTML = newFormHtml;
+    
+        // Extract the input field
+        var inputField = tempDiv.querySelector('input[name$="choice_text"]');
+        inputField.classList.add('form-control');
+    
+        var inputDiv = document.createElement('div');
+        inputDiv.classList.add('inline-block');
+        inputDiv.appendChild(inputField);
+    
+        // Include the hidden DELETE field
+        var deleteField = tempDiv.querySelector('input[name$="-DELETE"]');
+    
+        // Create the delete button
         var deleteButton = document.createElement('button');
         deleteButton.type = 'button';
-        deleteButton.classList.add('btn', 'btn-danger', 'remove-form-button');
+        deleteButton.classList.add('btn', 'remove-form-button', 'ms-2');
         deleteButton.onclick = function() { removeForm(formIndex); };
-        deleteButton.textContent = 'Delete';
+        //deleteButton.textContent = 'Delete';
+        deleteButton.innerHTML = '<i class="fa-solid fa-trash fa-lg" style="color: #f04747;"></i>'
 
+        // Append input field and button to the new form
+        newForm.appendChild(inputDiv);
         newForm.appendChild(deleteButton);
-
+    
+        // Append the hidden DELETE field to the form
+        if (deleteField) {
+            newForm.appendChild(deleteField);
+        }
+    
         formContainer.appendChild(newForm);
 
         formIndex++;
-        totalForms.value = formIndex;
+
+        console.log(totalForms);
+        console.log(formIndex);
+        totalForms.setAttribute('value', formIndex);
+        //totalForms.value = formIndex;
     }
 
     function removeForm(index) {
-        var form = document.getElementById('form-' + index);
+        var form = document.getElementById('form-' + (index));
 
+        console.log(index);
+        console.log(form)
         // Set the DELETE field's value to 'on'
         var deleteField = form.querySelector('input[name$="-DELETE"]');
-        deleteField.value = 'on';
+        if (deleteField) {
+            deleteField.value = 'on';
+        }
 
         // Hide the form
+        form.classList.remove('d-flex');
         form.style.display = 'none';
     }
+
+
+      // Trigger toast if there are any messages
+      document.addEventListener('DOMContentLoaded', function () {
+        
+        var toastEl = document.getElementById('toastMessage');
+        var toastEl2 = document.getElementById('form-error');
+        var toast = new bootstrap.Toast(toastEl);
+        var toast2 = new bootstrap.Toast(toastEl2);
+        if (toast){
+            toast.show();
+        }
+
+        {% if messages %}
+            toast2.show();  
+        {% endif %}
+
+      });
 </script>
 {% endblock %}

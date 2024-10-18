@@ -14,20 +14,22 @@ body {
     color: gray;
 }
 
-.form-control,
+.post-input,
 .select-container,
 .submit-btn-container,
-.select-text {
+.select-text,
+.options-container {
   max-width: 60%;
 }
 
 .select-container select {
-  max-width: 40%;
+    max-width: 40%;
 }
 
 .select-container,
 .submit-btn-container,
-.select-text {
+.select-text,
+.options-container {
   margin-left: auto;
   margin-right: auto;
 }
@@ -60,4 +62,12 @@ body {
 .label-heading {
     font-weight: 500;
     font-size: 1.2rem;
+}
+
+.errorlist {
+    padding: 0;
+}
+
+.errorlist li {
+    list-style-type: none;
 }

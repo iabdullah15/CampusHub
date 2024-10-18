@@ -79,7 +79,7 @@ class CreatePostView(View):
 
             messages.success(request, "Post created successfully")
 
-            return redirect("forum:home")
+            return redirect('forum:post_detail', pk=post.pk)
 
         # If the form is invalid, render the form again with errors (this part is commented out, but you might want it)
         return render(request, self.template_name, {'form': form})
@@ -109,7 +109,10 @@ class CreatePostWithPollView(View):
         
     def post(self, request):
         post_form = PostForm(request.POST)
-        poll_choice_formset = PollChoiceFormSet(request.POST)
+        poll_choice_formset = PollChoiceFormSet(
+            request.POST,
+            queryset=PollChoice.objects.none()
+        )
 
         if post_form.is_valid() and poll_choice_formset.is_valid():
             with transaction.atomic():
@@ -121,23 +124,26 @@ class CreatePostWithPollView(View):
                 # Create a poll linked to the post
                 poll = Poll.objects.create(post=post)
 
-                # Save poll choices
-                poll_choices = poll_choice_formset.save(commit=False)
-
-                # Assign the poll to each choice and save
-                for choice in poll_choices:
-                    choice.poll = poll
-                    choice.save()
-
-                # Handle deletions
-                for deleted_choice in poll_choice_formset.deleted_objects:
-                    deleted_choice.delete()
+                # Prepare choices to save
+                valid_choices = []
+                for form in poll_choice_formset:
+                    if form.cleaned_data.get('DELETE'):
+                        continue  # Skip forms marked for deletion
+                    choice_text = form.cleaned_data.get('choice_text')
+                    if choice_text:
+                        choice = form.save(commit=False)
+                        choice.poll = poll
+                        valid_choices.append(choice)
 
                 # Validate minimum number of choices
-                if PollChoice.objects.filter(poll=poll).count() < 2:
+                if len(valid_choices) < 2:
+                    print(len(valid_choices))
                     messages.error(request, 'Please provide at least two choices for the poll.')
                     transaction.set_rollback(True)
                 else:
+                    # Save valid choices
+                    for choice in valid_choices:
+                        choice.save()
                     messages.success(request, 'Post with poll created successfully!')
                     return redirect('forum:post_detail', pk=post.pk)
         else:

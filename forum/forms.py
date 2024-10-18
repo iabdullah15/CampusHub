@@ -6,7 +6,7 @@ from django.db.models.base import Model
 from django.forms.utils import ErrorList
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit, Div, HTML
-from django.forms import modelformset_factory, HiddenInput
+from django.forms import modelformset_factory, HiddenInput, BaseModelFormSet
 
 from django.contrib.auth.forms import PasswordChangeForm
 from .models import Post, PostCommunity, PostComment, PostCategory, PostCommentReply, PollChoice, PollVote
@@ -140,23 +140,45 @@ class CustomPasswordChangeForm(PasswordChangeForm):
     )
 
 
+# class PollChoiceForm(forms.ModelForm):
+#     class Meta:
+#         model = PollChoice
+#         fields = ['choice_text']
+#         widgets = {
+#             'choice_text': forms.TextInput(attrs={'placeholder': 'Enter choice text'}),
+#         }
+
+
 class PollChoiceForm(forms.ModelForm):
     class Meta:
         model = PollChoice
         fields = ['choice_text']
         widgets = {
-            'choice_text': forms.TextInput(attrs={'placeholder': 'Enter choice text'}),
+            'choice_text': forms.TextInput(attrs={
+                'placeholder': 'Enter choice text',
+                'class': 'form-control',
+            }),
         }
 
+    def __init__(self, *args, **kwargs):
+        super(PollChoiceForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False  # Do not render a <form> tag
+        self.helper.layout = Layout(
+            Field('choice_text', css_class='mb-0', placeholder='Enter choice text', wrapper_class='mb-0')
+        )
 
+
+class BasePollChoiceFormSet(BaseModelFormSet):
+    deletion_widget = HiddenInput
 
 
 PollChoiceFormSet = modelformset_factory(
     PollChoice,
     form=PollChoiceForm,
-    extra=2,
+    formset=BasePollChoiceFormSet,  # Use the custom formset class
+    extra=0,
     min_num=2,
     validate_min=True,
-    can_delete=True,
-    widgets={'DELETE': HiddenInput()}
+    can_delete=True
 )
