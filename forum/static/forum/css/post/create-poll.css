@@ -1,6 +1,5 @@
 body {
-    background-color: rgb(248, 249, 250);
-    /* --bs-light-rgb: 248, 249, 250; */
+  background-color: rgb(248, 249, 250);
 }
 
 .create-post-container {
@@ -8,10 +7,13 @@ body {
 }
 
 .heading-text {
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-    color: gray;
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  color: gray;
+  text-align: center; /* Align title to the center */
+  font-weight: 700;
+  font-size: 2rem;
 }
 
 .post-input,
@@ -20,10 +22,21 @@ body {
 .select-text,
 .options-container {
   max-width: 60%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .select-container select {
-    max-width: 40%;
+  max-width: 100%;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background-color: white;
+  transition: border-color 0.3s;
+}
+
+.select-container select:hover {
+  border-color: #007bff; /* Change border color on hover */
 }
 
 .select-container,
@@ -34,20 +47,28 @@ body {
   margin-right: auto;
 }
 
-#id_title, #id_body {
-    max-width: 100%;
-    border-radius: 20px;
+#id_title,
+#id_body {
+  max-width: 100%;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s;
+}
+
+#id_title:hover,
+#id_body:hover {
+  border-color: #007bff;
 }
 
 #id_body {
-    height: 100px;
+  height: 120px;
+  resize: none;
 }
 
 .form-floating {
-    width: 60%;  /* Let the input field take the full width */
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;  /* Center the content inside the container */
+  width: 100%; /* Full width for input fields */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .post-title-container {
@@ -60,14 +81,78 @@ body {
 }
 
 .label-heading {
-    font-weight: 500;
-    font-size: 1.2rem;
+  font-weight: 500;
+  font-size: 1.2rem;
 }
 
 .errorlist {
-    padding: 0;
+  padding: 0;
 }
 
 .errorlist li {
-    list-style-type: none;
+  list-style-type: none;
 }
+
+/* Improved style for poll choice inputs */
+.options-container input[type="text"] {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s;
+}
+
+.options-container input[type="text"]:hover {
+  border-color: #007bff;
+}
+
+.remove-form-button {
+  background-color: transparent;
+  border: none;
+  margin-left: 1rem;
+}
+
+.remove-form-button i {
+  color: #f04747;
+  transition: color 0.3s;
+}
+
+.remove-form-button i:hover {
+  color: red;
+}
+
+button.btn-secondary {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+button.btn-secondary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+button.btn-outline-dark {
+  border-radius: 10px;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+}
+
+/* Styling select dropdown menus */
+.select-container .form-select {
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  padding: 0.75rem;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.select-container .form-select:hover {
+  border-color: #007bff;
+}
+
