@@ -14,7 +14,7 @@ from .models import PostCommunity, Post, PostComment, PostCategory, PostLikes, P
 from .forms import PostForm, PostCommentForm, PostCommentReplyForm, UpdateProfileForm, CustomPasswordChangeForm, PollChoiceFormSet
 
 from django.contrib.auth import update_session_auth_hash
-from .helpers import ask_assistant
+from .helpers import ask_assistant, moderate_post
 from user.models import CustomUser
 
 
@@ -66,7 +66,14 @@ class CreatePostView(View):
 
             # Format data to send to translation bot
             content = f'{title}\n\n{body}'
-            ask_assistant(query=content)
+            
+            # Translate roman urdu to english for moderation
+            # ask_assistant(query=content)
+            
+            # perspective api for moderation
+            final_action, actions = moderate_post(post_content=content)
+            print(final_action)
+            print(actions)
 
             # Set additional fields
             post.community = post_category
@@ -76,15 +83,15 @@ class CreatePostView(View):
             post.save()
 
             # Add a success message:
-
             messages.success(request, "Post created successfully")
 
             return redirect('forum:post_detail', pk=post.pk)
 
-        # If the form is invalid, render the form again with errors (this part is commented out, but you might want it)
+        # If the form is invalid, render the form again with errors
         return render(request, self.template_name, {'form': form})
 
     def get(self, request: HttpRequest):
+        
         form = PostForm()
 
         return render(request, self.template_name, {'form': form})

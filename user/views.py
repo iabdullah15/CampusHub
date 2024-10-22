@@ -3,14 +3,13 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView
 
-from django.views.generic.edit import CreateView
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpRequest
 
-from .models import CustomUser
-from .forms import CustomUserChangeForm, CustomUserCreationForm
+from django.contrib.auth.views import LoginView, LogoutView
+
+from django.http import HttpResponse, HttpRequest
+from django.contrib import messages
+
+from .forms import CustomUserChangeForm, CustomUserCreationForm, UserOnboardingForm
 
 from django_email_verification import send_email, send_password
 from django.contrib.auth import get_user_model
@@ -59,3 +58,33 @@ class ForgotPasswordView(View):
 
 class VerificationSentView(TemplateView):
     template_name = "verification-sent.html"
+
+
+
+def onboarding_view(request):
+    
+    if request.method == 'POST':
+        form = UserOnboardingForm(request.POST)
+        if form.is_valid():
+            print("Hello")
+            form.save()  # Save the user data to the database
+            return redirect('forum:home')  # Redirect after successful onboarding
+    else:
+        form = UserOnboardingForm()
+
+    return render(request, 'onboarding.html', {'form': form})
+
+
+
+class CustomLoginView(LoginView):
+    template_name = "sign-in.html"
+    next_page = reverse_lazy('forum:home')
+
+    def form_valid(self, form):
+        # Add your custom checks here before the user is signed in
+        if not form.get_user().department:
+            
+            return redirect('user:onboarding')  # Redirect to onboarding
+        
+        # If all checks pass, let the user sign in
+        return super().form_valid(form)

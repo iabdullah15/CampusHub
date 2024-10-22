@@ -1,0 +1,55 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+  {% block title %}
+  <title>Welcome to CampusHub</title>
+  {% endblock %}
+
+  {% block css %}
+  <link rel="stylesheet" href="{% static 'css/onboarding.css' %}">
+  {% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-center align-items-center min-vh-100">
+
+<div class="onboarding-container text-center">
+    <!-- Animated GIF Section -->
+    <div class="gif-container mb-4">
+        <img src="{% static 'img/onboarding.gif' %}" alt="Onboarding Animation" class="img-fluid" />
+    </div>
+
+    <!-- Form Section -->
+    <h2 class="mb-4">Choose your username & department</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        <!-- <div class="form-floating mb-4">
+            {{ form.username }}
+            <label for="username">Username</label>
+            {% if form.username.errors %} 
+            <ul class="errorlist">
+              {% for error in form.username.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div> -->
+
+        <div class="form-floating mb-4">
+            {{ form.department }}
+            <label for="department">Department</label>
+            {% if form.department.errors %}  <!-- Check if there are errors for the email/username field -->
+            <ul class="errorlist">
+              {% for error in form.department.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100 rounded-pill">Next</button>
+    </form>
+</div>
+</div>
+
+{% endblock %}

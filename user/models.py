@@ -46,6 +46,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_("email_address"), unique=True)
     department = models.CharField(max_length=50, blank=False, null=True) #do not touch
     date_of_birth = models.DateField(null=True, blank=True)
+    warning_count = models.PositiveIntegerField(default=0)
+    rejection_count = models.PositiveIntegerField(default=0)
+    is_suspended = models.BooleanField(default=False)
+    suspension_end_date = models.DateTimeField(null=True, blank=True)
+
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     last_login = models.DateTimeField(auto_now_add=True)

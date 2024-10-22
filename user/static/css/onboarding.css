@@ -1,0 +1,37 @@
+body {
+    background-color: #f7f1e5;
+}
+
+.onboarding-container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    width: 40%;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    font-family: 'Arial', sans-serif;
+    color: #4f3a7b;
+}
+
+.form-floating label {
+    color: #4f3a7b;
+}
+
+.form-control, .form-select {
+    border-radius: 30px;
+    border: 1px solid #4f3a7b;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: none;
+    border-color: #4f3a7b;
+}
+
+
+.gif-container img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 15px;
+}
