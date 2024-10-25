@@ -7,14 +7,17 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.views import PasswordChangeView
+
 from django.db import transaction
+from datetime import timedelta
+from django.utils import timezone
 
 
 from .models import PostCommunity, Post, PostComment, PostCategory, PostLikes, PostCommentReply, CommentLike, Poll, PollChoice, PollVote
 from .forms import PostForm, PostCommentForm, PostCommentReplyForm, UpdateProfileForm, CustomPasswordChangeForm, PollChoiceFormSet
 
 from django.contrib.auth import update_session_auth_hash
-from .helpers import ask_assistant, moderate_post
+from .helpers import ask_assistant, moderate_post, determine_moderation_action
 from user.models import CustomUser
 
 
@@ -54,49 +57,89 @@ class CreatePostView(View):
         form = PostForm(request.POST)
 
         if form.is_valid():
-
             community = form.cleaned_data.get('community')
-            print(community)
             title = form.cleaned_data.get('title')
             body = form.cleaned_data.get('body')
             post_category = PostCommunity.objects.get(community_name=community)
             author = request.user
 
-            post = form.save(commit=False)
+            # Check if the user is suspended
+            if author.is_suspended and author.suspension_end_date:
+                if timezone.now() < author.suspension_end_date:
+                    messages.error(
+                        request,
+                        f"Your account is suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}. You cannot create new posts."
+                    )
+                    return redirect('forum:home')
+                else:
+                    # Suspension period is over
+                    author.is_suspended = False
+                    author.suspension_end_date = None
+                    author.save()
 
-            # Format data to send to translation bot
+            # Format content for moderation
             content = f'{title}\n\n{body}'
-            
-            # Translate roman urdu to english for moderation
-            # ask_assistant(query=content)
-            
-            # perspective api for moderation
-            final_action, actions = moderate_post(post_content=content)
-            print(final_action)
-            print(actions)
 
-            # Set additional fields
+            
+            final_action, actions = moderate_post(post_content=content)
+
+            # Create the post instance but do not save yet
+            post = form.save(commit=False)
             post.community = post_category
             post.author = author
+            post.moderation_status = final_action
+            # post.violation_attributes = attribute_scores if final_action != 'Accept' else None
+            post.moderation_timestamp = timezone.now()
 
-            # Now save the post instance to the database
-            post.save()
+            # Handle the final action
+            if final_action == 'Accept':
+                post.save()
+                messages.success(request, "Post created successfully.")
+                return redirect('forum:post_detail', pk=post.pk)
+            elif final_action == 'Issue Warning':
+                # Increment user's warning count
+                author.warning_count += 1
+                author.save()
 
-            # Add a success message:
-            messages.success(request, "Post created successfully")
+                post.save()
 
-            return redirect('forum:post_detail', pk=post.pk)
+                # Inform the user
+                warning_attributes = [attr for attr, action in actions.items() if action == 'Issue Warning']
+                messages.warning(
+                    request,
+                    f"Your post has been created but contains content that may violate our guidelines: {', '.join(warning_attributes)}. Please review our community guidelines."
+                )
+                return redirect('forum:post_detail', pk=post.pk)
+            
+            elif final_action == 'Reject':
+                # Increment user's rejection count
+                author.rejection_count += 1
+                author.save()
+                print(author.rejection_count)
 
-        # If the form is invalid, render the form again with errors
-        return render(request, self.template_name, {'form': form})
+                # Check for suspension
+                if author.rejection_count >= 3 and not author.is_suspended:
+                    author.is_suspended = True
+                    author.suspension_end_date = timezone.now() + timedelta(days=7)
+                    author.save()
+                    messages.error(
+                        request,
+                        f"Your post was rejected due to violating our community guidelines. Your account has been suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}."
+                    )
+                else:
+                    messages.error(
+                        request,
+                        "Your post was rejected due to violating our community guidelines."
+                    )
+                    
+                return render(request, self.template_name, {'form': form})
+        else:
+            # If the form is invalid, render the form again with errors
+            return render(request, self.template_name, {'form': form})
 
     def get(self, request: HttpRequest):
-        
         form = PostForm()
-
         return render(request, self.template_name, {'form': form})
-
-
 
 
 class CreatePostWithPollView(View):
