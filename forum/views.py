@@ -118,7 +118,7 @@ class CreatePostView(View):
                 print(author.rejection_count)
 
                 # Check for suspension
-                if author.rejection_count >= 3 and not author.is_suspended:
+                if author.rejection_count >= 5 and not author.is_suspended:
                     author.is_suspended = True
                     author.suspension_end_date = timezone.now() + timedelta(days=7)
                     author.save()
@@ -129,7 +129,7 @@ class CreatePostView(View):
                 else:
                     messages.error(
                         request,
-                        "Your post was rejected due to violating our community guidelines."
+                        "Your post was rejected due to violating our community guidelines. Please review our community guidelines."
                     )
                     
                 return render(request, self.template_name, {'form': form})
@@ -142,21 +142,20 @@ class CreatePostView(View):
         return render(request, self.template_name, {'form': form})
 
 
+
+
 class CreatePostWithPollView(View):
-    
+
     template_name = 'forum/post/create-poll.html'
-    
-    def get(self, request:HttpRequest):
-        
-        print("Hello")
+
+    def get(self, request: HttpRequest):
         post_form = PostForm()
         poll_choice_formset = PollChoiceFormSet(queryset=PollChoice.objects.none())
-        
         return render(request, self.template_name, {
             'post_form': post_form,
             'poll_choice_formset': poll_choice_formset,
         })
-        
+
     def post(self, request):
         post_form = PostForm(request.POST)
         poll_choice_formset = PollChoiceFormSet(
@@ -165,37 +164,106 @@ class CreatePostWithPollView(View):
         )
 
         if post_form.is_valid() and poll_choice_formset.is_valid():
-            with transaction.atomic():
-                # Save the post
-                post = post_form.save(commit=False)
-                post.author = request.user
-                post.save()
+            author = request.user
 
-                # Create a poll linked to the post
-                poll = Poll.objects.create(post=post)
-
-                # Prepare choices to save
-                valid_choices = []
-                for form in poll_choice_formset:
-                    if form.cleaned_data.get('DELETE'):
-                        continue  # Skip forms marked for deletion
-                    choice_text = form.cleaned_data.get('choice_text')
-                    if choice_text:
-                        choice = form.save(commit=False)
-                        choice.poll = poll
-                        valid_choices.append(choice)
-
-                # Validate minimum number of choices
-                if len(valid_choices) < 2:
-                    print(len(valid_choices))
-                    messages.error(request, 'Please provide at least two choices for the poll.')
-                    transaction.set_rollback(True)
+            # Check if the user is suspended
+            if author.is_suspended and author.suspension_end_date:
+                if timezone.now() < author.suspension_end_date:
+                    messages.error(
+                        request,
+                        f"Your account is suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}. You cannot create new posts."
+                    )
+                    return redirect('forum:home')
                 else:
+                    # Suspension period is over
+                    author.is_suspended = False
+                    author.suspension_end_date = None
+                    author.save()
+
+            # Extract and validate poll choices
+            choices = []
+            for form in poll_choice_formset:
+                if form.cleaned_data.get('DELETE'):
+                    continue  # Skip forms marked for deletion
+                choice_text = form.cleaned_data.get('choice_text')
+                if choice_text:
+                    choices.append(choice_text)
+
+            # Validate minimum number of choices
+            if len(choices) < 2:
+                messages.error(request, 'Please provide at least two choices for the poll.')
+                return render(request, self.template_name, {
+                    'post_form': post_form,
+                    'poll_choice_formset': poll_choice_formset,
+                })
+
+            # Format content for moderation
+            title = post_form.cleaned_data.get('title')
+            body = post_form.cleaned_data.get('body')
+            choices_content = '\n'.join(choices)
+            content = f'{title}\n\n{body}\n\nChoices:\n{choices_content}'
+
+            # Perspective API moderation
+            final_action, actions = moderate_post(post_content=content)
+
+            # Handle the final action
+            if final_action == 'Accept' or final_action == 'Issue Warning':
+                with transaction.atomic():
+                    # Update user counts if necessary
+                    if final_action == 'Issue Warning':
+                        author.warning_count += 1
+                        author.save()
+
+                    # Save the post
+                    post = post_form.save(commit=False)
+                    post.author = author
+                    post.moderation_status = final_action
+                    post.moderation_timestamp = timezone.now()
+                    post.save()
+
+                    # Create a poll linked to the post
+                    poll = Poll.objects.create(post=post)
+
                     # Save valid choices
-                    for choice in valid_choices:
-                        choice.save()
+                    for choice_text in choices:
+                        PollChoice.objects.create(poll=poll, choice_text=choice_text)
+
+                if final_action == 'Issue Warning':
+                    warning_attributes = [attr for attr, action in actions.items() if action == 'Issue Warning']
+                    messages.warning(
+                        request,
+                        f"Your post has been created but contains content that may violate our guidelines: {', '.join(warning_attributes)}. Please review our community guidelines."
+                    )
+                else:
                     messages.success(request, 'Post with poll created successfully!')
-                    return redirect('forum:post_detail', pk=post.pk)
+
+                return redirect('forum:post_detail', pk=post.pk)
+
+            elif final_action == 'Reject':
+                # Increment user's rejection count and handle suspension
+                with transaction.atomic():
+                    author.rejection_count += 1
+                    author.save()
+
+                    if author.rejection_count >= 5 and not author.is_suspended:
+                        author.is_suspended = True
+                        author.suspension_end_date = timezone.now() + timedelta(days=7)
+                        author.save()
+                        messages.error(
+                            request,
+                            f"Your post was rejected due to violating our community guidelines. Your account has been suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}."
+                        )
+                    else:
+                        messages.error(
+                            request,
+                            "Your post was rejected due to violating our community guidelines. Please review our community guidelines."
+                        )
+
+                # Render the form again without any database operations
+                return render(request, self.template_name, {
+                    'post_form': post_form,
+                    'poll_choice_formset': poll_choice_formset,
+                })
         else:
             messages.error(request, 'There was an error in your submission.')
 
@@ -203,6 +271,69 @@ class CreatePostWithPollView(View):
             'post_form': post_form,
             'poll_choice_formset': poll_choice_formset,
         })
+
+
+# class CreatePostWithPollView(View):
+    
+#     template_name = 'forum/post/create-poll.html'
+    
+#     def get(self, request:HttpRequest):
+        
+#         print("Hello")
+#         post_form = PostForm()
+#         poll_choice_formset = PollChoiceFormSet(queryset=PollChoice.objects.none())
+        
+#         return render(request, self.template_name, {
+#             'post_form': post_form,
+#             'poll_choice_formset': poll_choice_formset,
+#         })
+        
+#     def post(self, request):
+#         post_form = PostForm(request.POST)
+#         poll_choice_formset = PollChoiceFormSet(
+#             request.POST,
+#             queryset=PollChoice.objects.none()
+#         )
+
+#         if post_form.is_valid() and poll_choice_formset.is_valid():
+#             with transaction.atomic():
+#                 # Save the post
+#                 post = post_form.save(commit=False)
+#                 post.author = request.user
+#                 post.save()
+
+#                 # Create a poll linked to the post
+#                 poll = Poll.objects.create(post=post)
+
+#                 # Prepare choices to save
+#                 valid_choices = []
+#                 for form in poll_choice_formset:
+#                     if form.cleaned_data.get('DELETE'):
+#                         continue  # Skip forms marked for deletion
+#                     choice_text = form.cleaned_data.get('choice_text')
+#                     if choice_text:
+#                         choice = form.save(commit=False)
+#                         choice.poll = poll
+#                         valid_choices.append(choice)
+
+#                 # Validate minimum number of choices
+#                 if len(valid_choices) < 2:
+#                     print(len(valid_choices))
+#                     messages.error(request, 'Please provide at least two choices for the poll.')
+#                     transaction.set_rollback(True)
+#                 else:
+#                     # Save valid choices
+#                     for choice in valid_choices:
+#                         choice.save()
+#                     messages.success(request, 'Post with poll created successfully!')
+#                     return redirect('forum:post_detail', pk=post.pk)
+#         else:
+#             messages.error(request, 'There was an error in your submission.')
+
+#         return render(request, self.template_name, {
+#             'post_form': post_form,
+#             'poll_choice_formset': poll_choice_formset,
+#         })
 
 
 

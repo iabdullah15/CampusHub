@@ -158,10 +158,13 @@
       </div>
 
         
-        <h4 class="mb-4 feed-title">Feed</h4>
+        <div class="feed-header d-flex justify-content-between align-items-center mb-4">
+          <h4 class="feed-title mb-0">Feed</h4>
+          <a href="{% url 'forum:create_post' %}" class="btn btn-dark"><i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i>  New Post</a>
+        </div>
 
           <!-- Offcanvas -->
-          <div class="offcanvas-container mb-4">
+        <div class="offcanvas-container mb-4">
             <button
               class="btn btn-outline-dark"
               type="button"

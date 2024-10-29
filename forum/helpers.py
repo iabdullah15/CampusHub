@@ -101,17 +101,17 @@ def determine_moderation_action(attribute_scores):
             # High Priority Attributes
             if score < 0.45:
                 actions[attribute] = 'Accept'
-            elif 0.45 <= score <= 0.6:
+            elif 0.45 <= score <= 0.75:
                 actions[attribute] = 'Issue Warning'
                 final_action = 'Issue Warning' if final_action != 'Reject' else final_action
-            else:  # score > 0.6
+            else:  # score > 0.75
                 actions[attribute] = 'Reject'
                 final_action = 'Reject'
         elif attribute == 'THREAT':
             # Moderate Priority Attribute
             if score < 0.5:
                 actions[attribute] = 'Accept'
-            elif 0.5 <= score <= 0.7:
+            elif 0.5 <= score <= 0.75:
                 actions[attribute] = 'Issue Warning'
                 if final_action == 'Accept':
                     final_action = 'Issue Warning'
