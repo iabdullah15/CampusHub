@@ -349,6 +349,12 @@
                         {% if post_with_status.post.category %}
                             <h6 class="card-subtitle mb-2 text-body-secondary">{{ post_with_status.post.category }}</h6>
                         {% endif %}
+                        
+                        {% if post_with_status.post.poll %}
+                        <h6 class="card-subtitle mb-2 text-body-secondary">-</h6>
+                          <h6 class="card-subtitle mb-2 text-body-secondary">Poll</h6>
+                        {% endif %}
+                          
                     </div>
 
                     

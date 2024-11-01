@@ -124,7 +124,7 @@ class Poll(models.Model):
 
 
 class PollChoice(models.Model):
-    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='choices')
     choice_text = models.CharField(max_length=200)
     
     def __str__(self) -> str:
@@ -133,7 +133,7 @@ class PollChoice(models.Model):
 
 class PollVote(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
-    choice = models.ForeignKey(PollChoice, on_delete=models.CASCADE)
+    choice = models.ForeignKey(PollChoice, on_delete=models.CASCADE, related_name='vote')
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     # Use auto_now to update timestamp on each save

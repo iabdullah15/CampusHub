@@ -13,6 +13,16 @@ body {
     border: none;
 }
 
+.list-group-item:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.interaction-container{
+    margin-top: 2rem;
+}
+
+
 .interaction-container{
     margin-top: 2rem;
 }

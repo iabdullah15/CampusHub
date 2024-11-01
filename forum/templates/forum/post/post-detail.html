@@ -25,67 +25,13 @@
       toast.show();
     {% endif %}
 
-    document
-      .getElementById("comments-container")
-      .addEventListener("click", (event) => {
-        if (event.target.classList.contains("reply-link")) {
-          const commentId = event.target.getAttribute("data-comment-id");
-          const replyContainer = event.target
-            .closest(".comment")
-            .querySelector(".post-comment-reply-container");
-          const replyTextarea = replyContainer.querySelector(
-            ".reply-comment-textarea"
-          );
-          const replyBtnsContainer = replyContainer.querySelector(
-            ".reply-btn-container"
-          );
 
-          replyContainer.style.display = "block";
-          replyTextarea.style.display = "block";
-          replyTextarea.focus();
-          replyBtnsContainer.style.display = "flex";
-        }
-
-        if (event.target.classList.contains("cancel-btn-reply")) {
-          const replyContainer = event.target.closest(
-            ".post-comment-reply-container"
-          );
-          const replyTextarea = replyContainer.querySelector(
-            ".reply-comment-textarea"
-          );
-          const replyBtnsContainer = replyContainer.querySelector(
-            ".reply-btn-container"
-          );
-
-          replyContainer.style.display = "none";
-          replyTextarea.style.display = "none";
-          replyBtnsContainer.style.display = "none";
-        }
-      });
-
-    // Event listener for comment textarea
-    const commentTextarea = document.getElementById(
-      "CommentFormControlTextarea1"
-    );
-    const commentSubmitButton = document.getElementById(
-      "CommentSubmitButton"
-    );
-    const cancelButton = document.getElementById("CancelButton");
-
-    commentTextarea.addEventListener("focus", () => {
-      commentSubmitButton.style.display = "inline-block";
-      cancelButton.style.display = "inline-block";
-    });
-
-    cancelButton.addEventListener("click", () => {
-      commentSubmitButton.style.display = "none";
-      cancelButton.style.display = "none";
-      commentTextarea.blur();
-    });
   });
 
   </script>
-  <script defer src="{% static 'forum/js/post/post-detail-like.js' %}"></script>
+  <script defer src="{% static 'forum/js/poll/vote.js' %}"></script>
+  <script defer src="{% static 'forum/js/post/post-detail-like.js' %}"></script>  
+  <script defer src="{% static 'forum/js/post/comment-box.js' %}"></script>
   <script defer src="{% static 'forum/js/post/comment-like.js' %}"></script>
 {% endblock %}
 
@@ -268,12 +214,40 @@
             <span class="mx-3" style="font-weight: 500; font-size: 1.4rem">{{ post.community.community_name }}</span>
             <span class="ms-auto" style="font-weight: 400; font-size: 1rem">{{ post.time_created|naturaltime }}</span>
         </div>
-          <h5 class="card-title mt-3">
+          <h5 class="card-title mt-3 mb-4">
             {{post.title}}
           </h5>
           <p class="card-text ">
             {{post.body}}
           </p>
+
+          
+          {% if poll %}
+            <div class="poll-container" data-post-id="{{ post.id }}" data-poll-id="{{ poll.id }}">
+                <ul class="list-group">
+                    {% for choice in poll_choices %}
+                    <li class="list-group-item d-flex align-items-center justify-content-between">
+                        <div class="form-check">
+                            <input
+                                class="form-check-input poll-option"
+                                type="radio"
+                                name="pollChoice"
+                                id="choice{{ choice.choice.id }}"
+                                data-choice-id="{{ choice.choice.id }}"
+                                {% if user_vote and user_vote.choice.id == choice.choice.id %}checked{% endif %}>
+                            <label class="form-check-label" for="choice{{ choice.choice.id }}">
+                                {{ choice.choice.choice_text }}
+                            </label>
+                        </div>
+                        <span class="badge bg-light text-primary" id="percentage-{{ choice.choice.id }}">
+                            {{ choice.percentage|floatformat:1 }}%
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+          {% endif %}
+
           <div class="interaction-container" data-liked="{% if is_liked_by_user %}true{% else %}false{% endif %}">
             <p class="card-text">
               <small class="text-muted">

@@ -28,12 +28,11 @@ class HomePageView(View):
     def get(self, request: HttpRequest):
 
         communities = PostCommunity.objects.all().order_by('community_name')
-        cs_category = PostCommunity.objects.get(community_name='FOIT and CS')
-        cs_posts = Post.objects.filter(community=cs_category)
+        all_posts = Post.objects.all().order_by("-time_created")
 
         # Create a list of posts with their like status (Current user)
         posts_with_like_status = []
-        for post in cs_posts:
+        for post in all_posts:
             is_liked_by_user = PostLikes.objects.filter(
                 post=post, user=request.user, is_liked=True).exists()
             posts_with_like_status.append({
@@ -68,7 +67,8 @@ class CreatePostView(View):
                 if timezone.now() < author.suspension_end_date:
                     messages.error(
                         request,
-                        f"Your account is suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}. You cannot create new posts."
+                        f"Your account is suspended until {author.suspension_end_date.strftime(
+                            '%Y-%m-%d %H:%M:%S')}. You cannot create new posts."
                     )
                     return redirect('forum:home')
                 else:
@@ -80,7 +80,6 @@ class CreatePostView(View):
             # Format content for moderation
             content = f'{title}\n\n{body}'
 
-            
             final_action, actions = moderate_post(post_content=content)
 
             # Create the post instance but do not save yet
@@ -104,13 +103,15 @@ class CreatePostView(View):
                 post.save()
 
                 # Inform the user
-                warning_attributes = [attr for attr, action in actions.items() if action == 'Issue Warning']
+                warning_attributes = [
+                    attr for attr, action in actions.items() if action == 'Issue Warning']
                 messages.warning(
                     request,
-                    f"Your post has been created but contains content that may violate our guidelines: {', '.join(warning_attributes)}. Please review our community guidelines."
+                    f"Your post has been created but contains content that may violate our guidelines: {
+                        ', '.join(warning_attributes)}. Please review our community guidelines."
                 )
                 return redirect('forum:post_detail', pk=post.pk)
-            
+
             elif final_action == 'Reject':
                 # Increment user's rejection count
                 author.rejection_count += 1
@@ -124,14 +125,15 @@ class CreatePostView(View):
                     author.save()
                     messages.error(
                         request,
-                        f"Your post was rejected due to violating our community guidelines. Your account has been suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}."
+                        f"Your post was rejected due to violating our community guidelines. Your account has been suspended until {
+                            author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}."
                     )
                 else:
                     messages.error(
                         request,
                         "Your post was rejected due to violating our community guidelines. Please review our community guidelines."
                     )
-                    
+
                 return render(request, self.template_name, {'form': form})
         else:
             # If the form is invalid, render the form again with errors
@@ -142,15 +144,14 @@ class CreatePostView(View):
         return render(request, self.template_name, {'form': form})
 
 
-
-
 class CreatePostWithPollView(View):
 
     template_name = 'forum/post/create-poll.html'
 
     def get(self, request: HttpRequest):
         post_form = PostForm()
-        poll_choice_formset = PollChoiceFormSet(queryset=PollChoice.objects.none())
+        poll_choice_formset = PollChoiceFormSet(
+            queryset=PollChoice.objects.none())
         return render(request, self.template_name, {
             'post_form': post_form,
             'poll_choice_formset': poll_choice_formset,
@@ -171,7 +172,8 @@ class CreatePostWithPollView(View):
                 if timezone.now() < author.suspension_end_date:
                     messages.error(
                         request,
-                        f"Your account is suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}. You cannot create new posts."
+                        f"Your account is suspended until {author.suspension_end_date.strftime(
+                            '%Y-%m-%d %H:%M:%S')}. You cannot create new posts."
                     )
                     return redirect('forum:home')
                 else:
@@ -191,7 +193,8 @@ class CreatePostWithPollView(View):
 
             # Validate minimum number of choices
             if len(choices) < 2:
-                messages.error(request, 'Please provide at least two choices for the poll.')
+                messages.error(
+                    request, 'Please provide at least two choices for the poll.')
                 return render(request, self.template_name, {
                     'post_form': post_form,
                     'poll_choice_formset': poll_choice_formset,
@@ -226,16 +229,20 @@ class CreatePostWithPollView(View):
 
                     # Save valid choices
                     for choice_text in choices:
-                        PollChoice.objects.create(poll=poll, choice_text=choice_text)
+                        PollChoice.objects.create(
+                            poll=poll, choice_text=choice_text)
 
                 if final_action == 'Issue Warning':
-                    warning_attributes = [attr for attr, action in actions.items() if action == 'Issue Warning']
+                    warning_attributes = [
+                        attr for attr, action in actions.items() if action == 'Issue Warning']
                     messages.warning(
                         request,
-                        f"Your post has been created but contains content that may violate our guidelines: {', '.join(warning_attributes)}. Please review our community guidelines."
+                        f"Your post has been created but contains content that may violate our guidelines: {
+                            ', '.join(warning_attributes)}. Please review our community guidelines."
                     )
                 else:
-                    messages.success(request, 'Post with poll created successfully!')
+                    messages.success(
+                        request, 'Post with poll created successfully!')
 
                 return redirect('forum:post_detail', pk=post.pk)
 
@@ -251,7 +258,8 @@ class CreatePostWithPollView(View):
                         author.save()
                         messages.error(
                             request,
-                            f"Your post was rejected due to violating our community guidelines. Your account has been suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}."
+                            f"Your post was rejected due to violating our community guidelines. Your account has been suspended until {
+                                author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}."
                         )
                     else:
                         messages.error(
@@ -271,72 +279,46 @@ class CreatePostWithPollView(View):
             'post_form': post_form,
             'poll_choice_formset': poll_choice_formset,
         })
-
-
-# class CreatePostWithPollView(View):
-    
-#     template_name = 'forum/post/create-poll.html'
-    
-#     def get(self, request:HttpRequest):
         
-#         print("Hello")
-#         post_form = PostForm()
-#         poll_choice_formset = PollChoiceFormSet(queryset=PollChoice.objects.none())
         
-#         return render(request, self.template_name, {
-#             'post_form': post_form,
-#             'poll_choice_formset': poll_choice_formset,
-#         })
         
-#     def post(self, request):
-#         post_form = PostForm(request.POST)
-#         poll_choice_formset = PollChoiceFormSet(
-#             request.POST,
-#             queryset=PollChoice.objects.none()
-#         )
+        
+class Vote(View):
+    def post(self, request, post_id, poll_id):
+        
+        choice_id = request.POST.get('choice_id')
+        print(f"CHOICE ID: {choice_id}")
+        if not choice_id:
+            return JsonResponse({'success': False, 'error': 'Choice ID is required'}, status=400)
 
-#         if post_form.is_valid() and poll_choice_formset.is_valid():
-#             with transaction.atomic():
-#                 # Save the post
-#                 post = post_form.save(commit=False)
-#                 post.author = request.user
-#                 post.save()
+        try:
+            poll = Poll.objects.get(id=poll_id, post__id=post_id)
+            choice = PollChoice.objects.get(id=choice_id, poll=poll)
 
-#                 # Create a poll linked to the post
-#                 poll = Poll.objects.create(post=post)
+            # Create or update the user's vote
+            vote, created = PollVote.objects.get_or_create(user=request.user, poll=poll, defaults={'choice': choice})
+            if not created:
+                vote.choice = choice
+                vote.save()
 
-#                 # Prepare choices to save
-#                 valid_choices = []
-#                 for form in poll_choice_formset:
-#                     if form.cleaned_data.get('DELETE'):
-#                         continue  # Skip forms marked for deletion
-#                     choice_text = form.cleaned_data.get('choice_text')
-#                     if choice_text:
-#                         choice = form.save(commit=False)
-#                         choice.poll = poll
-#                         valid_choices.append(choice)
+            # Calculate percentages for each choice
+            total_votes = PollVote.objects.filter(poll=poll).count()
+            choices_data = []
+            for poll_choice in poll.choices.all():
+                choice_votes = PollVote.objects.filter(poll=poll, choice=poll_choice).count()
+                percentage = round((choice_votes / total_votes) * 100) if total_votes > 0 else 0
+                choices_data.append({'choice_id': poll_choice.id, 'percentage': percentage})
 
-#                 # Validate minimum number of choices
-#                 if len(valid_choices) < 2:
-#                     print(len(valid_choices))
-#                     messages.error(request, 'Please provide at least two choices for the poll.')
-#                     transaction.set_rollback(True)
-#                 else:
-#                     # Save valid choices
-#                     for choice in valid_choices:
-#                         choice.save()
-#                     messages.success(request, 'Post with poll created successfully!')
-#                     return redirect('forum:post_detail', pk=post.pk)
-#         else:
-#             messages.error(request, 'There was an error in your submission.')
+            return JsonResponse({'success': True, 'choices': choices_data})
 
-#         return render(request, self.template_name, {
-#             'post_form': post_form,
-#             'poll_choice_formset': poll_choice_formset,
-#         })
+        except (Poll.DoesNotExist, PollChoice.DoesNotExist):
+            return JsonResponse({'success': False, 'error': 'Invalid poll or choice'}, status=400)
 
-
-
+        
+        
+        
+        
+        
 
 
 class PostDetailView(View):
@@ -345,10 +327,59 @@ class PostDetailView(View):
 
     def get(self, request: HttpRequest, pk: int):
 
+        context = {}
+
         try:
             post = Post.objects.get(id=pk)
             comments = PostComment.objects.filter(
                 post=post).order_by('-time_created')
+
+            if post.poll:
+
+                poll = Poll.objects.get(post=post)
+                poll_choices = PollChoice.objects.filter(poll=poll)
+                poll_vote = None
+
+                context.update({"poll": poll})
+                context.update({"poll_choices": poll_choices})
+                
+
+                try:
+                    poll_vote = PollVote.objects.get(user=request.user)
+
+                except:
+                    poll_vote = None
+                    
+                    
+             # Calculate the total votes for the poll
+                total_votes = PollVote.objects.filter(poll=poll).count()
+                
+                # Calculate the percentage for each choice
+                poll_choices_with_percentages = []
+                
+                for choice in poll_choices:
+                    
+                    choice_votes = PollVote.objects.filter(poll=poll, choice=choice).count()
+                    
+                    if total_votes > 0:
+                        
+                        choice_percentage = (choice_votes / total_votes) * 100
+                        
+                    else:
+                        
+                        choice_percentage = 0
+                    poll_choices_with_percentages.append({
+                        'choice': choice,
+                        'percentage': choice_percentage,
+                    })
+
+                # Update context for poll details
+                context.update({
+                    "poll": poll,
+                    "poll_choices": poll_choices_with_percentages,
+                    "user_vote": poll_vote
+                })        
+                    
 
             comment_form = PostCommentForm()
             reply_form = PostCommentReplyForm()
@@ -360,7 +391,7 @@ class PostDetailView(View):
             for comment in comments:
                 is_liked_by_user = CommentLike.objects.filter(
                     comment=comment, user=request.user, is_liked=True).exists()
-                print(comment.comment_likes.filter(is_liked=True).count())
+                # print(comment.comment_likes.filter(is_liked=True).count())
 
                 comments_with_like_status.append({
                     'comment': comment,
@@ -369,21 +400,24 @@ class PostDetailView(View):
                     'total_likes': comment.comment_likes.filter(is_liked=True).count()
                 })
 
-            print(comments_with_like_status)
 
             # Check if the post is liked by the current user
             is_liked_by_user = post.likes.filter(
                 user=request.user, is_liked=True).exists()
-            print(is_liked_by_user)
 
-            return render(request, self.template_name, {
+            # Update context with post and comments data
+            context.update({
                 "post": post,
                 "comment_form": comment_form,
                 "comments_with_like_status": comments_with_like_status,
-                "is_liked_by_user": is_liked_by_user,  # Pass to the template
+                "is_liked_by_user": is_liked_by_user,
                 "comment_count": comment_count,
                 'reply_form': reply_form
             })
+            
+            print(context)
+
+            return render(request, self.template_name, context=context)
 
         except Post.DoesNotExist:
             return render(request, self.template_name, {})
@@ -568,8 +602,10 @@ class ProfileView(View):
                                                     "profile_form": profile_form, "password_form": password_form})
 
     def post(self, request, username):
-        profile_form = UpdateProfileForm(instance=request.user, data=request.POST)
-        password_form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+        profile_form = UpdateProfileForm(
+            instance=request.user, data=request.POST)
+        password_form = CustomPasswordChangeForm(
+            user=request.user, data=request.POST)
 
         if 'update_profile' in request.POST and profile_form.is_valid():
             profile_form.save()
@@ -579,7 +615,8 @@ class ProfileView(View):
         elif 'change_password' in request.POST and password_form.is_valid():
             print("Hello")
             user = password_form.save()
-            update_session_auth_hash(request, user)  # Keeps the user logged in after password change
+            # Keeps the user logged in after password change
+            update_session_auth_hash(request, user)
             messages.success(request, "Password changed successfully!")
             return redirect(reverse_lazy('forum:profile', kwargs={'username': request.user.username}))
 
