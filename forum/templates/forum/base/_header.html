@@ -1,13 +1,14 @@
 <header class="navbar">
   <h1 id="nav-title"><a href="{% url 'forum:home' %}">CampusHub</a></h1>
-  <form class="mx-auto search-bar-form" role="search">
+  <form class="mx-auto search-bar-form" role="search" method="get" action="{% url 'forum:post_search' %}">
     <input
       class="form-control search-posts me-2"
       type="search"
+      name="q"
       placeholder="Search"
       aria-label="Search"
     />
-    <button class="btn btn-outline-dark search-btn">search</button>
+    <button class="btn search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
   </form>
   <nav>
     <ul>

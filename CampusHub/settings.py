@@ -141,6 +141,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 STATICFILES_DIRS = [
     BASE_DIR / "user" / "static",
     BASE_DIR / "forum" / "static",
@@ -198,3 +200,51 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'abduzubair2001@gmail.com'
 EMAIL_HOST_PASSWORD = "paea uypn hpyi honl"
+
+
+
+
+# GCP storage settings
+
+
+from google.oauth2 import service_account
+
+
+# Load credentials from the service account JSON file
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    os.path.join(BASE_DIR, 'gcpCredentials.json')
+)
+
+
+# Configure Django storage settings
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+        "OPTIONS": {
+            "project_id": "campushub-fyp",
+            "credentials": GS_CREDENTIALS,
+            "bucket_name": "campushub_bucket",
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+        "OPTIONS": {
+            "project_id": "campushub-fyp",
+            "credentials": GS_CREDENTIALS,
+            "bucket_name": "campushub_bucket",
+        },
+    },
+}
+
+
+# Google Cloud Storage settings
+GS_PROJECT_ID = 'campushub-fyp'
+GS_BUCKET_NAME = 'campushub_bucket'
+
+# Static and media files settings
+STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
+
+MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
+
+# Add unique file names if the same file name is uploaded again
+GS_FILE_OVERWRITE = False

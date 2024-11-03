@@ -19,6 +19,7 @@ from .forms import PostForm, PostCommentForm, PostCommentReplyForm, UpdateProfil
 from django.contrib.auth import update_session_auth_hash
 from .helpers import ask_assistant, moderate_post, determine_moderation_action
 from user.models import CustomUser
+from django.db.models import Q
 
 
 class HomePageView(View):
@@ -44,6 +45,42 @@ class HomePageView(View):
         return render(request, self.template_name, {
             'posts_with_like_status': posts_with_like_status,
             'communities': communities,
+        })
+
+
+class PostSearchView(View):
+
+    template_name = 'forum/post/post-search.html'
+
+    def get(self, request):
+
+        communities = PostCommunity.objects.all().order_by('community_name')
+        posts = Post.objects.all().order_by("-time_created")
+
+        # Create a list of posts with their like status (Current user)
+        posts_with_like_status = []
+
+        query = request.GET.get('q')
+
+        if query:
+            # Filter posts by checking if the query is in the title or body
+            posts = posts.filter(
+                Q(title__icontains=query) | Q(body__icontains=query)
+            )
+
+        for post in posts:
+            
+            is_liked_by_user = PostLikes.objects.filter(
+                post=post, user=request.user, is_liked=True).exists()
+            posts_with_like_status.append({
+                'post': post,
+                'is_liked_by_user': is_liked_by_user
+            })
+
+        return render(request, self.template_name, {
+            'posts_with_like_status': posts_with_like_status,
+            'communities': communities,
+            'query': query
         })
 
 
@@ -279,13 +316,11 @@ class CreatePostWithPollView(View):
             'post_form': post_form,
             'poll_choice_formset': poll_choice_formset,
         })
-        
-        
-        
-        
+
+
 class Vote(View):
     def post(self, request, post_id, poll_id):
-        
+
         choice_id = request.POST.get('choice_id')
         print(f"CHOICE ID: {choice_id}")
         if not choice_id:
@@ -296,7 +331,8 @@ class Vote(View):
             choice = PollChoice.objects.get(id=choice_id, poll=poll)
 
             # Create or update the user's vote
-            vote, created = PollVote.objects.get_or_create(user=request.user, poll=poll, defaults={'choice': choice})
+            vote, created = PollVote.objects.get_or_create(
+                user=request.user, poll=poll, defaults={'choice': choice})
             if not created:
                 vote.choice = choice
                 vote.save()
@@ -305,20 +341,17 @@ class Vote(View):
             total_votes = PollVote.objects.filter(poll=poll).count()
             choices_data = []
             for poll_choice in poll.choices.all():
-                choice_votes = PollVote.objects.filter(poll=poll, choice=poll_choice).count()
-                percentage = round((choice_votes / total_votes) * 100) if total_votes > 0 else 0
-                choices_data.append({'choice_id': poll_choice.id, 'percentage': percentage})
+                choice_votes = PollVote.objects.filter(
+                    poll=poll, choice=poll_choice).count()
+                percentage = round((choice_votes / total_votes)
+                                   * 100) if total_votes > 0 else 0
+                choices_data.append(
+                    {'choice_id': poll_choice.id, 'percentage': percentage})
 
             return JsonResponse({'success': True, 'choices': choices_data})
 
         except (Poll.DoesNotExist, PollChoice.DoesNotExist):
             return JsonResponse({'success': False, 'error': 'Invalid poll or choice'}, status=400)
-
-        
-        
-        
-        
-        
 
 
 class PostDetailView(View):
@@ -334,52 +367,53 @@ class PostDetailView(View):
             comments = PostComment.objects.filter(
                 post=post).order_by('-time_created')
 
-            if post.poll:
+            try:
+                if post.poll:
 
-                poll = Poll.objects.get(post=post)
-                poll_choices = PollChoice.objects.filter(poll=poll)
-                poll_vote = None
-
-                context.update({"poll": poll})
-                context.update({"poll_choices": poll_choices})
-                
-
-                try:
-                    poll_vote = PollVote.objects.get(user=request.user)
-
-                except:
+                    poll = Poll.objects.get(post=post)
+                    poll_choices = PollChoice.objects.filter(poll=poll)
                     poll_vote = None
-                    
-                    
-             # Calculate the total votes for the poll
-                total_votes = PollVote.objects.filter(poll=poll).count()
-                
-                # Calculate the percentage for each choice
-                poll_choices_with_percentages = []
-                
-                for choice in poll_choices:
-                    
-                    choice_votes = PollVote.objects.filter(poll=poll, choice=choice).count()
-                    
-                    if total_votes > 0:
-                        
-                        choice_percentage = (choice_votes / total_votes) * 100
-                        
-                    else:
-                        
-                        choice_percentage = 0
-                    poll_choices_with_percentages.append({
-                        'choice': choice,
-                        'percentage': choice_percentage,
-                    })
 
-                # Update context for poll details
-                context.update({
-                    "poll": poll,
-                    "poll_choices": poll_choices_with_percentages,
-                    "user_vote": poll_vote
-                })        
-                    
+                    context.update({"poll": poll})
+                    context.update({"poll_choices": poll_choices})
+
+                    try:
+                        poll_vote = PollVote.objects.get(user=request.user)
+
+                    except:
+                        poll_vote = None
+
+                # Calculate the total votes for the poll
+                    total_votes = PollVote.objects.filter(poll=poll).count()
+
+                    # Calculate the percentage for each choice
+                    poll_choices_with_percentages = []
+
+                    for choice in poll_choices:
+
+                        choice_votes = PollVote.objects.filter(
+                            poll=poll, choice=choice).count()
+
+                        if total_votes > 0:
+
+                            choice_percentage = (choice_votes / total_votes) * 100
+
+                        else:
+
+                            choice_percentage = 0
+                        poll_choices_with_percentages.append({
+                            'choice': choice,
+                            'percentage': choice_percentage,
+                        })
+
+                    # Update context for poll details
+                    context.update({
+                        "poll": poll,
+                        "poll_choices": poll_choices_with_percentages,
+                        "user_vote": poll_vote
+                    })
+            except:
+                None
 
             comment_form = PostCommentForm()
             reply_form = PostCommentReplyForm()
@@ -400,7 +434,6 @@ class PostDetailView(View):
                     'total_likes': comment.comment_likes.filter(is_liked=True).count()
                 })
 
-
             # Check if the post is liked by the current user
             is_liked_by_user = post.likes.filter(
                 user=request.user, is_liked=True).exists()
@@ -414,7 +447,7 @@ class PostDetailView(View):
                 "comment_count": comment_count,
                 'reply_form': reply_form
             })
-            
+
             print(context)
 
             return render(request, self.template_name, context=context)
