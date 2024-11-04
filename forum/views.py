@@ -69,7 +69,7 @@ class PostSearchView(View):
             )
 
         for post in posts:
-            
+
             is_liked_by_user = PostLikes.objects.filter(
                 post=post, user=request.user, is_liked=True).exists()
             posts_with_like_status.append({
@@ -90,12 +90,15 @@ class CreatePostView(View):
 
     def post(self, request: HttpRequest):
 
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, request.FILES)
 
         if form.is_valid():
             community = form.cleaned_data.get('community')
             title = form.cleaned_data.get('title')
             body = form.cleaned_data.get('body')
+            image = form.cleaned_data.get('image')
+
+            
             post_category = PostCommunity.objects.get(community_name=community)
             author = request.user
 
@@ -122,6 +125,7 @@ class CreatePostView(View):
             # Create the post instance but do not save yet
             post = form.save(commit=False)
             post.community = post_category
+            post.image = image if image else None
             post.author = author
             post.moderation_status = final_action
             # post.violation_attributes = attribute_scores if final_action != 'Accept' else None
@@ -195,7 +199,7 @@ class CreatePostWithPollView(View):
         })
 
     def post(self, request):
-        post_form = PostForm(request.POST)
+        post_form = PostForm(request.POST, request.FILES)
         poll_choice_formset = PollChoiceFormSet(
             request.POST,
             queryset=PollChoice.objects.none()
@@ -203,6 +207,7 @@ class CreatePostWithPollView(View):
 
         if post_form.is_valid() and poll_choice_formset.is_valid():
             author = request.user
+            
 
             # Check if the user is suspended
             if author.is_suspended and author.suspension_end_date:
@@ -240,6 +245,9 @@ class CreatePostWithPollView(View):
             # Format content for moderation
             title = post_form.cleaned_data.get('title')
             body = post_form.cleaned_data.get('body')
+            image = form.cleaned_data.get('image')
+
+            
             choices_content = '\n'.join(choices)
             content = f'{title}\n\n{body}\n\nChoices:\n{choices_content}'
 
@@ -257,6 +265,7 @@ class CreatePostWithPollView(View):
                     # Save the post
                     post = post_form.save(commit=False)
                     post.author = author
+                    post.image = image if image else None
                     post.moderation_status = final_action
                     post.moderation_timestamp = timezone.now()
                     post.save()
@@ -333,6 +342,7 @@ class Vote(View):
             # Create or update the user's vote
             vote, created = PollVote.objects.get_or_create(
                 user=request.user, poll=poll, defaults={'choice': choice})
+            print(vote, created)
             if not created:
                 vote.choice = choice
                 vote.save()
@@ -378,7 +388,7 @@ class PostDetailView(View):
                     context.update({"poll_choices": poll_choices})
 
                     try:
-                        poll_vote = PollVote.objects.get(user=request.user)
+                        poll_vote = PollVote.objects.get(poll=poll, user=request.user)
 
                     except:
                         poll_vote = None
@@ -396,7 +406,8 @@ class PostDetailView(View):
 
                         if total_votes > 0:
 
-                            choice_percentage = (choice_votes / total_votes) * 100
+                            choice_percentage = (
+                                choice_votes / total_votes) * 100
 
                         else:
 
@@ -412,6 +423,7 @@ class PostDetailView(View):
                         "poll_choices": poll_choices_with_percentages,
                         "user_vote": poll_vote
                     })
+                    print(poll_vote.choice)
             except:
                 None
 
@@ -448,7 +460,7 @@ class PostDetailView(View):
                 'reply_form': reply_form
             })
 
-            print(context)
+            # print(context)
 
             return render(request, self.template_name, context=context)
 

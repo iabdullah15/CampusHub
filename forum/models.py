@@ -47,6 +47,7 @@ class Post(models.Model):
     body = models.TextField()
     time_created = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
+    image = models.ImageField(null=True, blank=True)
     community = models.ForeignKey(PostCommunity, on_delete=models.CASCADE)
     category = models.ForeignKey(
         PostCategory, on_delete=models.CASCADE, null=True)

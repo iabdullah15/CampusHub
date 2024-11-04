@@ -16,7 +16,7 @@ from user.models import CustomUser
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ["community", "category", "title", "body"]
+        fields = ["community", "category", "title", "body", "image"]
         widgets = {
             'title': forms.TextInput(attrs={'placeholder': 'Title'}),
             'body': forms.Textarea(attrs={'placeholder': 'Body'}),

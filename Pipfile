@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "==5.1"
+django = "*"
 asgiref = "==3.8.1"
 mysqlclient = "==2.2.4"
 python-dotenv = "==1.0.1"
@@ -16,6 +16,9 @@ django-crispy-forms = "*"
 crispy-bootstrap5 = "*"
 openai = "*"
 django-widget-tweaks = "*"
+django-storages = "*"
+google-cloud-storage = "*"
+pillow = "*"
 
 [dev-packages]
 

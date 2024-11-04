@@ -5,7 +5,7 @@
 {% load humanize %}
 
 {% block title %}
-    <title>Post Detial</title>
+    <title>{{post.title|truncatewords:5}}</title>
 {% endblock %}
 
 {% block css %}
@@ -220,6 +220,52 @@
           <p class="card-text ">
             {{post.body}}
           </p>
+
+          <!-- Thumbnail -->
+          {% if post.image %}
+            <div class="container-fluid mt-5 thumbnail-container">
+              <img
+                src="{{post.image.url}} "
+                alt="Thumbnail"
+                class="img-thumbnail"
+                data-bs-toggle="modal"
+                data-bs-target="#imageModal-{{ post.id }}"
+                style="cursor: pointer"
+              />
+            </div>
+          {% endif %}
+
+          <!-- Modal -->
+          <!-- Unique modal ID -->
+        {% if post.image %}
+          <div
+            class="modal modal-lg fade"
+            id="imageModal-{{ post.id }}" 
+            tabindex="-1"
+            aria-labelledby="imageModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <img
+                    src="{{post.image.url}}"
+                    alt="Full-size Image"
+                    class="img-fluid"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
 
           
           {% if poll %}

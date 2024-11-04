@@ -143,6 +143,8 @@ STATIC_URL = 'static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
+
 STATICFILES_DIRS = [
     BASE_DIR / "user" / "static",
     BASE_DIR / "forum" / "static",
@@ -224,6 +226,7 @@ STORAGES = {
             "project_id": "campushub-fyp",
             "credentials": GS_CREDENTIALS,
             "bucket_name": "campushub_bucket",
+            "location": "media",  # Ensure media files are stored in 'media' folder
         },
     },
     "staticfiles": {
@@ -232,6 +235,7 @@ STORAGES = {
             "project_id": "campushub-fyp",
             "credentials": GS_CREDENTIALS,
             "bucket_name": "campushub_bucket",
+            
         },
     },
 }

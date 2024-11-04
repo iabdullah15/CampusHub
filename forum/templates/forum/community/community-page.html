@@ -3,7 +3,7 @@
 {% load humanize %}
 
     {% block title %}
-    <title>Community Name</title>
+    <title>{{community.community_name}} Community</title>
     {% endblock %}
     
     {% block css %}
@@ -177,7 +177,7 @@
               />
             </div>
             <div class="card-body">
-              <h3 class="card-title pb-3">IT & CS Community</h3>
+              <h3 class="card-title pb-3">{{community.community_name}}</h3>
               <p class="card-text">Community Description:</p>
               <p class="card-text">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit.

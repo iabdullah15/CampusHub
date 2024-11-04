@@ -27,7 +27,7 @@ body {
 
 .select-container,
 .submit-btn-container,
-.select-text {
+.select-text, .post-img-container {
   margin-left: auto;
   margin-right: auto;
 }

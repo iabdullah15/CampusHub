@@ -1,0 +1,122 @@
+body {
+    background-color: rgb(248, 249, 250);
+    /* --bs-light-rgb: 248, 249, 250; */
+}
+
+.post-card {
+    border: none;
+}
+
+.back-link {
+    color: black;
+    text-decoration: none;
+    border: none;
+}
+
+.list-group-item:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.interaction-container{
+    margin-top: 2rem;
+}
+
+
+.interaction-container{
+    margin-top: 2rem;
+}
+
+.interaction-button{
+    background-color:#e5ebee; 
+    border-radius: 15px; 
+    padding: 0.5rem; 
+    margin-right: 10px;
+
+}
+
+.interaction-container .interaction-button:hover{
+    cursor:pointer !important;
+}
+
+.interaction-button .unlike-icon {
+    color: red;
+}
+
+/* .unlike-btn{
+    display: none;
+} */
+
+.heart-icon:hover{
+    cursor: pointer;
+}
+
+.comment-icon:hover{
+    cursor: pointer;
+}
+
+
+.views-icon:hover {
+    cursor: pointer;
+}
+
+.post-comment-container{
+    
+}
+
+.comment-textarea, .reply-comment-textarea {
+    max-width: 70%;
+}
+
+.comment-btn-container{
+
+}
+
+#CommentSubmitButton, #CancelButton {
+    width: 15%;
+}
+
+.comment-card, .comment-reply-card {
+    border: 0 solid #eff0f4;
+    background-color: #f3f3f3;
+    width: 70%;
+}
+
+.comment-interaction-container{
+    margin-top: 1rem;
+}
+
+.reply-link {
+    color: black;
+    text-decoration: none;
+}
+
+.reply-link:hover {
+cursor: pointer;
+}
+
+.comment-reply-card, .comment-reply-interaction-container {
+    width: 60%;
+    margin-top: 1rem;
+    margin-left: 10%;
+}
+
+
+@media (max-width: 1500px) {
+    .comment-card{
+      width: 100%;
+    }
+
+    .comment-reply-card{
+        width: 90%;
+    }
+
+    .comment-textarea {
+        max-width: 100%;
+    }
+
+    .reply-comment-textarea {
+        max-width: 90%;
+    }
+  
+  }

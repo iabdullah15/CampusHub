@@ -346,46 +346,50 @@
                     </p>
                   </a>
                   <!-- Thumbnail -->
-                  <div class="container-fluid mt-5 thumbnail-container">
-                    <img
-                      src="random.jpg"
-                      alt="Thumbnail"
-                      class="img-thumbnail"
-                      data-bs-toggle="modal"
-                      data-bs-target="#likeImageModal"
-                      style="cursor: pointer"
-                    />
-                  </div>
+                  {% if post_with_status.post.image %}
+                    <div class="container-fluid mt-5 thumbnail-container">
+                      <img
+                        src="{{post_with_status.post.image.url}} "
+                        alt="Thumbnail"
+                        class="img-thumbnail"
+                        data-bs-toggle="modal"
+                        data-bs-target="#imageModal-{{ post_with_status.post.id }}"
+                        style="cursor: pointer"
+                      />
+                    </div>
+                  {% endif %}
 
                   <!-- Modal -->
                     <!-- Unique modal ID -->
-                  <div
-                    class="modal modal-lg fade"
-                    id="imageModal-{{ post_with_status.post.id }}" 
-                    tabindex="-1"
-                    aria-labelledby="imageModalLabel"
-                    aria-hidden="true"
-                  >
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <button
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"
-                          ></button>
-                        </div>
-                        <div class="modal-body">
-                          <img
-                            src="random.jpg"
-                            alt="Full-size Image"
-                            class="img-fluid"
-                          />
+                  {% if post_with_status.post.image %}
+                    <div
+                      class="modal modal-lg fade"
+                      id="imageModal-{{ post_with_status.post.id }}" 
+                      tabindex="-1"
+                      aria-labelledby="imageModalLabel"
+                      aria-hidden="true"
+                    >
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button
+                              type="button"
+                              class="btn-close"
+                              data-bs-dismiss="modal"
+                              aria-label="Close"
+                            ></button>
+                          </div>
+                          <div class="modal-body">
+                            <img
+                              src="{{post_with_status.post.image.url}}"
+                              alt="Full-size Image"
+                              class="img-fluid"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  {% endif %}
 
                   <div class="row pt-4 px-4 interaction-row">
                     <div class="interaction-container col-4" data-liked="{% if post_with_status.is_liked_by_user %}true{% else %}false{% endif %}" data-post-id="{{ post_with_status.post.id }}">
