@@ -20,32 +20,41 @@ from django.contrib.auth import update_session_auth_hash
 from .helpers import ask_assistant, moderate_post, determine_moderation_action
 from user.models import CustomUser
 from django.db.models import Q
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class HomePageView(View):
 
     template_name = "forum/home/home-v2.html"
 
+
     def get(self, request: HttpRequest):
 
-        communities = PostCommunity.objects.all().order_by('community_name')
-        all_posts = Post.objects.all().order_by("-time_created")
+        if request.user.is_authenticated:
 
-        # Create a list of posts with their like status (Current user)
-        posts_with_like_status = []
-        for post in all_posts:
-            is_liked_by_user = PostLikes.objects.filter(
-                post=post, user=request.user, is_liked=True).exists()
-            posts_with_like_status.append({
-                'post': post,
-                'is_liked_by_user': is_liked_by_user
+            communities = PostCommunity.objects.all().order_by('community_name')
+            all_posts = Post.objects.all().order_by("-time_created")
+
+            # Create a list of posts with their like status (Current user)
+            posts_with_like_status = []
+            for post in all_posts:
+
+                is_liked_by_user = PostLikes.objects.filter(
+                    post=post, user=request.user, is_liked=True).exists()
+                print(is_liked_by_user)
+                posts_with_like_status.append({
+                    'post': post,
+                    'is_liked_by_user': is_liked_by_user
+                })
+
+            print(communities)
+            return render(request, self.template_name, {
+                'posts_with_like_status': posts_with_like_status,
+                'communities': communities,
             })
 
-        print(communities)
-        return render(request, self.template_name, {
-            'posts_with_like_status': posts_with_like_status,
-            'communities': communities,
-        })
+        else:
+            return redirect(reverse_lazy('user:sign-in'))
 
 
 class PostSearchView(View):
@@ -98,7 +107,6 @@ class CreatePostView(View):
             body = form.cleaned_data.get('body')
             image = form.cleaned_data.get('image')
 
-            
             post_category = PostCommunity.objects.get(community_name=community)
             author = request.user
 
@@ -126,6 +134,7 @@ class CreatePostView(View):
             post = form.save(commit=False)
             post.community = post_category
             post.image = image if image else None
+            print(f"Post image: {post.image}")
             post.author = author
             post.moderation_status = final_action
             # post.violation_attributes = attribute_scores if final_action != 'Accept' else None
@@ -207,7 +216,6 @@ class CreatePostWithPollView(View):
 
         if post_form.is_valid() and poll_choice_formset.is_valid():
             author = request.user
-            
 
             # Check if the user is suspended
             if author.is_suspended and author.suspension_end_date:
@@ -247,7 +255,6 @@ class CreatePostWithPollView(View):
             body = post_form.cleaned_data.get('body')
             image = form.cleaned_data.get('image')
 
-            
             choices_content = '\n'.join(choices)
             content = f'{title}\n\n{body}\n\nChoices:\n{choices_content}'
 
@@ -388,7 +395,8 @@ class PostDetailView(View):
                     context.update({"poll_choices": poll_choices})
 
                     try:
-                        poll_vote = PollVote.objects.get(poll=poll, user=request.user)
+                        poll_vote = PollVote.objects.get(
+                            poll=poll, user=request.user)
 
                     except:
                         poll_vote = None

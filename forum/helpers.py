@@ -1,7 +1,6 @@
-import time
 from openai import OpenAI
 from googleapiclient import discovery
-import json
+import json, requests, time
 
 # Translate text
 def ask_assistant(query: str):
@@ -150,3 +149,26 @@ def moderate_post(post_content:str):
     print("Actions per Attribute:", actions)
     
     return final_action, actions
+
+
+
+
+
+# image moderation
+
+def img_score(img_path: str) -> dict:
+
+    headers = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzQ1ZWIxZTUtYzI5Mi00OTE5LTg5Y2YtM2I3ODJhN2I0YTgwIiwidHlwZSI6ImFwaV90b2tlbiJ9.uIF8cuAlcDD_ryHrZK1c-QByA1qmJvWSqCPS2V7WPko"}
+
+    url = "https://api.edenai.run/v2/image/explicit_content"
+
+    data = {
+        "providers": "microsoft",
+    }
+    files = {'file': open(img_path, 'rb')}
+
+    response = requests.post(url, data=data, files=files, headers=headers)
+
+    result = json.loads(response.text)
+    print(type(result))
+    return result

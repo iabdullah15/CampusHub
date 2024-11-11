@@ -12,7 +12,7 @@ from django.contrib import messages
 from .forms import CustomUserChangeForm, CustomUserCreationForm, UserOnboardingForm
 
 from django_email_verification import send_email, send_password
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login
 
 User = get_user_model()
 
@@ -67,7 +67,11 @@ def onboarding_view(request):
         form = UserOnboardingForm(request.POST)
         if form.is_valid():
             print("Hello")
-            form.save()  # Save the user data to the database
+            department = form.cleaned_data.get('department')
+            print(department)
+            user = request.user
+            user.department = department
+            user.save()
             return redirect('forum:home')  # Redirect after successful onboarding
     else:
         form = UserOnboardingForm()
@@ -81,9 +85,14 @@ class CustomLoginView(LoginView):
     next_page = reverse_lazy('forum:home')
 
     def form_valid(self, form):
-        # Add your custom checks here before the user is signed in
-        if not form.get_user().department:
-            
+        # Log the user in first
+        login(self.request, form.get_user())
+        # Add debug logging
+        user_department = form.get_user().department
+        print("Department:", user_department)  # Log department to verify its value
+        
+        if not user_department:
+            print("Redirecting to onboarding as department is not set.")
             return redirect('user:onboarding')  # Redirect to onboarding
         
         # If all checks pass, let the user sign in
