@@ -172,3 +172,14 @@ def img_score(img_path: str) -> dict:
     result = json.loads(response.text)
     print(type(result))
     return result
+
+
+def moderate_img(img_path: str):
+    
+    result_dict = img_score(img_path=img_path)
+    print(result_dict)
+    
+
+    
+path = 'staticfiles\img\community1.png'
+moderate_img(path)
