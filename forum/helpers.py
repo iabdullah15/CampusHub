@@ -1,14 +1,19 @@
 from openai import OpenAI
 from googleapiclient import discovery
-import json, requests, time
+import json
+import requests
+import time
 
 # Translate text
+
+
 def ask_assistant(query: str):
 
     ASSISTANT_ID = "asst_ujKwICKSjUFQ359drqh82L1F"
 
     # Make sure your API key is set as an environment variable.
-    client = OpenAI(api_key="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")
+    client = OpenAI(
+        api_key="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")
 
     # Create a thread with a message.
     thread = client.beta.threads.create(
@@ -29,7 +34,8 @@ def ask_assistant(query: str):
 
     # Wait for run to complete.
     while run.status != "completed":
-        run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
+        run = client.beta.threads.runs.retrieve(
+            thread_id=thread.id, run_id=run.id)
         print(f"🏃 Run Status: {run.status}")
         time.sleep(1)
     else:
@@ -42,16 +48,12 @@ def ask_assistant(query: str):
     # Print the latest message.
     latest_message = messages[0]
     print(f"💬 Response: {latest_message.content[0].text.value}")
-    
-    
-    
 
 
+def perspective(post_content: str):
 
-def perspective(post_content:str):
-    
     API_KEY = "AIzaSyBqueBXYTNwxUxHiJEyie962Gg7c2QxGEo"
-    
+
     client = discovery.build(
         "commentanalyzer",
         "v1alpha1",
@@ -62,7 +64,7 @@ def perspective(post_content:str):
 
     analyze_request = {
         "comment": {"text": post_content},
-        "requestedAttributes": {"TOXICITY": {}, "PROFANITY": {}, "IDENTITY_ATTACK": {}, "INSULT": {}, "THREAT":{}},
+        "requestedAttributes": {"TOXICITY": {}, "PROFANITY": {}, "IDENTITY_ATTACK": {}, "INSULT": {}, "THREAT": {}},
     }
 
     response = client.comments().analyze(body=analyze_request).execute()
@@ -80,17 +82,14 @@ def perspective(post_content:str):
         attrs_list.append(i)
 
     for i in range(len(attr_scores)):
-        
-        score =  attr_scores[attrs_list[i]]['summaryScore']['value']
-        
+
+        score = attr_scores[attrs_list[i]]['summaryScore']['value']
+
         scores_dict.update({attrs_list[i]: score})
-    
-        
+
     return scores_dict
-    
-    
-    
-    
+
+
 def determine_moderation_action(attribute_scores):
     actions = {}
     final_action = 'Accept'  # Default action
@@ -135,23 +134,18 @@ def determine_moderation_action(attribute_scores):
     return final_action, actions
 
 
-def moderate_post(post_content:str):
-    
-    #perspective api
-    
+def moderate_post(post_content: str):
+
+    # perspective api
+
     attr_scores = perspective(post_content)
-    print(attr_scores)
-    
     # Actions based on perspective result
     final_action, actions = determine_moderation_action(attr_scores)
 
-    print("Final Action:", final_action)
-    print("Actions per Attribute:", actions)
-    
+    # print("Final Action:", final_action)
+    # print("Actions per Attribute:", actions)
+
     return final_action, actions
-
-
-
 
 
 # image moderation
@@ -165,21 +159,29 @@ def img_score(img_path: str) -> dict:
     data = {
         "providers": "microsoft",
     }
-    files = {'file': open(img_path, 'rb')}
+
+    # Prepare the files parameter with the correct format
+    files = {
+        'file': (img_path.name, img_path, img_path.content_type)
+    }
 
     response = requests.post(url, data=data, files=files, headers=headers)
+    response.raise_for_status()  # Check for HTTP errors
+    response_data = response.json()
 
-    result = json.loads(response.text)
-    print(type(result))
-    return result
+    return response_data
+
+    # result = json.loads(response.text)
+    # return result
 
 
 def moderate_img(img_path: str):
-    
-    result_dict = img_score(img_path=img_path)
-    print(result_dict)
-    
 
-    
-path = 'staticfiles\img\community1.png'
-moderate_img(path)
+    result_dict = img_score(img_path=img_path)
+    # Extract the nsfw_likelihood_score
+    nsfw_score = result_dict['microsoft'].get('nsfw_likelihood_score')
+    return nsfw_score
+
+
+# path = 'staticfiles\img\community1.png'
+# print(moderate_img(path))
