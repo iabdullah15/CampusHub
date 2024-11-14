@@ -26,6 +26,11 @@
           <li>
             <a class="dropdown-item" href="{% url 'forum:home' %}">Home</a>
           </li>
+          {% if request.user.is_staff %}
+            <li>
+              <a class="dropdown-item" href="{% url 'forum:admin_panel' %}">Admin Panel</a>
+            </li>
+          {% endif %}
           <li><a class="dropdown-item" href="{% url 'forum:profile' request.user.username %}">Profile</a></li>
           <li><hr class="dropdown-divider" /></li>
           <form method="post" action="{% url 'user:logout' %}">

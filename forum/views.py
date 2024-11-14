@@ -898,3 +898,18 @@ class ProfileView(View):
             'profile_form': profile_form,
             'password_form': password_form
         })
+
+
+class AdminPanel(View):
+
+    def get(self, request: HttpRequest):
+
+        if request.user.is_staff:
+
+            return render(request, 'forum/admin/admin-panel.html', {})
+
+        else:
+
+            messages.error(
+                request, message="You are not authorized to access the Admin Panel. To request access, please contact the relevant mods/admins")
+            return redirect(reverse_lazy('forum:home'))
