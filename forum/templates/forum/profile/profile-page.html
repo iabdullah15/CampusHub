@@ -61,22 +61,22 @@
   <div class="main-profile-section">
     <h3 class="mb-3 text-center">Your Profile</h3>
 
-    <!-- Toast container -->
-    <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center w-100">
-      {% if messages %}
-        {% for message in messages %}
-          <div id="toastMessage" class="toast text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="15000">
-            <div class="d-flex">
-              <div class="toast-body">
-                <!-- Display Django messages inside the toast -->
-                {{ message }}
+        <!-- Toast container -->
+        <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center w-100">
+          {% if messages %}
+              {% for message in messages %}
+              <div id="toastMessage" class="toast align-items-center text-light bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="60000">
+                  <div class="d-flex">
+                      <div class="toast-body">
+                      <!-- Display Django messages inside the toast -->
+                      {{ message }}
+                      </div>
+                      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                  </div>
               </div>
-              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-          </div>
-        {% endfor %}
-      {% endif %}
-    </div>
+              {% endfor %}
+          {% endif %}
+      </div>
 
     <ul class="nav nav-tabs" role="tablist">
       <li class="nav-item profile-nav-tab" role="presentation">
@@ -254,54 +254,94 @@
           {% for post in posts %}
           <div class="user-post-card card">
             <div class="card-body">
-
-              <div class="card-title-container d-flex justify-content-between align-items-center mb-5">
-                <!-- Title with link -->
-                <h5 class="card-title">
-                    <a class="user-post-link" href="{% url 'forum:post_detail' post.id %}">
-                        {{ post.title }}
-                    </a>
-                </h5>
-    
-                <!-- Timestamp and ellipsis icon on the same line -->
-                <div class="d-flex align-items-center">
-                    <p class="text-muted me-3 mb-0">{{ post.time_created|naturaltime }}</p>
-                    <div class="post-option-icon-container">
-                        <i class="fa-solid fa-ellipsis post-options-icon fa-lg"></i>
-                    </div>
-                </div>
-              </div>
-
+              <!-- Title and Timestamp with Ellipsis -->
                 <div
-                  class="d-flex align-items-center custom-subtitle-container"
+                  class="card-title-container d-flex justify-content-between align-items-center mb-3"
                 >
-                  {% if post.community %}
-                  <h6 class="card-subtitle mb-2 text-body-secondary">
-                    {{ post.community }}
-                  </h6>
-                  {% endif %} {% if post.community and post.category%}
-                  <h6 class="card-subtitle mb-2 text-body-secondary">-</h6>
-                  {% endif %} {% if post.category %}
-                  <h6 class="card-subtitle mb-2 text-body-secondary">
-                    {{ post.category }}
-                  </h6>
-                  {% endif %}
+                  <h5 class="card-title mb-0">
+                    <a class="user-post-link" href="{% url 'forum:post_detail' post.id %}">
+                      {{ post.title }}
+                    </a>
+                  </h5>
+            
+                  <div class="d-flex align-items-center">
+                    <p class="text-muted me-3 mb-0">
+                      {{ post.time_created|naturaltime }}
+                    </p>
+                    <div class="post-option-icon-container dropdown">
+                      <i
+                        class="fa-solid fa-ellipsis post-options-icon fa-lg"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      ></i>
+            
+                      <!-- Dropdown menu -->
+                      <ul
+                        class="dropdown-menu dropdown-menu"
+                        aria-labelledby="dropdownMenuButton"
+                      >
+                        {% if request.user == post.author %}
+                        <li>
+                          <form action="{% url 'forum:delete_post' post.id %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item text-danger">
+                              <i class="fa-solid fa-trash me-2"></i>Delete Post
+                            </button>
+                          </form>
+                        </li>
+                        {% endif %}
+                        
+                        <li>
+                          <a class="dropdown-item" href="#"
+                            ><i class="fa-solid fa-minus me-2"></i>Show less</a 
+                          >
+                        </li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li>
+                          <a class="dropdown-item" href="#"
+                            ><i class="fa-solid fa-bookmark me-2"></i>Save post</a
+                          >
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-
-                <p class="card-text">{{post.body|truncatewords:20 }}</p>
-
+          
+              <!-- Subtitle -->
+              <div class="d-flex align-items-center custom-subtitle-container mb-3">
+                {% if post.community %}
+                <h6 class="card-subtitle text-body-secondary me-1">
+                  {{ post.community }}
+                </h6>
+                {% endif %}
+                {% if post.community and post.category %}
+                <h6 class="card-subtitle text-body-secondary">-</h6>
+                {% endif %}
+                {% if post.category %}
+                <h6 class="card-subtitle text-body-secondary ms-1">
+                  {{ post.category }}
+                </h6>
+                {% endif %}
+              </div>
+          
+              <!-- Post Body -->
+              <p class="card-text">{{ post.body|truncatewords:20 }}</p>
+          
               <!-- Thumbnail -->
-              <div class="container-fluid mt-5">
+              <div class="container-fluid">
+                {% if post.image %}
                 <img
-                  src="random.jpg"
+                  src="{{ post.image.url }}"
                   alt="Thumbnail"
                   class="img-thumbnail"
                   data-bs-toggle="modal"
-                  data-bs-target="#imageModal1"
+                  data-bs-target="#imageModal-{{ post.id }}"
                   style="cursor: pointer"
                 />
-              </div>
 
+                {% endif %}
+              </div>
+          
               <!-- Modal -->
               <div
                 class="modal modal-lg fade"
@@ -321,24 +361,47 @@
                       ></button>
                     </div>
                     <div class="modal-body">
+                      {% if post.image %}
                       <img
-                        src="random.jpg"
+                        src="{{ post.image.url }}"
                         alt="Full-size Image"
                         class="img-fluid"
                       />
+                      {% endif %}
                     </div>
                   </div>
                 </div>
               </div>
-
-              <p class="card-text">
-                <small class="text-muted"
-                  >9 likes · 104 comments · 1,935 views</small
-                >
+          
+              <!-- Interaction Section -->
+              <p class="card-text mt-3">
+                <small class="text-muted">
+                  {{ post.total_likes }} likes · {{ post.comments.count }} comments ·
+                  1,935 views
+                </small>
               </p>
             </div>
           </div>
-          {% endfor %} {% else %}
+          
+
+
+
+          
+
+
+
+
+
+
+
+
+
+
+
+          
+          {% endfor %} 
+          
+          {% else %}
           <h6 class="text-center">
             You have made no comments on any post yet.
           </h6>
@@ -547,7 +610,9 @@
   document.addEventListener('DOMContentLoaded', function () {
     var toastEl = document.getElementById('toastMessage');
     var toast = new bootstrap.Toast(toastEl);
+    if (toast){
       toast.show();
+  }
     });
 </script>
 

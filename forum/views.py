@@ -913,3 +913,30 @@ class AdminPanel(View):
             messages.error(
                 request, message="You are not authorized to access the Admin Panel. To request access, please contact the relevant mods/admins")
             return redirect(reverse_lazy('forum:home'))
+
+
+class DeletePost(LoginRequiredMixin, View):
+
+    login_url = reverse_lazy("user:sign-in")
+    redirect_field_name = None
+    
+    def post(self, request: HttpRequest, post_id):
+
+        try:
+            post = Post.objects.get(id=post_id).delete()
+            messages.success(
+                request, "Your post has been sucessfully deleted.")
+            return redirect(reverse_lazy('forum:profile', kwargs={'username': request.user.username}))
+        except:
+            messages.error(
+                request, "There was an error with the request. Please try again later.")
+            return redirect(reverse_lazy('forum:profile', kwargs={'username': request.user.username}))
+        
+        
+class ReportPost(View):
+    
+    login_url = reverse_lazy("user:sign-in")
+    redirect_field_name = None
+    
+    def post(self, request: HttpRequest, post_id):
+        pass

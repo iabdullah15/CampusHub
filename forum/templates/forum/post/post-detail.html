@@ -209,21 +209,75 @@
         <div class="card-body">
           <div class="card-title d-flex justify-content-between align-items-center">
             <a class="back-link btn btn-outline-light" href="{% url 'forum:home' %}">
-                <i class="fa-solid fa-arrow-left back-icon"> </i>
+              <i class="fa-solid fa-arrow-left back-icon"></i>
             </a>
             <span class="mx-3" style="font-weight: 500; font-size: 1.4rem">{{ post.community.community_name }}</span>
-            <span class="ms-auto" style="font-weight: 400; font-size: 1rem">{{ post.time_created|naturaltime }}</span>
+            <div class="d-flex align-items-center ms-auto">
+              <span class="text-muted me-3" style="font-weight: 400; font-size: 1rem">{{ post.time_created|naturaltime }}</span>
+              <div class="post-option-icon-container dropdown">
+                <i
+                  class="fa-solid fa-ellipsis post-options-icon fa-lg"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                ></i>
+      
+                <!-- Dropdown menu -->
+                <ul class="dropdown-menu dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  {% if request.user == post.author %}
+                  <li>
+                    <form action="{% url 'forum:delete_post' post.id %}" method="POST">
+                      {% csrf_token %}
+                      <button type="submit" class="dropdown-item text-danger">
+                        <i class="fa-solid fa-trash me-2"></i>Delete Post
+                      </button>
+                    </form>
+                  </li>
+                  {% endif %}
+                  <li>
+                    <a class="dropdown-item" href="#">
+                      <i class="fa-solid fa-minus me-2"></i>Show less
+                    </a>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider" />
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#">
+                      <i class="fa-solid fa-bookmark me-2"></i>Save post
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
-          <h5 class="card-title mt-3 mb-4">
+
+
+
+        <div class="title-body-container container ms-2">
+
+          <h5 class="card-title mb-4">
             {{post.title}}
           </h5>
-          <p class="card-text ">
+          <div class="d-flex align-items-center custom-subtitle-container">
+            {% if post.category %}
+                <h6 class="card-subtitle mb-2 text-body-secondary">{{ post.category }}</h6>
+            {% endif %}
+            
+            {% if post.poll %}
+            <h6 class="card-subtitle mb-2 text-body-secondary">-</h6>
+              <h6 class="card-subtitle mb-2 text-body-secondary">Poll</h6>
+            {% endif %}
+              
+        </div>
+          <p class="card-text mt-2">
             {{post.body}}
           </p>
+        </div>
 
           <!-- Thumbnail -->
           {% if post.image %}
-            <div class="container-fluid mt-5 thumbnail-container">
+            <div class="container-fluid mt-3 thumbnail-container">
               <img
                 src="{{post.image.url}} "
                 alt="Thumbnail"

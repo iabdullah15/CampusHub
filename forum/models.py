@@ -145,3 +145,27 @@ class PollVote(models.Model):
 
     def __str__(self):
         return f"{self.user.username} Choice Name on post with TITLE {self.poll.post.title}"
+    
+    
+class Report(models.Model):
+    REASONS = [
+        ('spam', 'Spam'),
+        ('inappropriate', 'Inappropriate Content'),
+        ('other', 'Other'),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="reports"
+    )
+    post = models.ForeignKey(
+        'Post',
+        on_delete=models.CASCADE,
+        related_name="reports"
+    )
+    reason = models.CharField(max_length=20, choices=REASONS)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} reported {self.post.title}"
