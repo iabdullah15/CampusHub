@@ -905,7 +905,20 @@ class AdminPanel(View):
 
         if request.user.is_staff:
 
-            return render(request, 'forum/admin/admin-panel.html', {})
+            # Fetch all reported posts
+            reported_posts = Report.objects.select_related(
+                'post', 'user').order_by('-timestamp')
+            reported_posts_count = reported_posts.count()
+            post_count = Post.objects.all().count()
+            
+              # Fetch posts created in the last 24 hours
+            last_24_hours = timezone.now() - timedelta(hours=24)
+            recent_posts = Post.objects.filter(time_created__gte=last_24_hours).order_by('-time_created')
+
+            return render(request, 'forum/admin/admin-panel.html', {'reported_posts': reported_posts, 
+                                                                    'reported_posts_count': reported_posts_count, 
+                                                                    'post_count': post_count,
+                                                                    'recent_posts': recent_posts,})
 
         else:
 
@@ -943,7 +956,8 @@ class ReportPost(LoginRequiredMixin, View):
         print(f"Post ID: {post.id}, User: {request.user.username}")
 
         if Report.objects.filter(post=post, user=request.user).exists():
-            print(f"User {request.user.username} has already reported the post {post.title}.")
+            print(f"User {request.user.username} has already reported the post {
+                  post.title}.")
             return JsonResponse({"success": False, "message": "You have already reported this post."}, status=400)
 
         reason = request.POST.get('reason', 'Inappropriate Content')

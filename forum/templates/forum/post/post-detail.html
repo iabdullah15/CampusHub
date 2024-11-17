@@ -326,7 +326,7 @@
             <div class="poll-container" data-post-id="{{ post.id }}" data-poll-id="{{ poll.id }}">
                 <ul class="list-group">
                     {% for choice in poll_choices %}
-                    <li class="list-group-item d-flex align-items-center justify-content-between">
+                      <li class="list-group-item d-flex align-items-center justify-content-between">
                         <div class="form-check">
                             <input
                                 class="form-check-input poll-option"
@@ -342,13 +342,13 @@
                         <span class="badge bg-light text-primary" id="percentage-{{ choice.choice.id }}">
                             {{ choice.percentage|floatformat:1 }}%
                         </span>
-                    </li>
+                      </li>
                     {% endfor %}
                 </ul>
             </div>
           {% endif %}
 
-          <div class="interaction-container" data-liked="{% if is_liked_by_user %}true{% else %}false{% endif %}">
+          <div class="interaction-container p-3" data-liked="{% if is_liked_by_user %}true{% else %}false{% endif %}">
             <p class="card-text">
               <small class="text-muted">
 
