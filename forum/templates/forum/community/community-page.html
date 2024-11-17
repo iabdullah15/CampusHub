@@ -13,6 +13,7 @@
 
     {% block js %}
     <script defer src="{% static 'forum/js/home/home-like.js' %}"></script>
+    <script defer src="{% static 'forum/js/home/report-post.js' %}"></script>
     {% endblock %}
 
     {% block main %}
@@ -155,54 +156,202 @@
 
           <div class="user-post-card card">
             <div class="card-body user-post-card-body">
-              <a class="user-post-link" href="{% url 'forum:post_detail' post_with_status.post.id %}">
-                <div class="card-title-container">
-                  <h5 class="card-title">
-                    {{post_with_status.post.title}}
-                  </h5>
-
-                  <p class="text-muted pt-3">{{post_with_status.post.time_created|naturaltime}}</p>
-                  <div class="post-option-icon-container">
-                    <i class="fa-solid fa-ellipsis post-options-icon fa-lg"></i>
-
+              <!-- Title and Dropdown -->
+              <div class="card-title-container d-flex justify-content-between align-items-center mt-4 mb-4">
+                <!-- Post Title -->
+                <h5 class="card-title mb-0">
+                  <a class="user-post-link" href="{% url 'forum:post_detail' post_with_status.post.id %}">
+                    {{ post_with_status.post.title }}
+                  </a>
+                </h5>
+          
+                <!-- Time and Ellipsis Dropdown -->
+                <div class="d-flex align-items-center ms-auto">
+                  <!-- Time -->
+                  <p class="text-muted me-3 mb-0">{{ post_with_status.post.time_created|naturaltime }}</p>
+          
+                  <!-- Ellipsis Dropdown -->
+                  <div class="post-option-icon-container dropdown">
+                    <i
+                      class="fa-solid fa-ellipsis post-options-icon fa-lg"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    ></i>
+                    <!-- Dropdown Menu -->
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
+                      {% if request.user == post_with_status.post.author %}
+                      <li>
+                        <form action="{% url 'forum:delete_post' post_with_status.post.id %}" method="POST">
+                          {% csrf_token %}
+                          <button type="submit" class="dropdown-item text-danger">
+                            <i class="fa-solid fa-trash me-2"></i>Delete Post
+                          </button>
+                        </form>
+                      </li>
+                      {% endif %}
+        
+                      <li>
+                        <!-- Trigger for Modal -->
+                        <button
+                          class="dropdown-item btn btn-link text-light report-post-button"
+                          data-bs-toggle="modal"
+                          data-bs-target="#reportPostModal-{{ post_with_status.post.id }}"
+                        >
+                          <i class="fa-solid fa-flag"></i> Report
+                        </button>
+                      </li>
+                      
+                    </ul>
                   </div>
                 </div>
-
- 
-                <div class="d-flex align-items-center custom-subtitle-container">
-                    {% if post_with_status.post.community %}
-                    <h6 class="card-subtitle mb-2 text-body-secondary">{{ post_with_status.post.community }}</h6>
-                    {% endif %}
-                    {% if post_with_status.post.community and  post_with_status.post.category%}
-                    <h6 class="card-subtitle mb-2 text-body-secondary">-</h6>
-                    {% endif %}
-                    {% if post_with_status.post.category %}
-                        <h6 class="card-subtitle mb-2 text-body-secondary">{{ post_with_status.post.category }}</h6>
-                    {% endif %}
+              </div>
+        
+                          <!-- Modal -->
+              <div
+              class="modal fade"
+              id="reportPostModal-{{ post_with_status.post.id }}"
+              tabindex="-1"
+              aria-labelledby="reportPostModalLabel-{{ post_with_status.post.id }}"
+              aria-hidden="true"
+              >
+              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1
+                      class="modal-title fs-5"
+                      id="reportPostModalLabel-{{ post_with_status.post.id }}"
+                    >
+                      Report Post
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <form
+                    class="report-post-form"
+                    data-post-id="{{ post_with_status.post.id }}"
+                  >
+                    {% csrf_token %}
+                    <div class="modal-body">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="reason-{{ post_with_status.post.id }}"
+                          id="reason-inappropriate-{{ post_with_status.post.id }}"
+                          value="inappropriate"
+                          checked
+                        />
+                        <label
+                          class="form-check-label"
+                          for="reason-inappropriate-{{ post_with_status.post.id }}"
+                        >
+                          Inappropriate Content
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="reason-{{ post_with_status.post.id }}"
+                          id="reason-spam-{{ post_with_status.post.id }}"
+                          value="spam"
+                        />
+                        <label
+                          class="form-check-label"
+                          for="reason-spam-{{ post_with_status.post.id }}"
+                        >
+                          Spam
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="reason-{{ post_with_status.post.id }}"
+                          id="reason-other-{{ post_with_status.post.id }}"
+                          value="other"
+                        />
+                        <label
+                          class="form-check-label"
+                          for="reason-other-{{ post_with_status.post.id }}"
+                        >
+                          Other
+                        </label>
+                      </div>
+                      <div
+                        id="otherReasonInputContainer-{{ post_with_status.post.id }}"
+                        class="mt-3"
+                        style="display: none;"
+                      >
+                        <label for="otherReasonInput-{{ post_with_status.post.id }}" class="form-label"
+                          >Please specify:</label
+                        >
+                        <input
+                          name="comment"
+                          type="text"
+                          id="otherReasonInput-{{ post_with_status.post.id }}"
+                          class="form-control"
+                          placeholder="Enter your reason here"
+                        />
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                      <button type="submit" class="btn btn-primary">Submit Report</button>
+                    </div>
+                  </form>
                 </div>
-
-                
-
-                <p class="card-text">
-                  {{post_with_status.post.body|truncatewords:20 }}
-                </p>
-              </a>
+              </div>
+              </div>
+              <!-- Community and Category -->
+              <div class="d-flex align-items-center custom-subtitle-container mt-2">
+                {% if post_with_status.post.community %}
+                <h6 class="card-subtitle mb-0 text-body-secondary">{{ post_with_status.post.community }}</h6>
+                {% endif %}
+                {% if post_with_status.post.community and post_with_status.post.category %}
+                <h6 class="card-subtitle mb-0 text-body-secondary mx-2">-</h6>
+                {% endif %}
+                {% if post_with_status.post.category %}
+                <h6 class="card-subtitle mb-0 text-body-secondary">{{ post_with_status.post.category }}</h6>
+                {% endif %}
+                {% if post_with_status.post.poll %}
+                <h6 class="card-subtitle mb-0 text-body-secondary mx-2">-</h6>
+                <h6 class="card-subtitle mb-0 text-body-secondary">Poll</h6>
+                {% endif %}
+              </div>
+          
+              <!-- Post Body -->
+              <p class="card-text mt-3">{{ post_with_status.post.body|truncatewords:20 }}</p>
+          
               <!-- Thumbnail -->
+              {% if post_with_status.post.image %}
               <div class="container-fluid mt-5 thumbnail-container">
                 <img
-                  src="random.jpg"
+                  src="{{ post_with_status.post.image.url }}"
                   alt="Thumbnail"
                   class="img-thumbnail"
                   data-bs-toggle="modal"
-                  data-bs-target="#likeImageModal"
+                  data-bs-target="#imageModal-{{ post_with_status.post.id }}"
                   style="cursor: pointer"
                 />
               </div>
-
+              {% endif %}
+          
               <!-- Modal -->
+              {% if post_with_status.post.image %}
               <div
                 class="modal modal-lg fade"
-                id="likeImageModal"
+                id="imageModal-{{ post_with_status.post.id }}"
                 tabindex="-1"
                 aria-labelledby="imageModalLabel"
                 aria-hidden="true"
@@ -219,7 +368,7 @@
                     </div>
                     <div class="modal-body">
                       <img
-                        src="random.jpg"
+                        src="{{ post_with_status.post.image.url }}"
                         alt="Full-size Image"
                         class="img-fluid"
                       />
@@ -227,27 +376,26 @@
                   </div>
                 </div>
               </div>
-
+              {% endif %}
+          
+              <!-- Interaction Section -->
               <div class="row pt-4 px-4 interaction-row">
                 <div class="interaction-container col-4" data-liked="{% if post_with_status.is_liked_by_user %}true{% else %}false{% endif %}" data-post-id="{{ post_with_status.post.id }}">
-        
-                    <!-- Like Button (shown if the post is not liked by the user) -->
-                    <div id="like-button-{{ post_with_status.post.id }}" class="" {% if post_with_status.is_liked_by_user %}style="display: none;"{% endif %}>
-                        <span class="interaction-button like-btn" data-url="{% url 'forum:like-post' post_with_status.post.id %}">
-                            <i class="fa-regular fa-heart fa-xl like-icon"></i>
-                            <span id="like-count-{{ post_with_status.post.id }}" class="like-{{ post_with_status.post.id }}">{{ post_with_status.post.total_likes }} likes</span>
-                        </span>
-                    </div>
-        
-                    <!-- Unlike Button (shown if the post is liked by the user) -->
-                    <div id="unlike-button-{{ post_with_status.post.id }}" class="" {% if not post_with_status.is_liked_by_user %}style="display: none;"{% endif %}>
-                        <span class="interaction-button unlike-btn" data-url="{% url 'forum:like-post' post_with_status.post.id %}">
-                            <i class="fa-solid fa-heart fa-xl unlike-icon"></i>
-                            <span id="like-count-{{ post_with_status.post.id }}" class="like-{{ post_with_status.post.id }}">{{ post_with_status.post.total_likes }} likes</span>
-                        </span>
-                    </div>
+                  <!-- Like Button -->
+                  <div id="like-button-{{ post_with_status.post.id }}" {% if post_with_status.is_liked_by_user %}style="display: none;"{% endif %}>
+                    <span class="interaction-button like-btn" data-url="{% url 'forum:like-post' post_with_status.post.id %}">
+                      <i class="fa-regular fa-heart fa-xl like-icon"></i>
+                      <span id="like-count-{{ post_with_status.post.id }}" class="like-{{ post_with_status.post.id }}">{{ post_with_status.post.total_likes }} likes</span>
+                    </span>
+                  </div>
+                  <!-- Unlike Button -->
+                  <div id="unlike-button-{{ post_with_status.post.id }}" {% if not post_with_status.is_liked_by_user %}style="display: none;"{% endif %}>
+                    <span class="interaction-button unlike-btn" data-url="{% url 'forum:like-post' post_with_status.post.id %}">
+                      <i class="fa-solid fa-heart fa-xl unlike-icon"></i>
+                      <span id="like-count-{{ post_with_status.post.id }}" class="like-{{ post_with_status.post.id }}">{{ post_with_status.post.total_likes }} likes</span>
+                    </span>
+                  </div>
                 </div>
-        
                 <div class="col-4">
                   <span class="interaction-button">
                     <i class="fa-regular fa-message fa-xl"></i>
@@ -260,20 +408,85 @@
                     <small class="text-muted">9 views</small>
                   </span>
                 </div>
+              </div>
             </div>
-              
-            </div>
-          </div>
+        </div>
 
 
-      {% endfor %}
+          {% endfor %}
   
           <!-- Add more feed items here -->
         </div>
+        {% include 'forum/home/toast.html' %}
+
       </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          // Handle "Other" input visibility
+          document.querySelectorAll(".form-check-input").forEach((input) => {
+            input.addEventListener("change", function () {
+              const postID = this.closest(".modal").querySelector("form").dataset.postId;
+              const otherInputContainer = document.querySelector(
+                `#otherReasonInputContainer-${postID}`
+              );
+              if (this.value === "other" && this.checked) {
+                otherInputContainer.style.display = "block";
+              } else {
+                otherInputContainer.style.display = "none";
+              }
+            });
+          });
+        
+          // Handle form submission
+          document.querySelectorAll(".report-post-form").forEach((form) => {
+            form.addEventListener("submit", function (e) {
+              e.preventDefault(); // Prevent default form submission
+        
+              const postID = this.dataset.postId;
+              const formData = new FormData(this);
+        
+              fetch(`/report-post/${postID}/`, {
+                method: "POST",
+                body: formData,
+                headers: {
+                  "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                },
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.success) {
+                    // Show success toast
+                    showToast(data.message, "bg-success");
+                  } else {
+                    // Show error toast
+                    showToast(data.message, "bg-danger");
+                  }
+        
+                  // Hide modal after submission
+                  const modal = bootstrap.Modal.getInstance(
+                    document.getElementById(`reportPostModal-${postID}`)
+                  );
+                  modal.hide();
+                })
+                .catch(() => {
+                  showToast("An error occurred. Please try again.", "bg-danger");
+                });
+            });
+          });
+        
+          // Toast notification function
+          function showToast(message, bgClass) {
+            const toastBody = document.getElementById("reportToastBody");
+            const toastMessage = document.getElementById("reportToastMessage");
+        
+            toastBody.textContent = message;
+            toastMessage.className = `toast align-items-center text-white ${bgClass} border-0`;
+            const toast = new bootstrap.Toast(toastMessage);
+            toast.show();
+          }
+        });
 
-
-
+      </script>
     {% endblock %}
 
 

@@ -13,7 +13,7 @@ from datetime import timedelta
 from django.utils import timezone
 
 
-from .models import PostCommunity, Post, PostComment, PostCategory, PostLikes, PostCommentReply, CommentLike, Poll, PollChoice, PollVote
+from .models import PostCommunity, Post, PostComment, PostCategory, PostLikes, PostCommentReply, CommentLike, Poll, PollChoice, PollVote, Report
 from .forms import PostForm, PostCommentForm, PostCommentReplyForm, UpdateProfileForm, CustomPasswordChangeForm, PollChoiceFormSet
 
 from django.contrib.auth import update_session_auth_hash
@@ -40,13 +40,11 @@ class HomePageView(View):
 
                 is_liked_by_user = PostLikes.objects.filter(
                     post=post, user=request.user, is_liked=True).exists()
-                print(is_liked_by_user)
                 posts_with_like_status.append({
                     'post': post,
                     'is_liked_by_user': is_liked_by_user
                 })
 
-            print(communities)
             return render(request, self.template_name, {
                 'posts_with_like_status': posts_with_like_status,
                 'communities': communities,
@@ -603,6 +601,7 @@ class PostDetailView(View):
             post = Post.objects.get(id=pk)
             comments = PostComment.objects.filter(
                 post=post).order_by('-time_created')
+            print(pk)
 
             try:
                 if post.poll:
@@ -919,7 +918,7 @@ class DeletePost(LoginRequiredMixin, View):
 
     login_url = reverse_lazy("user:sign-in")
     redirect_field_name = None
-    
+
     def post(self, request: HttpRequest, post_id):
 
         try:
@@ -931,12 +930,30 @@ class DeletePost(LoginRequiredMixin, View):
             messages.error(
                 request, "There was an error with the request. Please try again later.")
             return redirect(reverse_lazy('forum:profile', kwargs={'username': request.user.username}))
-        
-        
-class ReportPost(View):
-    
+
+
+class ReportPost(LoginRequiredMixin, View):
     login_url = reverse_lazy("user:sign-in")
     redirect_field_name = None
-    
+
     def post(self, request: HttpRequest, post_id):
-        pass
+        post = get_object_or_404(Post, id=post_id)
+
+        # Debugging: Check incoming data
+        print(f"Post ID: {post.id}, User: {request.user.username}")
+
+        if Report.objects.filter(post=post, user=request.user).exists():
+            print(f"User {request.user.username} has already reported the post {post.title}.")
+            return JsonResponse({"success": False, "message": "You have already reported this post."}, status=400)
+
+        reason = request.POST.get('reason', 'Inappropriate Content')
+        comment = request.POST.get('comment', '').strip()
+
+        # Debugging: Log the report details
+        print(f"Creating report with reason: {reason}, comment: {comment}")
+
+        # Create the report
+        Report.objects.create(post=post, user=request.user,
+                              reason=reason, comment=comment)
+
+        return JsonResponse({"success": True, "message": "Report submitted successfully."})

@@ -148,11 +148,6 @@ class PollVote(models.Model):
     
     
 class Report(models.Model):
-    REASONS = [
-        ('spam', 'Spam'),
-        ('inappropriate', 'Inappropriate Content'),
-        ('other', 'Other'),
-    ]
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -164,8 +159,12 @@ class Report(models.Model):
         on_delete=models.CASCADE,
         related_name="reports"
     )
-    reason = models.CharField(max_length=20, choices=REASONS)
+    reason = models.CharField(max_length=50, default='Inappropriate Content')
     timestamp = models.DateTimeField(auto_now_add=True)
+    comment = models.CharField(max_length=100, null=True, blank=True)
+    
+    class Meta:
+        unique_together = ('user', 'post')  # Ensure one report per user per post
 
     def __str__(self):
         return f"{self.user.username} reported {self.post.title}"
