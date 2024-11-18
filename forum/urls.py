@@ -19,6 +19,7 @@ urlpatterns = [
     path("post/comment/<int:comment_id>/reply", views.PostReplyView.as_view(), name='post_reply'),
     path('comment/<int:comment_id>/like/', views.LikeCommentView.as_view(), name='like_comment'),
     path('delete-post/<int:post_id>', views.DeletePost.as_view(), name='delete_post'),
+    path('disregard-post/<int:post_id>', views.DisregardReports.as_view(), name='disregard_reports'),
     path("report-post/<int:post_id>/", views.ReportPost.as_view(), name="report_post"),
-
+    path("reports/<int:post_id>", views.ViewReports.as_view(), name='view_reports')
 ]

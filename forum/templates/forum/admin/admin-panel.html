@@ -24,13 +24,8 @@
         <h5>Admin Panel</h5>
         <ul class="nav flex-column">
           <li class="nav-item">
-            <a class="nav-link active left-sidebar-link" href="#">
+            <a class="nav-link active left-sidebar-link" href="{% url 'forum:home' %}">
               <i class="fa-solid fa-house fa-lg"></i> Home</a
-            >
-          </li>
-          <li class="nav-item">
-            <a class="nav-link left-sidebar-link" href="#"
-              ><i class="fa-solid fa-square-poll-vertical fa-lg"></i> Polls</a
             >
           </li>
           <li class="nav-item">
@@ -57,6 +52,22 @@
 
     <div class="main-profile-section">
       <h3 class="mb-3 text-center">Welcome back user123!</h3>
+
+      <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center w-100">
+        {% if messages %}
+            {% for message in messages %}
+            <div id="toastMessage" class="toast align-items-center text-light bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="60000">
+                <div class="d-flex">
+                    <div class="toast-body">
+                    <!-- Display Django messages inside the toast -->
+                    {{ message }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+      </div>
 
       <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item profile-nav-tab" role="presentation">
@@ -268,72 +279,56 @@
                         class="user-post-link"
                         href=""
                       >
-                        Title
+                        {{post.title}}
                       </a>
                     </h5>
 
                     <div class="d-flex align-items-center">
-                      <p class="text-muted me-3 mb-0">1 day ago</p>
-                      <div class="post-option-icon-container dropdown">
-                        <i
-                          class="fa-solid fa-ellipsis post-options-icon fa-lg"
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                        ></i>
-
-                        <!-- Dropdown menu -->
-                        <ul
-                          class="dropdown-menu dropdown-menu"
-                          aria-labelledby="dropdownMenuButton"
-                        >
-                          <li>
-                            <a class="dropdown-item" href="#"
-                              ><i class="fa-solid fa-plus me-2"></i>Show more</a
-                            >
-                          </li>
-                          <li>
-                            <a class="dropdown-item" href="#"
-                              ><i class="fa-solid fa-minus me-2"></i>Show
-                              less</a
-                            >
-                          </li>
-                          <li><hr class="dropdown-divider" /></li>
-                          <li>
-                            <a class="dropdown-item" href="#"
-                              ><i class="fa-solid fa-bookmark me-2"></i>Save
-                              post</a
-                            >
-                          </li>
-                        </ul>
-                      </div>
+                      <p class="text-muted me-3 mb-0">{{post.time_created|naturaltime}}</p>
                     </div>
                   </div>
 
-                  <!-- Subtitle -->
-                  <div
-                    class="d-flex align-items-center custom-subtitle-container mb-3"
-                  >
-                    <h6 class="card-subtitle text-body-secondary me-1">Test</h6>
-                    <h6 class="card-subtitle text-body-secondary">-</h6>
-                    <h6 class="card-subtitle text-body-secondary ms-1">test</h6>
+                  <!-- Community and Category -->
+                  <div class="d-flex align-items-center custom-subtitle-container">
+                    <h6 class="card-subtitle mb-0 text-body-secondary">{{ post.author.username }}</h6>
                   </div>
-
+                  <!-- Community and Category -->
+                  <div class="d-flex align-items-center custom-subtitle-container mt-2">
+                    {% if post.community %}
+                    <h6 class="card-subtitle mb-0 text-body-secondary"><a class="subtitle-link" href="{% url 'forum:community_page' post.community.id %}">{{ post.community }}</a></h6>
+                    {% endif %}
+                    {% if post.community and post.category %}
+                    <h6 class="card-subtitle mb-0 text-body-secondary mx-2">-</h6>
+                    {% endif %}
+                    {% if post.category %}
+                    <h6 class="card-subtitle mb-0 text-body-secondary">{{ post.category }}</h6>
+                    {% endif %}
+                    {% if post.poll %}
+                    <h6 class="card-subtitle mb-0 text-body-secondary mx-2">-</h6>
+                    <h6 class="card-subtitle mb-0 text-body-secondary">Poll</h6>
+                    {% endif %}
+                  </div>
+                  <!-- Post Body -->
+                  <p class="card-text mt-3">{{ post.body|truncatewords:20 }}</p>
                   <!-- Thumbnail -->
-                  <div class="container-fluid">
+                  {% if post.image %}
+                  <div class="container-fluid mt-5 thumbnail-container">
                     <img
-                      src="random.jpg"
+                      src="{{ post.image.url }}"
                       alt="Thumbnail"
                       class="img-thumbnail"
                       data-bs-toggle="modal"
-                      data-bs-target="#imageModal1"
+                      data-bs-target="#imageModal-{{ post.id }}"
                       style="cursor: pointer"
                     />
                   </div>
-
+                  {% endif %}
+              
                   <!-- Modal -->
+                  {% if post.image %}
                   <div
                     class="modal modal-lg fade"
-                    id="imageModal1"
+                    id="imageModal-{{ post.id }}"
                     tabindex="-1"
                     aria-labelledby="imageModalLabel"
                     aria-hidden="true"
@@ -350,7 +345,7 @@
                         </div>
                         <div class="modal-body">
                           <img
-                            src="random.jpg"
+                            src="{{ post.image.url }}"
                             alt="Full-size Image"
                             class="img-fluid"
                           />
@@ -358,11 +353,12 @@
                       </div>
                     </div>
                   </div>
+                  {% endif %}
 
                   <!-- Interaction Section -->
                   <p class="card-text mt-3">
                     <small class="text-muted"
-                      >9 likes · 104 comments · 1,935 views</small
+                      >9 likes · 104 comments</small
                     >
                   </p>
                 </div>
@@ -386,111 +382,122 @@
           role="tabpanel"
           aria-labelledby="simple-tab-2"
         >
-        {% if reported_posts %}
-        {% for report in reported_posts %}
-          {% with report.post as post %}
-          <div class="user-post-card card">
-            <div class="card-body">
-              <div
-                class="card-title-container d-flex justify-content-between align-items-center mb-3"
-              >
-                <h5 class="card-title mb-0">
-                  <a class="user-post-link" href="{% url 'forum:post_detail' post.id %}">
-                    {{ post.title }}
-                  </a>
-                </h5>
-        
-                <div class="d-flex align-items-center">
-                  <p class="text-muted me-3 mb-0">
-                    {{ post.time_created|naturaltime }}
-                  </p>
+          {% if reported_posts %}
+          {% for post in reported_posts %}
+            <div class="user-post-card card">
+              <div class="card-body">
+                <div
+                  class="card-title-container d-flex justify-content-between align-items-center mb-3"
+                >
+                  <h5 class="card-title mb-0">
+                    <a class="user-post-link" href="{% url 'forum:post_detail' post.id %}">
+                      {{ post.title }}
+                    </a>
+                  </h5>
+          
+                  <div class="d-flex align-items-center">
+                    <p class="text-muted me-3 mb-0">
+                      {{ post.time_created|naturaltime }}
+                    </p>
+                  </div>
                 </div>
-              </div>
-      
-              <!-- Subtitle -->
-              <div class="d-flex align-items-center custom-subtitle-container mb-3">
-                {% if post.community %}
-                <h6 class="card-subtitle text-body-secondary me-1">
-                  {{ post.community }}
-                </h6>
-                {% endif %}
-                {% if post.community and post.category %}
-                <h6 class="card-subtitle text-body-secondary">-</h6>
-                {% endif %}
-                {% if post.category %}
-                <h6 class="card-subtitle text-body-secondary ms-1">
-                  {{ post.category }}
-                </h6>
-                {% endif %}
-              </div>
-      
-              <!-- Post Body -->
-              <p class="card-text">{{ post.body|truncatewords:20 }}</p>
-      
-              <!-- Thumbnail -->
-              <div class="container-fluid">
-                {% if post.image %}
-                <img
-                  src="{{ post.image.url }}"
-                  alt="Thumbnail"
-                  class="img-thumbnail"
-                  data-bs-toggle="modal"
-                  data-bs-target="#imageModal-{{ post.id }}"
-                  style="cursor: pointer"
-                />
-                {% endif %}
-              </div>
-      
-              <!-- Modal -->
-              <div
-                class="modal modal-lg fade"
-                id="imageModal-{{ post.id }}"
-                tabindex="-1"
-                aria-labelledby="imageModalLabel"
-                aria-hidden="true"
-              >
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
-                    </div>
-                    <div class="modal-body">
-                      {% if post.image %}
-                      <img
-                        src="{{ post.image.url }}"
-                        alt="Full-size Image"
-                        class="img-fluid"
-                      />
-                      {% endif %}
+        
+                <!-- Subtitle -->
+                <div class="d-flex align-items-center custom-subtitle-container mb-3">
+                  {% if post.community %}
+                  <h6 class="card-subtitle text-body-secondary me-1">
+                    {{ post.community }}
+                  </h6>
+                  {% endif %}
+                  {% if post.community and post.category %}
+                  <h6 class="card-subtitle text-body-secondary">-</h6>
+                  {% endif %}
+                  {% if post.category %}
+                  <h6 class="card-subtitle text-body-secondary ms-1">
+                    {{ post.category }}
+                  </h6>
+                  {% endif %}
+                </div>
+        
+                <!-- Post Body -->
+                <p class="card-text">{{ post.body|truncatewords:20 }}</p>
+        
+                <!-- Thumbnail -->
+                <div class="container-fluid">
+                  {% if post.image %}
+                  <img
+                    src="{{ post.image.url }}"
+                    alt="Thumbnail"
+                    class="img-thumbnail"
+                    data-bs-toggle="modal"
+                    data-bs-target="#imageModal-{{ post.id }}"
+                    style="cursor: pointer"
+                  />
+                  {% endif %}
+                </div>
+        
+                <!-- Modal -->
+                <div
+                  class="modal modal-lg fade"
+                  id="imageModal-{{ post.id }}"
+                  tabindex="-1"
+                  aria-labelledby="imageModalLabel"
+                  aria-hidden="true"
+                >
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button
+                          type="button"
+                          class="btn-close"
+                          data-bs-dismiss="modal"
+                          aria-label="Close"
+                        ></button>
+                      </div>
+                      <div class="modal-body">
+                        {% if post.image %}
+                        <img
+                          src="{{ post.image.url }}"
+                          alt="Full-size Image"
+                          class="img-fluid"
+                        />
+                        {% endif %}
+                      </div>
                     </div>
                   </div>
                 </div>
+        
+                <!-- Interaction Section -->
+                <p class="card-text mt-3 d-flex justify-content-between align-items-center">
+                  <small class="text-muted">
+                    {{ post.total_likes }} likes · {{ post.comments.count }} comments · {{ post.report_count }} reports
+                  </small>
+                  <a href="{% url 'forum:view_reports' post.id %}" class="text-primary text-decoration-none ms-auto">
+                    View reports
+                  </a>
+                </p>
               </div>
-      
-              <!-- Interaction Section -->
-              <p class="card-text mt-3">
-                <small class="text-muted">
-                  {{ post.total_likes }} likes · {{ post.comments.count }} comments ·
-                </small>
-              </p>
             </div>
+          {% endfor %}
+          {% else %}
+            <p>No reported posts found.</p>
+          {% endif %}
+        
           </div>
-          {% endwith %}
-        {% endfor %}
-        {% else %}
-          <p>No reported posts found.</p>
-        {% endif %}
-      
-        </div>
 
       </div>
     </div>
   </main>
 
+  <script>
+      // Trigger toast if there are any messages
+      document.addEventListener('DOMContentLoaded', function () {
+        var toastEl = document.getElementById('toastMessage');
+        var toast = new bootstrap.Toast(toastEl);
+        {% if messages %}
+          toast.show();
+        {% endif %}
+      });
+  </script>
 
 {% endblock %}

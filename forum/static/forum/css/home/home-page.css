@@ -62,6 +62,7 @@ body {
   color: black;
 }
 
+
 .card-title-container {
   display: flex;
   justify-content: space-between;
@@ -88,6 +89,15 @@ body {
 .post-option-icon-container:hover {
   cursor: pointer; /* Optional: cursor change to indicate the icon is interactive */
   opacity: 0.5;
+}
+
+.subtitle-link {
+  color: rgba(33, 37, 41, 0.75);
+  text-decoration: none;
+}
+.subtitle-link:hover {
+  text-decoration: underline;
+
 }
 
 .interaction-button {

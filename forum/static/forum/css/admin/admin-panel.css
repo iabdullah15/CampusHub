@@ -36,3 +36,13 @@
     padding: 2rem;
     border-radius: 0.3rem;
 }
+
+
+.subtitle-link {
+    color: rgba(33, 37, 41, 0.75);
+    text-decoration: none;
+  }
+  .subtitle-link:hover {
+    text-decoration: underline;
+  
+  }

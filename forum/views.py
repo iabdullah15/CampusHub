@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.views import PasswordChangeView
 
-from django.db import transaction
+from django.db import transaction, models
 from datetime import timedelta
 from django.utils import timezone
 
@@ -596,6 +596,8 @@ class PostDetailView(View):
     def get(self, request: HttpRequest, pk: int):
 
         context = {}
+        communities = PostCommunity.objects.all()
+        context.update({'communities':communities})
 
         try:
             post = Post.objects.get(id=pk)
@@ -905,12 +907,22 @@ class AdminPanel(View):
 
         if request.user.is_staff:
 
-            # Fetch all reported posts
-            reported_posts = Report.objects.select_related(
-                'post', 'user').order_by('-timestamp')
+            # # Fetch all reported posts
+            # reported_posts = Report.objects.select_related(
+            #     'post', 'user').order_by('-timestamp')
+            reported_posts = (
+                Post.objects.annotate(report_count=models.Count('reports'))
+                .filter(reports__isnull=False)
+                .select_related('community', 'category')  # Fetch related fields
+                .order_by('-report_count')  # Sort by report count
+            )
+            for i in reported_posts:
+                print(i)
+                print()
+
             reported_posts_count = reported_posts.count()
             post_count = Post.objects.all().count()
-            
+            print(reported_posts)
               # Fetch posts created in the last 24 hours
             last_24_hours = timezone.now() - timedelta(hours=24)
             recent_posts = Post.objects.filter(time_created__gte=last_24_hours).order_by('-time_created')
@@ -925,6 +937,18 @@ class AdminPanel(View):
             messages.error(
                 request, message="You are not authorized to access the Admin Panel. To request access, please contact the relevant mods/admins")
             return redirect(reverse_lazy('forum:home'))
+
+
+class ViewReports(View):
+    
+    def get(self, request:HttpRequest, post_id):
+        
+        post = Post.objects.get(id=post_id)
+        reports = Report.objects.filter(post=post)
+        
+        return render(request, 'forum/admin/view-reports.html', {"post": post, "reports": reports})
+        
+
 
 
 class DeletePost(LoginRequiredMixin, View):
@@ -943,6 +967,18 @@ class DeletePost(LoginRequiredMixin, View):
             messages.error(
                 request, "There was an error with the request. Please try again later.")
             return redirect(reverse_lazy('forum:profile', kwargs={'username': request.user.username}))
+        
+        
+        
+class DisregardReports(View):
+    
+    def post(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        Report.objects.filter(post=post).delete()
+        messages.success(request, "All reports have been disregarded.")
+        return redirect(reverse_lazy('forum:admin_panel'))
+
+
 
 
 class ReportPost(LoginRequiredMixin, View):

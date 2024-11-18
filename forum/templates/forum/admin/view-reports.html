@@ -1,0 +1,112 @@
+{% extends 'forum/base/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+    <title>Admin Panel</title>
+{% endblock %}
+
+{% block css %}
+
+<link rel="stylesheet" href="{% static 'forum/css/home/home-page.css' %}">
+<link rel="stylesheet" href="{% static 'forum/css/profile/profile-page.css' %}">
+<link rel="stylesheet" href="{% static 'forum/css/admin/view-reports.css' %}">
+{% endblock %}
+
+{% block main %}
+
+  <main class="profile-section">
+    <div class="content-wrapper">
+      <div class="sidebar bg-light p-3">
+        <h5>Admin Panel</h5>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active left-sidebar-link" href="{% url 'forum:home' %}">
+              <i class="fa-solid fa-house fa-lg"></i> Home</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link left-sidebar-link" href="#"
+              ><i class="fa-solid fa-fire fa-lg"></i> Popular</a
+            >
+          </li>
+        </ul>
+        <div class="profile-container">
+          <h5 class="mt-3 mb-3">
+            <i class="fa-solid fa-user fa-lg"></i> Profile
+          </h5>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active left-sidebar-link" href="#"
+                ><i class="fa-solid fa-right-from-bracket fa-lg"></i>
+                Logout</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-profile-section">
+
+            <!-- Post Content -->
+        <div class="post-container">
+            <h3>{{ post.title }}</h3>
+            <p class="text-muted">{{ post.time_created|naturaltime }}</p>
+            {% if post.image %}
+            <div class="mb-3">
+                <img src="{{ post.image.url }}" alt="Post Image" class="img-fluid rounded" style="max-width: 600px; height: auto;">
+            </div>
+            {% endif %}
+            <p>{{ post.body }}</p>
+            <div>
+                {% if post.community %}
+                <span class="badge bg-secondary">{{ post.community }}</span>
+                {% endif %}
+                {% if post.category %}
+                <span class="badge bg-secondary">{{ post.category }}</span>
+                {% endif %}
+            </div>
+            <!-- Action Buttons -->
+            <div class="mt-4 d-flex">
+                <form method="POST" action="{% url 'forum:disregard_reports' post.id %}" class="me-3">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">Disregard Reports</button>
+                </form>
+                <form method="POST" action="{% url 'forum:delete_post' post.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete Post</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div class="reports-container mt-5">
+            <h4>Reports</h4>
+            {% if reports %}
+            {% for report in reports %}
+            <div class="report-card">
+                <div class="report-header">
+                    <span class="report-reason">{{ report.reason }}</span>
+                    <span class="report-time">{{ report.timestamp|naturaltime }}</span>
+                </div>
+                {% if report.comment %}
+                <p class="mb-0"><strong>Comment:</strong> {{ report.comment }}</p>
+                {% else %}
+                <p class="mb-0"><strong>Comment:</strong> No additional comment</p>
+                {% endif %}
+                <p class="text-muted mb-0">Reported by: {{ report.user.username }}</p>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="text-muted">No reports found for this post.</p>
+            {% endif %}
+        </div>
+
+                
+
+    </div>
+  </main>
+
+
+{% endblock %}

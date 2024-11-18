@@ -37,6 +37,11 @@
         </div>
 
         <h4 class="heading-text mb-4">Create Post</h4>
+        
+        <!-- Category Field -->
+        <div class="select-text mb-4">
+            <a class="btn btn-dark" href="{% url 'forum:create_poll' %}">Add Poll</a>
+        </div>
 
         <form action="{% url 'forum:create_post' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
