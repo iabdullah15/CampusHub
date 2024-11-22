@@ -393,22 +393,41 @@ class CreatePostWithPollView(View):
                     author.save()
 
             # Extract and validate poll choices
+            # choices = []
+            # for form in poll_choice_formset:
+            #     if form.cleaned_data.get('DELETE'):
+            #         continue  # Skip forms marked for deletion
+            #     choice_text = form.cleaned_data.get('choice_text')
+            #     if choice_text:
+            #         print(choice_text)
+            #         choices.append(choice_text)
+
+            # # Validate minimum number of choices
+            # if len(choices) < 2:
+            #     messages.error(
+            #         request, 'Please provide at least two choices for the poll.')
+            #     return render(request, self.template_name, {
+            #         'post_form': post_form,
+            #         'poll_choice_formset': poll_choice_formset,
+            #     })
+
             choices = []
             for form in poll_choice_formset:
                 if form.cleaned_data.get('DELETE'):
                     continue  # Skip forms marked for deletion
                 choice_text = form.cleaned_data.get('choice_text')
                 if choice_text:
+                    print(f"Choice saved: {choice_text}")  # Debugging
                     choices.append(choice_text)
 
             # Validate minimum number of choices
             if len(choices) < 2:
-                messages.error(
-                    request, 'Please provide at least two choices for the poll.')
+                messages.error(request, 'Please provide at least two choices for the poll.')
                 return render(request, self.template_name, {
                     'post_form': post_form,
                     'poll_choice_formset': poll_choice_formset,
                 })
+
 
             # Format content for moderation
             title = post_form.cleaned_data.get('title')

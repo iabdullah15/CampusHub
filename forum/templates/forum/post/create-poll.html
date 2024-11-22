@@ -167,18 +167,19 @@
 
 
     });
-    var formIndex = {{ poll_choice_formset.total_form_count }}-1;
+
+    var formIndex = {{ poll_choice_formset.total_form_count }};
     console.log(formIndex);
 
     function addForm() {
         var formContainer = document.getElementById('formset-container');
-        //var totalForms = document.getElementById('{{ poll_choice_formset.management_form.prefix }}-TOTAL_FORMS');
-        let totalForms = document.getElementById("id_form-TOTAL_FORMS")
+        var totalForms = document.getElementById("id_form-TOTAL_FORMS");
+        console.log(`Total forms ${totalForms}`);
 
+    
         var newForm = document.createElement('div');
         newForm.classList.add('mb-3', 'd-flex', 'align-items-center');
-        newForm.id = 'form-' + (formIndex+1);
-
+        newForm.id = 'form-' + formIndex;
     
         var emptyFormTemplate = `{{ poll_choice_formset.empty_form|safe|escapejs }}`;
         var newFormHtml = emptyFormTemplate.replace(/__prefix__/g, formIndex);
@@ -202,10 +203,11 @@
         var deleteButton = document.createElement('button');
         deleteButton.type = 'button';
         deleteButton.classList.add('btn', 'remove-form-button', 'ms-2');
-        deleteButton.onclick = function() { removeForm(formIndex); };
-        //deleteButton.textContent = 'Delete';
-        deleteButton.innerHTML = '<i class="fa-solid fa-trash fa-lg" style="color: #f04747;"></i>'
-
+        deleteButton.onclick = function () {
+            removeForm(formIndex);
+        };
+        deleteButton.innerHTML = '<i class="fa-solid fa-trash fa-lg" style="color: #f04747;"></i>';
+    
         // Append input field and button to the new form
         newForm.appendChild(inputDiv);
         newForm.appendChild(deleteButton);
@@ -216,14 +218,13 @@
         }
     
         formContainer.appendChild(newForm);
-
+    
+        // Update form index and total form count
         formIndex++;
-
-        console.log(totalForms);
-        console.log(formIndex);
-        totalForms.setAttribute('value', formIndex);
-        //totalForms.value = formIndex;
+        totalForms.value = formIndex;
+        console.log(`Form Index ${formIndex}`);
     }
+    
 
     function removeForm(index) {
         var form = document.getElementById('form-' + (index));

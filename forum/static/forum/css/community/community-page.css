@@ -1,6 +1,6 @@
 .main-feed {
   /* Adjust for navbar and sidebars width */
-  margin-top: 80px;
+  margin-top: 30px;
   margin-right: 50px;
   margin-left: 600px;
   margin-bottom: 56px;
@@ -41,6 +41,14 @@
 
 .card-title:hover {
   text-decoration: underline;
+}
+
+.community-title:hover {
+  text-decoration: none;
+}
+
+.community-description {
+  font-size: 1.2rem;
 }
 
 .custom-subtitle-container {
