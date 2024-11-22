@@ -11,6 +11,7 @@
 {% block css %}
     <link rel="stylesheet" href="{% static 'forum/css/home/home-page.css' %}">
     <link rel="stylesheet" href="{% static 'forum/css/post/post-detail.css' %}">
+    <link rel="stylesheet" href="{% static 'forum/css/post/post-detail-media-queries.css' %}">
 {% endblock %}
 
 {% block js %}
@@ -252,7 +253,7 @@
             {% endif %}
               
         </div>
-          <p class="card-text mt-2">
+          <p class="card-text mt-2 post-body">
             {{post.body}}
           </p>
         </div>
@@ -483,62 +484,13 @@
       {% endif %}
     </div>
 
-    <div class="right-sidebar bg-light">
+    <!-- <div class="right-sidebar bg-light">
       <h5 class="mt-3 ms-3">Most Read</h5>
       <hr />
       <div class="card right-sidebar-card">
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item px-2">
-            <div class="card-body p-1">
-              <h6 class="card-subtitle mb-2 text-body-secondary">
-                Category
-                <span class="right-sidebar-post-views ms-5"
-                  ><i class="fa-regular fa-eye fa-sm views-icon"></i> 1,935
-                  views</span
-                >
-              </h6>
-              <h6 class="card-title">Lorem ipsum dolor sit amet.</h6>
-            </div>
-          </li>
-          <li class="list-group-item px-2">
-            <div class="card-body p-1">
-              <h6 class="card-subtitle mb-2 text-body-secondary">
-                Category
-                <span class="right-sidebar-post-views ms-5"
-                  ><i class="fa-regular fa-eye fa-sm views-icon"></i> 1,935
-                  views</span
-                >
-              </h6>
-              <h6 class="card-title">Lorem ipsum dolor sit amet.</h6>
-            </div>
-          </li>
-          <li class="list-group-item px-2">
-            <div class="card-body p-1">
-              <h6 class="card-subtitle mb-2 text-body-secondary">
-                Category
-                <span class="right-sidebar-post-views ms-5"
-                  ><i class="fa-regular fa-eye fa-sm views-icon"></i> 1,935
-                  views</span
-                >
-              </h6>
-              <h6 class="card-title">Lorem ipsum dolor sit amet.</h6>
-            </div>
-          </li>
-          <li class="list-group-item px-2">
-            <div class="card-body p-1">
-              <h6 class="card-subtitle mb-2 text-body-secondary">
-                Category
-                <span class="right-sidebar-post-views ms-5"
-                  ><i class="fa-regular fa-eye fa-sm views-icon"></i> 1,935
-                  views</span
-                >
-              </h6>
-              <h6 class="card-title">Lorem ipsum dolor sit amet.</h6>
-            </div>
-          </li>
-        </ul>
+
       </div>
-    </div>
+    </div> -->
   </div>
 
 

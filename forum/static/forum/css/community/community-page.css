@@ -2,7 +2,7 @@
   /* Adjust for navbar and sidebars width */
   margin-top: 80px;
   margin-right: 50px;
-  margin-left: 400px;
+  margin-left: 600px;
   margin-bottom: 56px;
   flex: 1;
   overflow-y: auto;
@@ -10,8 +10,13 @@
 }
 
 .user-post-card {
-  width: 80%;
+  width: 60%;
   margin-bottom: 2rem;
+  max-height: 500px; /* Set your desired max height */
+  overflow: hidden; /* Ensures content beyond max-height doesn't overflow */
+  text-overflow: ellipsis; /* Adds ellipsis for overflowing text */
+  display: flex; /* Ensures proper layout */
+  flex-direction: column; /* Aligns content vertically */
 }
 
 .user-post-card-body {
@@ -70,7 +75,7 @@
 }
 
 .community-card {
-  width: 80%;
+  width: 60%;
   margin-bottom: 3rem;
 }
 

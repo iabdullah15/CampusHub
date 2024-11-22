@@ -219,34 +219,80 @@ GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
 
 
 # Configure Django storage settings
-STORAGES = {
-    "default": {
-        "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
-        "OPTIONS": {
-            "project_id": "campushub-fyp",
-            "credentials": GS_CREDENTIALS,
-            "bucket_name": "campushub_bucket",
-            "location": "media",  # Ensure media files are stored in 'media' folder
-        },
-    },
-    "staticfiles": {
-        "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
-        "OPTIONS": {
-            "project_id": "campushub-fyp",
-            "credentials": GS_CREDENTIALS,
-            "bucket_name": "campushub_bucket",
+# STORAGES = {
+#     "default": {
+#         "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+#         "OPTIONS": {
+#             "project_id": "campushub-fyp",
+#             "credentials": GS_CREDENTIALS,
+#             "bucket_name": "campushub_bucket",
+#             "location": "media",  # Ensure media files are stored in 'media' folder
+#         },
+#     },
+#     "staticfiles": {
+#         "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+#         "OPTIONS": {
+#             "project_id": "campushub-fyp",
+#             "credentials": GS_CREDENTIALS,
+#             "bucket_name": "campushub_bucket",
             
-        },
-    },
-}
+#         },
+#     },
+# }
 
 
 # Google Cloud Storage settings
 GS_PROJECT_ID = 'campushub-fyp'
 GS_BUCKET_NAME = 'campushub_bucket'
 
+
+# Toggle to use GCS for static files or local files
+USE_GCS_FOR_STATIC = False
+
+if USE_GCS_FOR_STATIC:
+    # Configure Google Cloud Storage settings
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "OPTIONS": {
+                "project_id": "campushub-fyp",
+                "credentials": GS_CREDENTIALS,
+                "bucket_name": "campushub_bucket",
+                "location": "media",  # Ensure media files are stored in 'media' folder
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "OPTIONS": {
+                "project_id": "campushub-fyp",
+                "credentials": GS_CREDENTIALS,
+                "bucket_name": "campushub_bucket",
+            },
+        },
+    }
+    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
+else:
+    # Use local static files during development
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "OPTIONS": {
+                "project_id": "campushub-fyp",
+                "credentials": GS_CREDENTIALS,
+                "bucket_name": "campushub_bucket",
+                "location": "media",  # Media files remain in GCS
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+    STATIC_URL = '/static/'  # Serve local static files during development
+
+
+
 # Static and media files settings
-STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
+# STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
 
 MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
 

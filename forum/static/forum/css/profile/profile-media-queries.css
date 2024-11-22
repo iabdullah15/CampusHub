@@ -1,0 +1,57 @@
+@media (min-width: 1565px) and (max-width: 1750px) {
+  .feed-header {
+    width: 65%;
+  }
+
+  .user-post-card {
+    width: 65%;
+  }
+
+  .main-feed {
+    margin-left: 500px;
+  }
+}
+
+@media (min-width: 1250.1px) and (max-width: 1565px) {
+  .user-post-card {
+    width: 80%;
+  }
+
+  .main-profile-section {
+    margin-right: 20px;
+    margin-left: 300px;
+    padding-top: 0;
+  }
+
+}
+
+@media (min-width: 800.1px) and (max-width: 1250px) {
+  .main-profile-section {
+    margin-right: 20px;
+    margin-left: 250px;
+    padding-top: 0;
+  }
+
+  .sidebar {
+    width: 250px;
+  }
+
+  .user-post-card {
+    width: 80%;
+  }
+}
+
+@media (max-width: 800px) {
+  .sidebar {
+    display: none;
+  }
+
+  .main-profile-section {
+    margin: 56px 20px;
+    padding-top: 0;
+  }
+
+  .user-post-card {
+    width: 100%;
+  }
+}
