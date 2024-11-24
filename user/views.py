@@ -13,6 +13,8 @@ from .forms import CustomUserChangeForm, CustomUserCreationForm, UserOnboardingF
 
 from django_email_verification import send_email, send_password
 from django.contrib.auth import get_user_model, login
+from .models import CustomUser
+
 
 User = get_user_model()
 
@@ -48,7 +50,8 @@ class ForgotPasswordView(View):
         email = request.POST.get('email')
         try:
             # Try to find the user by email
-            user = User.objects.get(email=email)
+            user = CustomUser.objects.get(email=email)
+            print(email, user)
             send_password(user)  # Send password recovery email
             return redirect(reverse_lazy('user:email-sent'))  # Redirect to a success page
         except User.DoesNotExist:

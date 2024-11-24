@@ -51,7 +51,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_suspended = models.BooleanField(default=False)
     suspension_end_date = models.DateTimeField(null=True, blank=True)
 
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)  
     is_staff = models.BooleanField(default=False)
     last_login = models.DateTimeField(auto_now_add=True)
     USERNAME_FIELD = "email"

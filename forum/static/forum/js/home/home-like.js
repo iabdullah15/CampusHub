@@ -4,7 +4,7 @@ $(document).ready(function () {
     let container = $(this);
     let postId = container.data("post-id"); // Get the post ID
     let isLikedByUser = container.data("liked") === true; // Get whether the post is liked
-    console.log(isLikedByUser);
+    //console.log(isLikedByUser);
 
     // Show/Hide buttons based on whether the post is liked by the user
     if (isLikedByUser) {
@@ -28,6 +28,7 @@ $(document).ready(function () {
             "X-CSRFToken": getCookie("csrftoken"), // Add CSRF token to request headers
           },
           success: function (response) {
+            console.log(response);
             if (response.liked) {
               // Hide the like button and show the unlike button
               $("#like-button-" + postId).hide();

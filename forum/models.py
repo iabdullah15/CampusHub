@@ -19,7 +19,7 @@ class PostCategory(models.Model):
     category_name = models.CharField(max_length=50)
 
     def __str__(self) -> str:
-        return self.category_name
+        return self.category_name   
 
 
 class PostLikes(models.Model):
@@ -28,7 +28,7 @@ class PostLikes(models.Model):
                              on_delete=models.CASCADE)
     post = models.ForeignKey('Post', related_name='likes', on_delete=models.CASCADE,
                              blank=True, null=True)  # Add ForeignKey to Post
-    is_liked = models.BooleanField(default=False)
+    is_liked = models.BooleanField(default=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

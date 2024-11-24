@@ -784,13 +784,17 @@ class LikePostView(View):
         # Get or create a PostLikes object
         post_like, created = PostLikes.objects.get_or_create(
             user=user, post=post)
+        print(f"POST LIKE: {post_like}, CREATED: {created}")
 
         if not created:
             # Toggle the 'is_liked' field if the like object already exists
             post_like.is_liked = not post_like.is_liked
-            post_like.save()
+            print(f"if not created: post like: {post_like.is_liked}")
+            post_like.save()    
 
-        print(post.likes.filter(is_liked=True).count())
+        print(f"if created post like: {post_like.is_liked}")
+
+        # print(post.likes.filter(is_liked=True).count())
         # Return JSON response to update the frontend
         return JsonResponse({
             'liked': post_like.is_liked,
