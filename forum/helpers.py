@@ -10,7 +10,7 @@ import time
 def ask_assistant(query: str):
 
     ASSISTANT_ID = "asst_ujKwICKSjUFQ359drqh82L1F"
-
+    print("Query str:", query)
     # Make sure your API key is set as an environment variable.
     client = OpenAI(
         api_key="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")
@@ -48,6 +48,8 @@ def ask_assistant(query: str):
     # Print the latest message.
     latest_message = messages[0]
     print(f"💬 Response: {latest_message.content[0].text.value}")
+    
+    return latest_message.content[0].text.value 
 
 
 def perspective(post_content: str):
@@ -137,13 +139,13 @@ def determine_moderation_action(attribute_scores):
 def moderate_post(post_content: str):
 
     # perspective api
-
+    translated_content = ask_assistant(post_content)
     attr_scores = perspective(post_content)
     # Actions based on perspective result
     final_action, actions = determine_moderation_action(attr_scores)
 
-    # print("Final Action:", final_action)
-    # print("Actions per Attribute:", actions)
+    print("Final Action:", final_action)
+    print("Actions per Attribute:", actions)
 
     return final_action, actions
 

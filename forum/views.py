@@ -422,12 +422,12 @@ class CreatePostWithPollView(View):
 
             # Validate minimum number of choices
             if len(choices) < 2:
-                messages.error(request, 'Please provide at least two choices for the poll.')
+                messages.error(
+                    request, 'Please provide at least two choices for the poll.')
                 return render(request, self.template_name, {
                     'post_form': post_form,
                     'poll_choice_formset': poll_choice_formset,
                 })
-
 
             # Format content for moderation
             title = post_form.cleaned_data.get('title')
@@ -616,7 +616,7 @@ class PostDetailView(View):
 
         context = {}
         communities = PostCommunity.objects.all()
-        context.update({'communities':communities})
+        context.update({'communities': communities})
 
         try:
             post = Post.objects.get(id=pk)
@@ -721,7 +721,6 @@ class PostCommentView(View):
     def post(self, request: HttpRequest, post_id: int):
 
         form = PostCommentForm(request.POST)
-
         post = Post.objects.get(id=post_id)
 
         if form.is_valid():
@@ -729,16 +728,76 @@ class PostCommentView(View):
             comment_body = form.cleaned_data.get('comment_body')
             author = request.user
 
+            # Check if the user is suspended
+            if author.is_suspended and author.suspension_end_date:
+                if timezone.now() < author.suspension_end_date:
+                    messages.error(
+                        request,
+                        f"Your account is suspended until {author.suspension_end_date.strftime(
+                            '%Y-%m-%d %H:%M:%S')}. You cannot create new posts."
+                    )
+                    return redirect('forum:home')
+                else:
+                    # Suspension period is over
+                    author.is_suspended = False
+                    author.suspension_end_date = None
+                    author.save()
+
+            # Format content for moderation
+            content = f'{comment_body}'
+            final_action, actions = moderate_post(post_content=content)
+
             comment = form.save(commit=False)
 
             # Add other fields
             comment.author = author
             comment.post = post
 
-            # Save comment
+            # Handle the final action
+            if final_action == 'Accept':
+                comment.save()
+                messages.success(
+                    request, "Your comment has been added sucessfully.")
+                return redirect('forum:post_detail', pk=post.pk)
 
-            comment.save()
-            messages.success(request, 'Comment added successfully')
+            elif final_action == 'Issue Warning':
+                # Increment user's warning count
+                author.warning_count += 1
+                author.save()
+
+                comment.save()
+
+                # Inform the user
+                warning_attributes = [
+                    attr for attr, action in actions.items() if action == 'Issue Warning']
+                messages.warning(
+                    request,
+                    f"Your comment has been added sucessfully but contains content that may violate our guidelines: {
+                        ', '.join(warning_attributes)}. Please review our community guidelines."
+                )
+                return redirect('forum:post_detail', pk=post.pk)
+
+            elif final_action == 'Reject':
+                # Increment user's rejection count
+                author.rejection_count += 1
+                author.save()
+                print(author.rejection_count)
+
+                # Check for suspension
+                if author.rejection_count >= 5 and not author.is_suspended:
+                    author.is_suspended = True
+                    author.suspension_end_date = timezone.now() + timedelta(days=7)
+                    author.save()
+                    messages.error(
+                        request,
+                        f"Your comment was removed due to violating our community guidelines. Your account has been suspended until {
+                            author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}."
+                    )
+                else:
+                    messages.error(
+                        request,
+                        "Your comment was removed due to violating our community guidelines. Please review our community guidelines."
+                    )
 
             return redirect(reverse_lazy('forum:post_detail', args=[post_id]))
 
@@ -757,6 +816,26 @@ class PostReplyView(View):
 
             comment_body = form.cleaned_data.get('reply_body')
             author = request.user
+            
+                        # Check if the user is suspended
+            if author.is_suspended and author.suspension_end_date:
+                if timezone.now() < author.suspension_end_date:
+                    messages.error(
+                        request,
+                        f"Your account is suspended until {author.suspension_end_date.strftime(
+                            '%Y-%m-%d %H:%M:%S')}. You cannot create new posts."
+                    )
+                    return redirect('forum:home')
+                else:
+                    # Suspension period is over
+                    author.is_suspended = False
+                    author.suspension_end_date = None
+                    author.save()
+                    
+            
+            # Format content for moderation
+            content = f'{comment_body}'
+            final_action, actions = moderate_post(post_content=content)
 
             reply = form.save(commit=False)
 
@@ -764,10 +843,52 @@ class PostReplyView(View):
             reply.author = author
             reply.comment = comment
 
-            # Save comment
+# Handle the final action
+            if final_action == 'Accept':
+                reply.save()
+                messages.success(
+                    request, "Your comment has been added sucessfully.")
+                return redirect('forum:post_detail', pk=comment.post.pk)
 
-            reply.save()
-            messages.success(request, 'Replied successfully')
+            elif final_action == 'Issue Warning':
+                # Increment user's warning count
+                author.warning_count += 1
+                author.save()
+
+                reply.save()
+                # Inform the user
+                warning_attributes = [
+                    attr for attr, action in actions.items() if action == 'Issue Warning']
+                messages.warning(
+                    request,
+                    f"Your comment has been added sucessfully but contains content that may violate our guidelines: {
+                        ', '.join(warning_attributes)}. Please review our community guidelines."
+                )
+                return redirect('forum:post_detail', pk=comment.post.pk)
+
+            elif final_action == 'Reject':
+                # Increment user's rejection count
+                author.rejection_count += 1
+                author.save()
+                print(author.rejection_count)
+
+                # Check for suspension
+                if author.rejection_count >= 5 and not author.is_suspended:
+                    author.is_suspended = True
+                    author.suspension_end_date = timezone.now() + timedelta(days=7)
+                    author.save()
+                    messages.error(
+                        request,
+                        f"Your comment was removed due to violating our community guidelines. Your account has been suspended until {
+                            author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}."
+                    )
+                
+                else:
+                    messages.error(
+                        request,
+                        "Your comment was removed due to violating our community guidelines. Please review our community guidelines."
+                    )
+
 
             return redirect(reverse_lazy('forum:post_detail', args=[comment.post.pk]))
 
@@ -790,7 +911,7 @@ class LikePostView(View):
             # Toggle the 'is_liked' field if the like object already exists
             post_like.is_liked = not post_like.is_liked
             print(f"if not created: post like: {post_like.is_liked}")
-            post_like.save()    
+            post_like.save()
 
         print(f"if created post like: {post_like.is_liked}")
 
@@ -936,7 +1057,8 @@ class AdminPanel(View):
             reported_posts = (
                 Post.objects.annotate(report_count=models.Count('reports'))
                 .filter(reports__isnull=False)
-                .select_related('community', 'category')  # Fetch related fields
+                # Fetch related fields
+                .select_related('community', 'category')
                 .order_by('-report_count')  # Sort by report count
             )
             for i in reported_posts:
@@ -946,14 +1068,15 @@ class AdminPanel(View):
             reported_posts_count = reported_posts.count()
             post_count = Post.objects.all().count()
             print(reported_posts)
-              # Fetch posts created in the last 24 hours
+            # Fetch posts created in the last 24 hours
             last_24_hours = timezone.now() - timedelta(hours=24)
-            recent_posts = Post.objects.filter(time_created__gte=last_24_hours).order_by('-time_created')
+            recent_posts = Post.objects.filter(
+                time_created__gte=last_24_hours).order_by('-time_created')
 
-            return render(request, 'forum/admin/admin-panel.html', {'reported_posts': reported_posts, 
-                                                                    'reported_posts_count': reported_posts_count, 
+            return render(request, 'forum/admin/admin-panel.html', {'reported_posts': reported_posts,
+                                                                    'reported_posts_count': reported_posts_count,
                                                                     'post_count': post_count,
-                                                                    'recent_posts': recent_posts,})
+                                                                    'recent_posts': recent_posts, })
 
         else:
 
@@ -963,15 +1086,13 @@ class AdminPanel(View):
 
 
 class ViewReports(View):
-    
-    def get(self, request:HttpRequest, post_id):
-        
+
+    def get(self, request: HttpRequest, post_id):
+
         post = Post.objects.get(id=post_id)
         reports = Report.objects.filter(post=post)
-        
-        return render(request, 'forum/admin/view-reports.html', {"post": post, "reports": reports})
-        
 
+        return render(request, 'forum/admin/view-reports.html', {"post": post, "reports": reports})
 
 
 class DeletePost(LoginRequiredMixin, View):
@@ -990,18 +1111,15 @@ class DeletePost(LoginRequiredMixin, View):
             messages.error(
                 request, "There was an error with the request. Please try again later.")
             return redirect(reverse_lazy('forum:profile', kwargs={'username': request.user.username}))
-        
-        
-        
+
+
 class DisregardReports(View):
-    
+
     def post(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)
         Report.objects.filter(post=post).delete()
         messages.success(request, "All reports have been disregarded.")
         return redirect(reverse_lazy('forum:admin_panel'))
-
-
 
 
 class ReportPost(LoginRequiredMixin, View):
