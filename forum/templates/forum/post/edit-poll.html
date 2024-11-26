@@ -4,7 +4,7 @@
 {% load widget_tweaks %}
 
 {% block title %}
-    <title>Create Poll</title>
+<title>Edit Poll</title>
 {% endblock %}
 
 {% block css %}
@@ -13,78 +13,38 @@
 
 {% block main %}
 <div class="create-post-container container">
-    <h4 class="heading-text mb-4">Create Poll</h4>
+    <h4 class="heading-text mb-4">Edit Poll</h4>
 
     <!-- Display Form Errors -->
-        <!-- Toast container -->
-        <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center w-100">
-            {% if messages %}
-                {% for message in messages %}
-                <div id="form-error" class="toast align-items-center text-light bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="60000">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                        <!-- Display Django messages inside the toast -->
-                        {{ message }}
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
+    <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center w-100">
+        {% if messages %}
+            {% for message in messages %}
+            <div id="form-error" class="toast align-items-center text-light bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="60000">
+                <div class="d-flex">
+                    <div class="toast-body">{{ message }}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
-                {% endfor %}
-            {% endif %}
-        </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" action="{% url 'forum:edit_poll' post.id %}" enctype="multipart/form-data">
         {% csrf_token %}
-        <!-- {{ post_form|crispy }} -->
-
-        <!-- Community Field -->
-        <div class="select-text">
-            <h4 class="mb-4 label-heading">Select your community</h4>
-        </div>
+        {{ post.id }}
         <div class="select-container mb-4">
             {{ post_form.community|add_class:"form-select mb-3" }}
-            <ul class="errorlist">
-                {% for error in post_form.community.errors %}
-                <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <!-- Category Field -->
-        <div class="select-text">
-            <h4 class="mb-4 label-heading">Select Category</h4>
         </div>
         <div class="select-container mb-4">
             {{ post_form.category|add_class:"form-select mb-3" }}
-            <ul class="errorlist">
-                {% for error in post_form.category.errors %}
-                <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
         </div>
-
-        <!-- Title Field with Floating Label -->
-        <div class="form-floating mb-4 post-title-container">
+        <div class="form-floating mb-4">
             {{ post_form.title|add_class:"form-control" }}
             <label for="id_title">Title</label>
-            <ul class="errorlist">
-                {% for error in post_form.title.errors %}
-                <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
         </div>
-
-        <!-- Body Field with Floating Label -->
-        <div class="post-body-container">
-            <div class="form-floating mb-4">  <!-- form-floating should be directly on the container -->
-                {{ post_form.body|add_class:"form-control" }}
-                <label for="id_body">Body</label>
-                <ul class="errorlist">
-                    {% for error in post_form.body.errors %}
-                    <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+        <div class="form-floating mb-4">
+            {{ post_form.body|add_class:"form-control" }}
+            <label for="id_body">Body</label>
         </div>
 
         <h4 class="heading-text mb-4">Poll Choices</h4>
@@ -93,17 +53,14 @@
             <div id="toastMessage" class="toast align-items-center text-light bg-dark border-0 mt-3 mb-5" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="60000">
                 <div class="d-flex">
                     <div class="toast-body">
-                        <!-- Display Django messages inside the toast -->
                         {{ poll_choice_formset.non_form_errors }}
                     </div>
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             </div>
         {% endif %}
-        
+
         <div class="options-container">
-
-
             <div id="formset-container">
                 {{ poll_choice_formset.management_form }}
                 {% for form in poll_choice_formset %}
@@ -111,6 +68,8 @@
                         <div class="inline-block">
                             {{ form.choice_text }}
                         </div>
+                        <!-- Include Hidden ID Field -->
+                        {{ form.id }}
                         <button type="button" class="btn remove-form-button ms-2" onclick="removeForm(this.parentElement)">
                             <i class="fa-solid fa-trash fa-lg" style="color: #f04747;"></i>
                         </button>
@@ -119,15 +78,12 @@
                 {% endfor %}
             </div>
             <button type="button" class="btn btn-dark">Add Choice</button>
-            
         </div>
 
         <!-- Image Upload Field -->
         <div class="post-img-container form-floating">
-
             <div class="form-group mb-4">
                 <h4 class="mb-4 label-heading text-start">Upload image</h4>
-
                 {{ post_form.image|add_class:"form-control" }}
                 <ul class="errorlist">
                     {% for error in form.image.errors %}
@@ -136,85 +92,63 @@
                 </ul>
             </div>
         </div>
-
-        <div class="submit-btn-container mt-4">
-
-            <button type="submit" class="btn btn-outline-dark">Post</button>
-        </div>
+        <button type="submit" class="btn btn-outline-dark mt-4">Update Poll</button>
     </form>
 </div>
 
-<!-- JavaScript to handle adding/removing forms -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const totalFormsInput = document.getElementById("id_form-TOTAL_FORMS");
         const formContainer = document.getElementById('formset-container');
         let formIndex = parseInt(totalFormsInput.value, 10); // Start with the current number of forms
-    
+
         function addForm() {
-            // Create a new form container
             const newForm = document.createElement('div');
             newForm.classList.add('mb-3', 'd-flex', 'align-items-center');
             newForm.id = `form-${formIndex}`;
-    
-            // Generate form HTML from the empty form template
+
             const emptyFormTemplate = `{{ poll_choice_formset.empty_form|safe|escapejs }}`;
             const newFormHtml = emptyFormTemplate.replace(/__prefix__/g, formIndex);
-            
-            // Create a temporary div to manipulate the new form's HTML
+
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = newFormHtml;
-    
-            // Add a text input field
+
             const inputField = tempDiv.querySelector('input[name$="choice_text"]');
             inputField.classList.add('form-control');
-    
+
+            const idField = tempDiv.querySelector('input[name$="id"]');
+            idField.value = ""; // Empty ID for new choices
+
             const inputDiv = document.createElement('div');
             inputDiv.classList.add('inline-block');
             inputDiv.appendChild(inputField);
-    
-            // Add a delete button
+
             const deleteButton = document.createElement('button');
             deleteButton.type = 'button';
             deleteButton.classList.add('btn', 'remove-form-button', 'ms-2');
             deleteButton.innerHTML = '<i class="fa-solid fa-trash fa-lg" style="color: #f04747;"></i>';
             deleteButton.onclick = () => removeForm(newForm);
-    
-            // Append the input field and delete button to the new form container
+
             newForm.appendChild(inputDiv);
             newForm.appendChild(deleteButton);
-    
-            // Include the hidden DELETE field
-            const deleteField = tempDiv.querySelector('input[name$="-DELETE"]');
-            if (deleteField) {
-                newForm.appendChild(deleteField);
-            }
-    
-            // Append the new form to the container
+            newForm.appendChild(idField);
+
             formContainer.appendChild(newForm);
-    
-            // Increment the form index and update TOTAL_FORMS
+
             formIndex++;
             totalFormsInput.value = formIndex;
         }
-    
+
         function removeForm(formElement) {
-            // Mark the DELETE field as active
             const deleteField = formElement.querySelector('input[name$="-DELETE"]');
             if (deleteField) {
                 deleteField.value = 'on';
             }
-    
-            // Hide the form visually
             formElement.style.display = 'none!important';
-            formElement.classList.add('d-none')
+            formElement.classList.add('d-none');
         }
-    
-        // Attach event listeners for adding and removing forms
+
         document.querySelector('.btn.btn-dark').addEventListener('click', addForm);
     });
-    
-    
-
 </script>
 {% endblock %}

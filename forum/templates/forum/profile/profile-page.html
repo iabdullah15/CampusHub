@@ -282,21 +282,29 @@
                         aria-labelledby="dropdownMenuButton"
                       >
                         {% if request.user == post.author %}
-                        <li>
-                          <form action="{% url 'forum:delete_post' post.id %}" method="POST">
-                            {% csrf_token %}
-                            <button type="submit" class="dropdown-item text-danger">
-                              <i class="fa-solid fa-trash me-2"></i>Delete Post
-                            </button>
-                          </form>
-                        </li>
+                          <li>
+                            <form action="{% url 'forum:delete_post' post.id %}" method="POST">
+                              {% csrf_token %}
+                              <button type="submit" class="dropdown-item text-danger">
+                                <i class="fa-solid fa-trash me-2"></i>Delete Post
+                              </button>
+                            </form>
+                          </li>
                         {% endif %}
-                        
-                        <li>
-                          <a class="dropdown-item" href="#"
-                            ><i class="fa-solid fa-minus me-2"></i>Show less</a 
-                          >
-                        </li>
+
+                        {% if post.poll %}
+                          <li>
+                            <a class="dropdown-item" href="{% url 'forum:edit_poll' post.id %}"
+                              ><i class="fa-solid fa-pen me-2"></i>Edit Poll</a 
+                            >
+                          </li>
+                        {% else %}
+                          <li>
+                            <a class="dropdown-item" href="{% url 'forum:edit_post' post.id %}"
+                              ><i class="fa-solid fa-pen me-2"></i>Edit Post</a 
+                            >
+                          </li>
+                        {% endif %}
                         <li><hr class="dropdown-divider" /></li>
                         <li>
                           <a class="dropdown-item" href="#"
@@ -383,21 +391,6 @@
               </p>
             </div>
           </div>
-          
-
-
-
-          
-
-
-
-
-
-
-
-
-
-
 
           
           {% endfor %} 

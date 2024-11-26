@@ -1,0 +1,89 @@
+{% extends 'forum/base/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}
+    <title>Edit Post</title>
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'forum/css/post/create-post.css' %}">
+{% endblock %}
+
+{% block main %}
+<div class="container create-post-container">
+
+    <!-- Toast Messages -->
+    <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center w-100">
+        {% if messages %}
+            {% for message in messages %}
+                <div id="toastMessage" class="toast align-items-center text-light bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="60000">
+                    <div class="d-flex">
+                        <div class="toast-body">{{ message }}</div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <h4 class="heading-text mb-4">Edit Post</h4>
+
+    <form action="{% url 'forum:edit_post' post.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Community Field -->
+        <div class="select-text">
+            <h4 class="mb-4 label-heading">Select your community</h4>
+        </div>
+        <div class="select-container mb-4">
+            {{ form.community|add_class:"form-select mb-3" }}
+            <ul class="errorlist">{% for error in form.community.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+        </div>
+
+        <!-- Category Field -->
+        <div class="select-text">
+            <h4 class="mb-4 label-heading">Select Category</h4>
+        </div>
+        <div class="select-container mb-4">
+            {{ form.category|add_class:"form-select mb-3" }}
+            <ul class="errorlist">{% for error in form.category.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+        </div>
+
+        <!-- Title Field -->
+        <div class="form-floating mb-4">
+            {{ form.title|add_class:"form-control" }}
+            <label for="id_title">Title</label>
+            <ul class="errorlist">{% for error in form.title.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+        </div>
+
+        <!-- Body Field -->
+        <div class="form-floating mb-4">
+            {{ form.body|add_class:"form-control" }}
+            <label for="id_body">Body</label>
+            <ul class="errorlist">{% for error in form.body.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+        </div>
+
+        <!-- Image Upload Field -->
+        <div class="form-floating mb-4">
+            {{ form.image|add_class:"form-control" }}
+            <ul class="errorlist">{% for error in form.image.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="submit-btn-container mt-4">
+            <button type="submit" class="btn btn-outline-dark">Update Post</button>
+        </div>
+    </form>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    var toastEl = document.getElementById('toastMessage');
+    var toast = new bootstrap.Toast(toastEl);
+    {% if messages %}
+      toast.show();
+    {% endif %}
+});
+</script>
+{% endblock %}
