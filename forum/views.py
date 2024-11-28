@@ -488,11 +488,9 @@ class UpdatePostWithPollView(View):
             request.POST, queryset=poll.choices.all()
         )
         
-        print("DEBUG: Processing POST for Post ID:", post.id)
 
         if post_form.is_valid() and poll_choice_formset.is_valid():
             author = request.user
-            print("DEBUG - VALID")
 
             # Check if the user is suspended
             if author.is_suspended and author.suspension_end_date:
@@ -587,16 +585,8 @@ class UpdatePostWithPollView(View):
                 )
                 return redirect('forum:post_detail', pk=post.pk)
         else:
-            print("DEBUG - INVALID")
             messages.error(request, 'There was an error in your submission.')
             
-        if not post_form.is_valid():
-            print("DEBUG - POST FORM ERRORS:", post_form.errors)
-
-        if not poll_choice_formset.is_valid():
-            print("DEBUG - POLL CHOICE FORMSET ERRORS:")
-            for form in poll_choice_formset:
-                print(form.errors)
 
 
         return render(request, self.template_name, {
@@ -1181,3 +1171,22 @@ class ReportPost(LoginRequiredMixin, View):
                               reason=reason, comment=comment)
 
         return JsonResponse({"success": True, "message": "Report submitted successfully."})
+
+
+
+class EditComment(View):
+    def post(self, request, comment_id):
+        print("Received Comment ID:", comment_id)
+
+        comment = get_object_or_404(PostComment, id=comment_id, author=request.user)
+        new_body = request.POST.get('comment_body', '').strip()
+        print(new_body)
+
+        if not new_body:
+            return JsonResponse({'success': False, 'error': 'Comment body cannot be empty.'}, status=400)
+
+        # Update the comment
+        comment.comment_body = new_body
+        comment.save()
+
+        return JsonResponse({'success': True, 'updated_body': comment.comment_body})

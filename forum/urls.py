@@ -26,4 +26,6 @@ urlpatterns = [
     path("reports/<int:post_id>", views.ViewReports.as_view(), name='view_reports'),
     # path('poll/edit/<int:post_id>/', views.UpdatePostWithPollView.as_view(), name='edit_poll'),
     path('poll/edit/<int:post_id>/', views.UpdatePostWithPollView.as_view(), name='edit_poll'),
+    path('comments/edit/<int:comment_id>/', views.EditComment.as_view(), name='edit_comment'),
+
 ]

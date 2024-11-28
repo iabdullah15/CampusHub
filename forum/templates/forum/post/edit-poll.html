@@ -31,7 +31,6 @@
 
     <form method="post" action="{% url 'forum:edit_poll' post.id %}" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ post.id }}
         <div class="select-container mb-4">
             {{ post_form.community|add_class:"form-select mb-3" }}
         </div>

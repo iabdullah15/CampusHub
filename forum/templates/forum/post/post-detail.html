@@ -34,6 +34,8 @@
   <script defer src="{% static 'forum/js/post/post-detail-like.js' %}"></script>  
   <script defer src="{% static 'forum/js/post/comment-box.js' %}"></script>
   <script defer src="{% static 'forum/js/post/comment-like.js' %}"></script>
+  <script defer src="{% static 'forum/js/post-detail/post-detail-comment.js' %}"></script>
+
 {% endblock %}
 
 
@@ -369,25 +371,16 @@
               {% csrf_token %}
 
               {{comment_form|crispy}}
-              <!-- <label for="CommentFormControlTextarea1" class="form-label"
-                >Comment</label
-              >
-              <textarea
-                class="form-control comment-textarea"
-                id="CommentFormControlTextarea1"
-                rows="2"
-              ></textarea> -->
+
               <div class="comment-btn-container mt-4">
 
                   <!-- Post comment button -->
-                  
 
                   <button style="display: none" id="CommentSubmitButton" class="btn btn-outline-dark ms-2" type="submit">              
                     Comment
                   </button>
 
                   <!-- Cancel comment button -->
-
                   <a
                   id="CancelButton"
                   class="btn btn-outline-dark ms-2"
@@ -405,21 +398,74 @@
           <hr class="w-100" />
 
           <div id="comments-container">
-
+            {% include 'forum/home/toast.html' %}
             {% if comments_with_like_status %}
 
             {% for comment_with_status in comments_with_like_status %}
 
-              <div class="comment my-5" data-comment-id="{{ comment_with_status.comment.id }}">
+
+              <div id="{{ comment_with_status.comment.id }}" class="comment my-5" data-comment-id="{{ comment_with_status.comment.id }}">
                 <div class="card comment-card">
                   <div class="card-body">
-                    <h6 class="card-title">
-                      Department name <span>{{ comment_with_status.comment.author.username }}</span>
-                      <span>{{ comment_with_status.comment.time_created|naturaltime }}</span>
-                    </h6>
-                    <p class="card-text">
+ 
+
+                    <div class="d-flex align-items-center">
+                      <h6 class="card-title">
+                        Department name <span>{{ comment_with_status.comment.author.username }}</span>
+                        <span>{{ comment_with_status.comment.time_created|naturaltime }}
+                      </h6>
+                      {% if request.user == comment_with_status.comment.author %}
+                      <div class="post-option-icon-container dropdown ms-auto">
+                        <i
+                            class="fa-solid fa-ellipsis post-options-icon fa-lg"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        ></i>
+
+                          <ul class="dropdown-menu">
+                              <li>
+                                  <a class="dropdown-item edit-comment-btn" href="#">
+                                      <i class="fa-solid fa-pencil me-2"></i>Edit
+                                  </a>
+                              </li>
+                              <li>
+                                  <a
+                                      class="dropdown-item"
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#reportPost"
+                                      href="#"
+                                  >
+                                      <i class="fa-solid fa-trash me-2"></i>Delete
+                                  </a>
+                              </li>
+                          </ul>
+                      </div>
+                      {% endif %}
+
+                    </div>
+                    <p class="card-text comment-text">
                       {{ comment_with_status.comment.comment_body }}
                     </p>
+
+                    <!-- Edit Comment Form -->
+                    <div class="edit-comment-form mt-3" style="display: none;" data-edit-comment-id="{{ comment_with_status.comment.id }}">
+                      <textarea
+                          class="form-control edit-comment-textarea"
+                          rows="3"
+                      ></textarea>
+                      <div class="edit-btn-container mt-2">
+                          <button class="btn btn-outline-dark submit-edit-btn">
+                              Submit
+                          </button>
+                          <button class="btn btn-outline-dark cancel-edit-btn">
+                              Cancel
+                          </button>
+                      </div>
+                    </div>
+
+
+
+
                   </div>
                 </div>
 
@@ -500,5 +546,7 @@
   <p><a href="{% url 'user:sign-in' %}"></a></p>
 
   {% endif %}
+
+  
 
 {% endblock %}

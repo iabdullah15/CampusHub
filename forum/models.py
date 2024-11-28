@@ -93,12 +93,6 @@ class PostComment(models.Model):
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name='comments')
 
-    # related name
-    # Creates a backwards link
-    # I can fetch all comments someone posted using the following:
-    # abdullah = PostComment.objects.get(author=author_obj)
-    # abdullah.comments.all()
-
     def __str__(self) -> str:
         return f"Comment by {self.author.username} on {self.post.title}"
 
