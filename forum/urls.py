@@ -28,4 +28,11 @@ urlpatterns = [
     path('poll/edit/<int:post_id>/', views.UpdatePostWithPollView.as_view(), name='edit_poll'),
     path('comments/edit/<int:comment_id>/', views.EditComment.as_view(), name='edit_comment'),
 
+    path('replies/edit/<int:reply_id>/', views.EditReply.as_view(), name='edit_reply'),
+    
+    path('comments/delete/<int:comment_id>/', views.DeleteComment.as_view(), name='delete_comment'),
+
+    # Other URLs...
+    path('replies/delete/<int:reply_id>/', views.DeleteCommentReplyView.as_view(), name='delete_reply'),
+
 ]

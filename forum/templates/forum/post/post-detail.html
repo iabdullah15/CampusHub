@@ -35,6 +35,9 @@
   <script defer src="{% static 'forum/js/post/comment-box.js' %}"></script>
   <script defer src="{% static 'forum/js/post/comment-like.js' %}"></script>
   <script defer src="{% static 'forum/js/post-detail/post-detail-comment.js' %}"></script>
+  <script defer src="{% static 'forum/js/post-detail/post-detail-comment-reply.js' %}"></script>
+  <script defer src="{% static 'forum/js/post-detail/delete-comment.js' %}"></script>
+  <script defer src="{% static 'forum/js/post-detail/delete-reply.js' %}"></script>
 
 {% endblock %}
 
@@ -424,16 +427,13 @@
 
                           <ul class="dropdown-menu">
                               <li>
-                                  <a class="dropdown-item edit-comment-btn" href="#">
+                                  <a class="dropdown-item edit-comment-btn">
                                       <i class="fa-solid fa-pencil me-2"></i>Edit
                                   </a>
                               </li>
                               <li>
                                   <a
-                                      class="dropdown-item"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#reportPost"
-                                      href="#"
+                                      class="dropdown-item delete-comment-btn"
                                   >
                                       <i class="fa-solid fa-trash me-2"></i>Delete
                                   </a>
@@ -496,27 +496,136 @@
                   </div>
                 </div>
 
-                <div class="comment-replies-container">
+                <!-- <div class="comment-replies-container">
                   {% for reply in comment_with_status.comment.comment_reply.all %}
                     <div class="card comment-reply-card">
                       <div class="card-body">
-                        <h6 class="card-title">
-                          Department <span>{{ reply.author.username }}</span>
-                          <span>{{ reply.time_created|naturaltime }}</span>
-                        </h6>
+
+                        <div class="d-flex align-items-center">
+                          <h6 class="card-title">
+                            Department <span>{{ reply.author.username }}</span>
+                            <span>{{ reply.time_created|naturaltime }}
+                          </h6>
+                          {% if request.user == reply.author %}
+                          <div
+                            class="post-option-icon-container dropdown ms-auto"
+                          >
+                            <i
+                              class="fa-solid fa-ellipsis post-options-icon fa-lg"
+                              data-bs-toggle="dropdown"
+                              aria-expanded="false"
+                            ></i>
+
+                              <ul class="dropdown-menu">
+                                <li>
+                                  <a class="dropdown-item edit-reply-btn" href="#">
+                                    <i class="fa-solid fa-pencil me-2"></i>Edit
+                                  </a>
+                                </li>
+                                <li>
+                                  <a
+                                    class="dropdown-item delete-reply-btn"
+                                    href="#"
+                                  >
+                                    <i class="fa-solid fa-trash me-2"></i>Delete
+                                  </a>
+                                </li>
+                              </ul>
+
+                          </div>
+                          {% endif %}
+                        </div>
+
+
                         <p class="card-text">
                           {{ reply.reply_body }}
                         </p>
+
+                        <div class="edit-reply-form mt-3" style="display: none">
+                          <textarea
+                            class="form-control edit-reply-textarea comment-textarea"
+                            rows="3"
+                          ></textarea>
+                          <div class="edit-btn-container mt-2">
+                            <button
+                              class="btn btn-outline-dark submit-reply-edit-btn"
+                            >
+                              Submit
+                            </button>
+                            <button
+                              class="btn btn-outline-dark cancel-reply-edit-btn"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+
                       </div>
+
                     </div>
+
+
                     <div class="comment-reply-interaction-container">
                       <span class="interaction-button mt-2">
                         <i class="fa-regular fa-heart fa-lg heart-icon"></i> 9
                       </span>
                     </div>
+
+
+                  {% endfor %}
+                </div> -->
+
+                <div class="comment-replies-container">
+                  {% for reply in comment_with_status.comment.comment_reply.all %}
+                      <div class="card comment-reply-card" data-reply-id="{{ reply.id }}">
+                          <div class="card-body">
+                              <div class="d-flex align-items-center">
+                                  <h6 class="card-title">
+                                      Department <span>{{ reply.author.username }}</span>
+                                      <span>{{ reply.time_created|naturaltime }}</span>
+                                  </h6>
+                                  {% if request.user == reply.author %}
+                                  <div class="post-option-icon-container dropdown ms-auto">
+                                      <i
+                                          class="fa-solid fa-ellipsis post-options-icon fa-lg"
+                                          data-bs-toggle="dropdown"
+                                          aria-expanded="false"
+                                      ></i>
+                                      <!-- Dropdown menu -->
+                                      <ul class="dropdown-menu">
+                                          <li>
+                                              <a class="dropdown-item edit-reply-btn">
+                                                  <i class="fa-solid fa-pencil me-2"></i>Edit
+                                              </a>
+                                          </li>
+                                          <li>
+                                              <a class="dropdown-item delete-reply-btn" data-reply-id="{{ reply.id }}">
+                                                  <i class="fa-solid fa-trash me-2"></i>Delete
+                                              </a>
+                                          </li>
+                                      </ul>
+                                  </div>
+                                  {% endif %}
+                              </div>
+              
+                              <p class="card-text reply-text">{{ reply.reply_body }}</p>
+              
+                              <!-- Edit Reply Form -->
+                              <div class="edit-reply-form mt-3" style="display: none;">
+                                  <textarea
+                                      class="form-control edit-reply-textarea"
+                                      rows="3"
+                                  ></textarea>
+                                  <div class="edit-btn-container mt-2">
+                                      <button class="btn btn-outline-dark submit-reply-edit-btn">Submit</button>
+                                      <button class="btn btn-outline-dark cancel-reply-edit-btn">Cancel</button>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
                   {% endfor %}
                 </div>
-
+              
               </div>
 
               {% endfor %}

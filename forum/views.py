@@ -1190,3 +1190,46 @@ class EditComment(View):
         comment.save()
 
         return JsonResponse({'success': True, 'updated_body': comment.comment_body})
+
+
+
+class EditReply(View):
+    def post(self, request, reply_id):
+        reply = get_object_or_404(PostCommentReply, id=reply_id, author=request.user)
+        new_body = request.POST.get('reply_body', '').strip()
+
+        if not new_body:
+            return JsonResponse({'success': False, 'error': 'Reply body cannot be empty.'}, status=400)
+
+        # Update the reply
+        reply.reply_body = new_body
+        reply.save()
+
+        return JsonResponse({'success': True, 'updated_body': reply.reply_body})
+    
+    
+
+class DeleteComment(View):
+    def post(self, request, comment_id):
+        comment = get_object_or_404(PostComment, id=comment_id)
+
+        # Check if the logged-in user is the author of the comment
+        if comment.author != request.user:
+            return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
+
+        # Delete the comment
+        comment.delete()
+
+        return JsonResponse({'success': True, 'message': 'Comment deleted successfully'})
+
+
+class DeleteCommentReplyView(View):
+    def post(self, request, reply_id):
+        # Ensure the user owns the reply
+        reply = get_object_or_404(PostCommentReply, id=reply_id, author=request.user)
+
+        try:
+            reply.delete()
+            return JsonResponse({'success': True, 'message': 'Reply deleted successfully.'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
