@@ -487,7 +487,6 @@ class UpdatePostWithPollView(View):
         poll_choice_formset = PollChoiceFormSet(
             request.POST, queryset=poll.choices.all()
         )
-        
 
         if post_form.is_valid() and poll_choice_formset.is_valid():
             author = request.user
@@ -586,11 +585,9 @@ class UpdatePostWithPollView(View):
                 return redirect('forum:post_detail', pk=post.pk)
         else:
             messages.error(request, 'There was an error in your submission.')
-            
-
 
         return render(request, self.template_name, {
-            'post':post,
+            'post': post,
             'post_form': post_form,
             'poll_choice_formset': poll_choice_formset,
         })
@@ -1173,12 +1170,12 @@ class ReportPost(LoginRequiredMixin, View):
         return JsonResponse({"success": True, "message": "Report submitted successfully."})
 
 
-
 class EditComment(View):
     def post(self, request, comment_id):
         print("Received Comment ID:", comment_id)
 
-        comment = get_object_or_404(PostComment, id=comment_id, author=request.user)
+        comment = get_object_or_404(
+            PostComment, id=comment_id, author=request.user)
         new_body = request.POST.get('comment_body', '').strip()
         print(new_body)
 
@@ -1192,10 +1189,10 @@ class EditComment(View):
         return JsonResponse({'success': True, 'updated_body': comment.comment_body})
 
 
-
 class EditReply(View):
     def post(self, request, reply_id):
-        reply = get_object_or_404(PostCommentReply, id=reply_id, author=request.user)
+        reply = get_object_or_404(
+            PostCommentReply, id=reply_id, author=request.user)
         new_body = request.POST.get('reply_body', '').strip()
 
         if not new_body:
@@ -1206,8 +1203,7 @@ class EditReply(View):
         reply.save()
 
         return JsonResponse({'success': True, 'updated_body': reply.reply_body})
-    
-    
+
 
 class DeleteComment(View):
     def post(self, request, comment_id):
@@ -1226,7 +1222,8 @@ class DeleteComment(View):
 class DeleteCommentReplyView(View):
     def post(self, request, reply_id):
         # Ensure the user owns the reply
-        reply = get_object_or_404(PostCommentReply, id=reply_id, author=request.user)
+        reply = get_object_or_404(
+            PostCommentReply, id=reply_id, author=request.user)
 
         try:
             reply.delete()

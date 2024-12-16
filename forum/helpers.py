@@ -9,12 +9,12 @@ import time
 
 def ask_assistant(query: str):
 
-    ASSISTANT_ID = "asst_ujKwICKSjUFQ359drqh82L1F"
+    ASSISTANT_ID = "asst_aG0b0m8KaHh9oH656uvqHnbe"
     print("Query str:", query)
     # Make sure your API key is set as an environment variable.
     client = OpenAI(
-        api_key="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")
-
+        api_key="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")
+    
     # Create a thread with a message.
     thread = client.beta.threads.create(
         messages=[
@@ -48,13 +48,15 @@ def ask_assistant(query: str):
     # Print the latest message.
     latest_message = messages[0]
     print(f"💬 Response: {latest_message.content[0].text.value}")
-    
-    return latest_message.content[0].text.value 
+
+    return latest_message.content[0].text.value
 
 
 def perspective(post_content: str):
 
     API_KEY = "AIzaSyBqueBXYTNwxUxHiJEyie962Gg7c2QxGEo"
+
+
 
     client = discovery.build(
         "commentanalyzer",
@@ -76,7 +78,7 @@ def perspective(post_content: str):
     attr_scores = response_dict.get('attributeScores')
     attrs_list = []
     scores_list = []
-
+    print(attr_scores)
     scores_dict = dict()
 
     # Get all attributes and append them to a list
@@ -140,6 +142,8 @@ def moderate_post(post_content: str):
 
     # perspective api
     translated_content = ask_assistant(post_content)
+    
+    # attr_scores = perspective(translated_content)
     attr_scores = perspective(post_content)
     # Actions based on perspective result
     final_action, actions = determine_moderation_action(attr_scores)
