@@ -148,8 +148,32 @@ body {
   position: fixed;
   top: 85px; /* Adjust for navbar height */
   bottom: 0;
-  width: 300px;
+  width: 400px;
   right: 0;
   overflow-y: auto;
   border-left: 1px solid #e5e5e5;
+}
+
+.choice-chips-container {
+  display: flex;
+  gap: 10px;
+}
+
+.choice-chip {
+  border: 1px solid #ddd;
+  background-color: #f8f9fa;
+  color: #333;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.choice-chip:hover {
+  background-color: #e9ecef;
+}
+
+.choice-chip.active {
+  background-color: #212529!important;
+  color: #fff!important;
+  border-color: #212529!important;
 }

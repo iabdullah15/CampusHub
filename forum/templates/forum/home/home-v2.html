@@ -43,7 +43,7 @@
           {% if communities %}
             {% for community in communities %}
               <li class="nav-item">
-                <a class="nav-link left-sidebar-link" href="{% url 'forum:community_page' community.id %}"> {{community.community_name}} </a>
+                <a class="nav-link left-sidebar-link" href="{% url 'forum:community_page' community.id %}"> <img width="30" src="{% static 'forum/img/software.png' %}" alt=""> {{community.community_name}} </a>
               </li>
             {% endfor %}
           {% endif %}
@@ -468,33 +468,27 @@
               {% endif %}
           
               <!-- Interaction Section -->
-              <div class="row pt-4 px-4 interaction-row">
-                <div class="interaction-container col-4" data-liked="{% if post_with_status.is_liked_by_user %}true{% else %}false{% endif %}" data-post-id="{{ post_with_status.post.id }}">
+              <div class="row pt-4 interaction-row">
+                <div class="interaction-container col-2" data-liked="{% if post_with_status.is_liked_by_user %}true{% else %}false{% endif %}" data-post-id="{{ post_with_status.post.id }}">
                   <!-- Like Button -->
                   <div id="like-button-{{ post_with_status.post.id }}" {% if post_with_status.is_liked_by_user %}style="display: none;"{% endif %}>
                     <span class="interaction-button like-btn" data-url="{% url 'forum:like-post' post_with_status.post.id %}">
-                      <i class="fa-regular fa-heart fa-xl like-icon"></i>
-                      <span id="like-count-{{ post_with_status.post.id }}" class="like-{{ post_with_status.post.id }}">{{ post_with_status.post.total_likes }} likes</span>
+                      <i class="fa-regular fa-heart fa-lg like-icon"></i>
+                      <small id="like-count-{{ post_with_status.post.id }}" class="like-{{ post_with_status.post.id }} text-muted">{{ post_with_status.post.total_likes }} likes</small>
                     </span>
                   </div>
                   <!-- Unlike Button -->
                   <div id="unlike-button-{{ post_with_status.post.id }}" {% if not post_with_status.is_liked_by_user %}style="display: none;"{% endif %}>
                     <span class="interaction-button unlike-btn" data-url="{% url 'forum:like-post' post_with_status.post.id %}">
-                      <i class="fa-solid fa-heart fa-xl unlike-icon"></i>
-                      <span id="like-count-{{ post_with_status.post.id }}" class="like-{{ post_with_status.post.id }}">{{ post_with_status.post.total_likes }} likes</span>
+                      <i class="fa-solid fa-heart fa-lg unlike-icon"></i>
+                      <small id="like-count-{{ post_with_status.post.id }}" class="like-{{ post_with_status.post.id }} text-muted">{{ post_with_status.post.total_likes }} likes</small>
                     </span>
                   </div>
                 </div>
                 <div class="col-4">
                   <span class="interaction-button">
-                    <i class="fa-regular fa-message fa-xl"></i>
-                    <small class="text-muted">9 comments</small>
-                  </span>
-                </div>
-                <div class="col-4">
-                  <span class="interaction-button">
-                    <i class="fa-regular fa-eye fa-xl interaction-btn"></i>
-                    <small class="text-muted">9 views</small>
+                    <i class="fa-regular fa-comment fa-lg"></i>
+                    <small class="text-muted"><a style="text-decoration: none;" class="link-dark" href="{% url 'forum:post_detail' post_with_status.post.id %}">9 comments</a></small>
                   </span>
                 </div>
               </div>
@@ -519,9 +513,106 @@
       
       <div class="right-sidebar bg-light p-0">
 
-        <h5 class="mt-3 ms-3">Lorem, ipsum dolor.</h5>
-        <div class="card right-sidebar-card">
+        <div class="container mt-5">
+          <!-- Must have .nav and .nav-tabs on the parent -->
+          <div class="nav nav-tabs choice-chips-container" role="tablist">
+            <button
+              class="nav-link choice-chip active"
+              id="tab1-btn"
+              data-bs-toggle="tab"
+              data-bs-target="#tab1-content"
+              type="button"
+              role="tab"
+              aria-controls="tab1-content"
+              aria-selected="true"
+            >
+              Latest
+            </button>
+            <button
+              class="nav-link choice-chip"
+              id="tab2-btn"
+              data-bs-toggle="tab"
+              data-bs-target="#tab2-content"
+              type="button"
+              role="tab"
+              aria-controls="tab2-content"
+              aria-selected="false"
+            >
+              Trending
+            </button>
+          </div>
+        
+          <!-- Tab Content -->
+            <div class="tab-content mt-4">
+              <div class="tab-pane fade show active" id="tab1-content" role="tabpanel">
+              <!-- Card 1 -->
+
+              {% if latest_posts_with_status %}
+              {% for post_with_data in latest_posts_with_status %}
+
+              <div class="card post-card mb-3 shadow-sm">
+                <div class="card-body">
+                  <!-- Top row: username & time -->
+                  <div class="d-flex justify-content-between text-muted mb-2">
+                    <span>@{{ post_with_data.post.author.username }}</span>
+                    <span>10 minutes ago</span>
+                  </div>
+
+                  <!-- Middle row: post title -->
+                  <h6 class="right-sidebar-card-title card-title mb-3">{{ post_with_data.post.title }}</h6>
+
+                  <!-- Bottom row: likes & comments -->
+                  <div class="d-flex justify-content-end align-items-center">
+                    <span class="me-3">
+                      <i class="far fa-thumbs-up"></i> {{ post_with_data.total_likes }}
+                    </span>
+                    <span>
+                      <i class="far fa-comment"></i> {{ post_with_data.total_comments }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+              {% endif %}
+
+
+              </div>
+
+              {% if trending_posts_with_data %}
+              {% for post_with_data in trending_posts_with_data %}
+
+              <div class="tab-pane fade" id="tab2-content" role="tabpanel">
+                <div class="card post-card mb-3 shadow-sm">
+                  <div class="card-body">
+                    <!-- Top row: username & time -->
+                    <div class="d-flex justify-content-between text-muted mb-2">
+                      <span>@{{ post_with_data.post.author.username }}</span>
+                      <span>10 minutes ago</span>
+                    </div>
+  
+                    <!-- Middle row: post title -->
+                    <h6 class="right-sidebar-card-title card-title mb-3">{{ post_with_data.post.title }}</h6>
+  
+                    <!-- Bottom row: likes & comments -->
+                    <div class="d-flex justify-content-end align-items-center">
+                      <span class="me-3">
+                        <i class="far fa-thumbs-up"></i> {{ post_with_data.total_likes }}
+                      </span>
+                      <span>
+                        <i class="far fa-comment"></i> {{ post_with_data.total_comments }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+              {% endif %}
+
+              </div>
+            </div>
         </div>
+        
+                <!-- <div class="card right-sidebar-card">
+        </div> -->
       </div>
 
       {% include 'forum/home/toast.html' %}

@@ -9,7 +9,7 @@ import time
 
 def ask_assistant(query: str):
 
-    ASSISTANT_ID = "asst_aG0b0m8KaHh9oH656uvqHnbe"
+    ASSISTANT_ID = "asst_ik2hya9XFKJtLUfyANn0mhIh"
     print("Query str:", query)
     # Make sure your API key is set as an environment variable.
     client = OpenAI(
@@ -138,14 +138,44 @@ def determine_moderation_action(attribute_scores):
     return final_action, actions
 
 
+# def moderate_post(post_content: str):
+
+#     # perspective api
+#     translated_content = ask_assistant(post_content)
+    
+#     # attr_scores = perspective(translated_content)
+#     attr_scores = perspective(post_content)
+#     # Actions based on perspective result
+#     final_action, actions = determine_moderation_action(attr_scores)
+
+#     print("Final Action:", final_action)
+#     print("Actions per Attribute:", actions)
+
+#     return final_action, actions
+
 def moderate_post(post_content: str):
 
-    # perspective api
+    # Attempt to translate content to English
     translated_content = ask_assistant(post_content)
-    
-    # attr_scores = perspective(translated_content)
-    attr_scores = perspective(post_content)
-    # Actions based on perspective result
+
+    # Check if translation is not available
+    if translated_content.strip().lower() == "translation not available at this time.":
+        # Since we cannot translate, do not call perspective
+        # Accept the post and set all attributes to 'Accept'
+        final_action = 'Accept'
+        actions = {
+            'TOXICITY': 'Accept',
+            'INSULT': 'Accept',
+            'PROFANITY': 'Accept',
+            'THREAT': 'Accept',
+            'IDENTITY_ATTACK': 'Accept'
+        }
+        print("Final Action:", final_action)
+        print("Actions per Attribute:", actions)
+        return final_action, actions
+
+    # If translation is available, proceed with moderation using the translated content
+    attr_scores = perspective(translated_content)
     final_action, actions = determine_moderation_action(attr_scores)
 
     print("Final Action:", final_action)
@@ -154,8 +184,8 @@ def moderate_post(post_content: str):
     return final_action, actions
 
 
-# image moderation
 
+# image moderation
 def img_score(img_path: str) -> dict:
 
     headers = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzQ1ZWIxZTUtYzI5Mi00OTE5LTg5Y2YtM2I3ODJhN2I0YTgwIiwidHlwZSI6ImFwaV90b2tlbiJ9.uIF8cuAlcDD_ryHrZK1c-QByA1qmJvWSqCPS2V7WPko"}

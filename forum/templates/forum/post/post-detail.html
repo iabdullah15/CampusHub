@@ -76,84 +76,6 @@
           {% endfor %}
         {% endif %}
       </ul>
-      <h5 class="mt-3">Job Groups</h5>
-      <ul class="nav flex-column">
-        <li class="nav-item">
-          <a class="nav-link active left-sidebar-link" href="#"
-            >Software Engineering</a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Product Managment</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Finance</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#"
-            >Management and Consulting</a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#"
-            >Investment Banking & Sell Side</a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Finance</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Data Science</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Security</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#"
-            >Information Technology</a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Security</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Human Resources</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Operations</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Legal</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Supply Chain</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Customer Service</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Design</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Marketing</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Admin</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#"
-            >Information Technology</a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#">Marketing</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#"
-            >Hardware Engineering</a
-          >
-        </li>
-      </ul>
     </div>
 
     <div class="main-feed">
@@ -179,20 +101,51 @@
 
       <div class="card mb-3 post-card">
         <div class="card-body">
-          <div class="card-title d-flex justify-content-between align-items-center">
-            <a class="back-link btn btn-outline-light" href="{% url 'forum:home' %}">
-              <i class="fa-solid fa-arrow-left back-icon"></i>
-            </a>
-            <span class="mx-3" style="font-weight: 500; font-size: 1.4rem">{{ post.community.community_name }}</span>
-            <div class="d-flex align-items-center ms-auto">
-              <span class="text-muted me-3" style="font-weight: 400; font-size: 1rem">{{ post.time_created|naturaltime }}</span>
+          <!-- Top row: Placeholder image + (Category/time, Community/username) + Ellipsis -->
+          <div class="d-flex align-items-center">
+            <!-- Small circle placeholder image -->
+            <img
+              src="https://via.placeholder.com/40"
+              alt="Placeholder"
+              class="rounded-circle me-3"
+              style="width: 40px; height: 40px; object-fit: cover;"
+            />
+      
+            <!-- Flex column for the two 'rows' -->
+            <div class="d-flex flex-column">
+              <!-- Row 1: Category + Time Created -->
+              <div class="d-flex mb-2">
+                {% if post.category %}
+                  <h6 class="card-subtitle mb-0 me-2 post-detail-heading">
+                    {{ post.category }}
+                  </h6>
+                {% endif %}
+                <small class="card-subtitle mb-0 text-body-secondary post-detail-heading-time">
+                  {{ post.time_created|naturaltime }}
+                </small>
+              </div>
+      
+              <!-- Row 2: Community + Username -->
+              <div class="d-flex">
+                {% if post.community %}
+                  <small class="card-subtitle mb-0 text-muted me-2">
+                    {{ post.community.community_name }}
+                  </small>
+                {% endif %}
+                <small class="card-subtitle mb-0 text-muted me-2">
+                  {{ post.author.username }}
+                </small>
+              </div>
+            </div>
+      
+            <!-- Ellipsis (dropdown) on the far right -->
+            <div class="ms-auto">
               <div class="post-option-icon-container dropdown">
                 <i
                   class="fa-solid fa-ellipsis post-options-icon fa-lg"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 ></i>
-      
                 <!-- Dropdown menu -->
                 <ul class="dropdown-menu dropdown-menu" aria-labelledby="dropdownMenuButton">
                   {% if request.user == post.author %}
@@ -223,66 +176,37 @@
             </div>
           </div>
         </div>
-
-
-
+      
+        <!-- Post Title and Body -->
         <div class="title-body-container container ms-2">
-
           <h5 class="card-title mb-3">
-            {{post.title}}
+            {{ post.title }}
           </h5>
-          <!-- Community and Category -->
-          <div class="d-flex align-items-center custom-subtitle-container mb-2">
-            <h6 class="card-subtitle mb-0 text-body-secondary">{{ post.author.username }}</h6>
-          </div>
-          <div class="d-flex align-items-center custom-subtitle-container mb-4">
-              <!-- Community and Category -->
-            {% if post.community %}
-            <h6 class="card-subtitle mb-0 text-body-secondary">{{ post.community }}</h6>
-            {% endif %}
-            {% if post.community and post.category %}
-            <h6 class="card-subtitle mb-0 text-body-secondary mx-2">-</h6>
-            {% endif %}
-            {% if post.category %}
-            <h6 class="card-subtitle mb-0 text-body-secondary">{{ post.category }}</h6>
-            {% endif %}
-            {% if post.poll %}
-            <h6 class="card-subtitle mb-0 text-body-secondary mx-2">-</h6>
-            <h6 class="card-subtitle mb-0 text-body-secondary">Poll</h6>
-            {% endif %}
-
-            
-            {% if post.poll %}
-            <h6 class="card-subtitle mb-2 text-body-secondary">-</h6>
-              <h6 class="card-subtitle mb-2 text-body-secondary">Poll</h6>
-            {% endif %}
-              
-        </div>
+      
           <p class="card-text mt-2 post-body">
-            {{post.body}}
+            {{ post.body }}
           </p>
         </div>
-
-          <!-- Thumbnail -->
-          {% if post.image %}
-            <div class="container-fluid mt-3 thumbnail-container">
-              <img
-                src="{{post.image.url}} "
-                alt="Thumbnail"
-                class="img-thumbnail"
-                data-bs-toggle="modal"
-                data-bs-target="#imageModal-{{ post.id }}"
-                style="cursor: pointer"
-              />
-            </div>
-          {% endif %}
-
-          <!-- Modal -->
-          <!-- Unique modal ID -->
+      
+        <!-- Thumbnail (if exists) -->
+        {% if post.image %}
+          <div class="container-fluid mt-3 thumbnail-container">
+            <img
+              src="{{ post.image.url }}"
+              alt="Thumbnail"
+              class="img-thumbnail"
+              data-bs-toggle="modal"
+              data-bs-target="#imageModal-{{ post.id }}"
+              style="cursor: pointer"
+            />
+          </div>
+        {% endif %}
+      
+        <!-- Modal for image (if exists) -->
         {% if post.image %}
           <div
             class="modal modal-md fade"
-            id="imageModal-{{ post.id }}" 
+            id="imageModal-{{ post.id }}"
             tabindex="-1"
             aria-labelledby="imageModalLabel"
             aria-hidden="true"
@@ -299,7 +223,7 @@
                 </div>
                 <div class="modal-body">
                   <img
-                    src="{{post.image.url}}"
+                    src="{{ post.image.url }}"
                     alt="Full-size Image"
                     class="img-fluid"
                   />
@@ -308,82 +232,87 @@
             </div>
           </div>
         {% endif %}
-
-          
-          {% if poll %}
-            <div class="poll-container" data-post-id="{{ post.id }}" data-poll-id="{{ poll.id }}">
-                <ul class="list-group">
-                    {% for choice in poll_choices %}
-                      <li class="list-group-item d-flex align-items-center justify-content-between">
-                        <div class="form-check">
-                            <input
-                                class="form-check-input poll-option"
-                                type="radio"
-                                name="pollChoice"
-                                id="choice{{ choice.choice.id }}"
-                                data-choice-id="{{ choice.choice.id }}"
-                                {% if user_vote and user_vote.choice.id == choice.choice.id %}checked{% endif %}>
-                            <label class="form-check-label" for="choice{{ choice.choice.id }}">
-                                {{ choice.choice.choice_text }}
-                            </label>
-                        </div>
-                        <span class="badge bg-light text-primary" id="percentage-{{ choice.choice.id }}">
-                            {{ choice.percentage|floatformat:1 }}%
-                        </span>
-                      </li>
-                    {% endfor %}
-                </ul>
-            </div>
-          {% endif %}
-
-          <div class="interaction-container p-3" data-liked="{% if is_liked_by_user %}true{% else %}false{% endif %}">
-            <p class="card-text">
-              <small class="text-muted">
-
-            <!-- Like Button (shown if the post is not liked by the user) -->
-
-                <span class="interaction-button like-btn" id="like-button" data-url="{% url 'forum:like-post' post.id %}">
-                    <i class="fa-regular fa-heart fa-xl like-icon"></i>
-                    <span class="like-count">{{ post.total_likes }} likes</span>
-                </span>
-
-                <!-- Unlike Button (shown if the post is liked by the user) -->
-
-                <span class="interaction-button unlike-btn" id="unlike-button" data-url="{% url 'forum:like-post' post.id %}">
-                    <i class="fa-solid fa-heart fa-xl unlike-icon"></i>
-                    <span class="like-count">{{ post.total_likes }} likes</span>
-                </span>
-
-
-                <span class="interaction-button">
-                  <i class="fa-regular fa-message fa-xl comment-icon"></i> {{comment_count}}
-                  comments
-                </span>
-                <span class="interaction-button">
-                  <i class="fa-regular fa-eye fa-xl views-icon"></i> 1,935
-                  views
-                </span>
-              </small>
-            </p>
+      
+        <!-- Poll (if exists) -->
+        {% if poll %}
+          <div class="poll-container" data-post-id="{{ post.id }}" data-poll-id="{{ poll.id }}">
+            <ul class="list-group">
+              {% for choice in poll_choices %}
+                <li class="list-group-item d-flex align-items-center justify-content-between">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input poll-option"
+                      type="radio"
+                      name="pollChoice"
+                      id="choice{{ choice.choice.id }}"
+                      data-choice-id="{{ choice.choice.id }}"
+                      {% if user_vote and user_vote.choice.id == choice.choice.id %}checked{% endif %}
+                    />
+                    <label class="form-check-label" for="choice{{ choice.choice.id }}">
+                      {{ choice.choice.choice_text }}
+                    </label>
+                  </div>
+                  <span class="badge bg-light text-primary" id="percentage-{{ choice.choice.id }}">
+                    {{ choice.percentage|floatformat:1 }}%
+                  </span>
+                </li>
+              {% endfor %}
+            </ul>
           </div>
+        {% endif %}
+      
+        <!-- Interaction Buttons -->
+        <div
+          class="interaction-container p-3"
+          data-liked="{% if is_liked_by_user %}true{% else %}false{% endif %}"
+        >
+          <p class="card-text">
+            <small class="text-muted">
+              <!-- Like/Unlike -->
+              <span
+                class="interaction-button like-btn"
+                id="like-button"
+                data-url="{% url 'forum:like-post' post.id %}"
+              >
+                <i class="fa-regular fa-heart fa-lg like-icon"></i>
+                <span class="like-count">{{ post.total_likes }} likes</span>
+              </span>
+      
+              <span
+                class="interaction-button unlike-btn"
+                id="unlike-button"
+                data-url="{% url 'forum:like-post' post.id %}"
+              >
+                <i class="fa-solid fa-heart fa-lg unlike-icon"></i>
+                <span class="like-count">{{ post.total_likes }} likes</span>
+              </span>
+      
+              <!-- Comments -->
+              <span class="interaction-button">
+                <i class="fa-regular fa-comment fa-lg comment-icon"></i> {{ comment_count }} comments
+              </span>
+      
+              <!-- Views -->
+              <span class="interaction-button">
+                <i class="fa-regular fa-eye fa-lg views-icon"></i> 1,935 views
+              </span>
+            </small>
+          </p>
         </div>
+      </div>
+      
 
-        <div class="container-fluid comments-container">
-          <form action="{% url 'forum:post_comment' post.id %}" method="post">
+        <div class="container-fluid outer-comments-container">
+          <!-- <form action="{% url 'forum:post_comment' post.id %}" method="post">
             <div class="post-comment-container mb-4">
               {% csrf_token %}
 
               {{comment_form|crispy}}
 
               <div class="comment-btn-container mt-4">
-
-                  <!-- Post comment button -->
-
                   <button style="display: none" id="CommentSubmitButton" class="btn btn-outline-dark ms-2" type="submit">              
                     Comment
                   </button>
-
-                  <!-- Cancel comment button -->
                   <a
                   id="CancelButton"
                   class="btn btn-outline-dark ms-2"
@@ -391,12 +320,28 @@
                 >
                   Cancel
                 </a>
-
-
               </div>
 
             </div>
-          </form>
+          </form> -->
+
+          <div class="sticky-comment-container">
+            <div class="post-comment-container">
+              <form action="{% url 'forum:post_comment' post.id %}" method="post">
+                <p class="text-muted">Add a comment</p>
+                {% csrf_token %}
+                {{ comment_form|crispy }}
+                <div class="comment-btn-container mt-4">
+                  <button id="CommentSubmitButton" class="btn btn-outline-dark ms-2" type="submit" style="display: none">
+                    Comment
+                  </button>
+                  <a id="CancelButton" class="btn btn-outline-dark ms-2" style="display: none">
+                    Cancel
+                  </a>
+                </div>
+              </form>
+            </div>
+          </div>
 
           <hr class="w-100" />
 
@@ -412,10 +357,11 @@
                   <div class="card-body">
  
 
-                    <div class="d-flex align-items-center">
-                      <h6 class="card-title">
-                        Department name <span>{{ comment_with_status.comment.author.username }}</span>
-                        <span>{{ comment_with_status.comment.time_created|naturaltime }}
+                    <div class="d-flex align-items-center comment-body-content">
+                      <h6 class="card-title comment-body-title mb-2">
+                        <span> 
+                        {% if comment_with_status.comment.author.department %}{{ comment_with_status.comment.author.department }} </span> {% endif %}<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none"><circle cx="6" cy="7.125" r="1.125" fill="currentColor"></circle></svg> <span>{{ comment_with_status.comment.author.username }}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none"><circle cx="6" cy="7.125" r="1.125" fill="currentColor"></circle></svg><span>{{ comment_with_status.comment.time_created|naturaltime }}
                       </h6>
                       {% if request.user == comment_with_status.comment.author %}
                       <div class="post-option-icon-container dropdown ms-auto">
@@ -443,7 +389,7 @@
                       {% endif %}
 
                     </div>
-                    <p class="card-text comment-text">
+                    <p class="card-text comment-text my-1">
                       {{ comment_with_status.comment.comment_body }}
                     </p>
 
@@ -472,13 +418,13 @@
                 <div class="comment-interaction-container">
                   <!-- Like Button (shown if the comment is not liked by the user) -->
                   <span class="interaction-button mt-2 comment-like-btn" id="like-comment-{{ comment_with_status.comment.id }}" data-url="{% url 'forum:like_comment' comment_with_status.comment.id %}" {% if comment_with_status.is_liked_by_user %}style="display:none;"{% endif %}>
-                    <i class="fa-regular fa-heart fa-lg like-icon"></i>
+                    <i class="fa-regular fa-heart fa-md like-icon"></i>
                     <span class="comment-like-count-{{ comment_with_status.comment.id }}" id="comment-like-count-{{ comment_with_status.comment.id }}">{{ comment_with_status.total_likes }} likes</span>
                   </span>
 
                   <!-- Unlike Button (shown if the comment is liked by the user) -->
                   <span class="interaction-button mt-2 comment-like-btn" id="unlike-comment-{{ comment_with_status.comment.id }}" data-url="{% url 'forum:like_comment' comment_with_status.comment.id %}" {% if not comment_with_status.is_liked_by_user %}style="display:none;"{% endif %}>
-                    <i class="fa-solid fa-heart fa-lg unlike-icon"></i>
+                    <i class="fa-solid fa-heart fa-md unlike-icon"></i>
                     <span class="comment-like-count-{{ comment_with_status.comment.id }}" id="comment-like-count-{{ comment_with_status.comment.id }}">{{ comment_with_status.total_likes }} likes</span>
                   </span>
 
@@ -580,9 +526,11 @@
                       <div class="card comment-reply-card" data-reply-id="{{ reply.id }}">
                           <div class="card-body">
                               <div class="d-flex align-items-center">
-                                  <h6 class="card-title">
-                                      Department <span>{{ reply.author.username }}</span>
-                                      <span>{{ reply.time_created|naturaltime }}</span>
+                                  <h6 class="card-title reply-comment-body-title mb-2">
+                                    <span> 
+                                      {% if reply.author.department %}{{ reply.author.department }} </span> {% endif %}<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none"><circle cx="6" cy="7.125" r="1.125" fill="currentColor"></circle></svg> <span><span>{{ reply.author.username }}</span></span>
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none"><circle cx="6" cy="7.125" r="1.125" fill="currentColor"></circle></svg><span>{{ reply.time_created|naturaltime }}
+                                      
                                   </h6>
                                   {% if request.user == reply.author %}
                                   <div class="post-option-icon-container dropdown ms-auto">
@@ -608,7 +556,7 @@
                                   {% endif %}
                               </div>
               
-                              <p class="card-text reply-text">{{ reply.reply_body }}</p>
+                              <p class="card-text reply-text my-1">{{ reply.reply_body }}</p>
               
                               <!-- Edit Reply Form -->
                               <div class="edit-reply-form mt-3" style="display: none;">

@@ -19,7 +19,7 @@ from .forms import PostForm, PostCommentForm, PostCommentReplyForm, UpdateProfil
 from django.contrib.auth import update_session_auth_hash
 from .helpers import ask_assistant, moderate_post, moderate_img
 from user.models import CustomUser
-from django.db.models import Q
+from django.db.models import Q, Count, F, Sum
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
@@ -33,8 +33,43 @@ class HomePageView(View):
 
             communities = PostCommunity.objects.all().order_by('community_name')
             all_posts = Post.objects.all().order_by("-time_created")
+            
+            seven_days_ago = timezone.now() - timedelta(days=7)
+            latest_posts = Post.objects.filter(time_created__gte=seven_days_ago)
 
-            # Create a list of posts with their like status (Current user)
+            # Latest Posts with like and comment count
+            latest_posts_with_like_status_and_comments = []
+
+            for post in latest_posts:
+                print(post)
+                like_count = post.likes.filter(is_liked=True).count()  # Using the related name 'likes'
+                comment_count = post.comments.count()  # Using the related name 'comments'
+
+                latest_posts_with_like_status_and_comments.append({
+                    'post': post,
+                    'total_likes': like_count,                    
+                    'total_comments': comment_count
+                })
+                
+                
+            # Fetch trending posts for the last 10 days
+            ten_days_ago = timezone.now() - timedelta(days=10)
+            trending_posts = (
+                Post.objects.filter(time_created__gte=ten_days_ago)
+                .annotate(total_interactions=Count('likes', filter=F('likes__is_liked')) + Count('comments'))
+                .order_by('-total_interactions')[:10]  # Top 10 posts by total interactions
+            )
+
+            trending_posts_with_data = []
+            for post in trending_posts:
+                trending_posts_with_data.append({
+                    'post': post,
+                    'total_interactions': post.total_interactions,
+                    'total_likes': post.likes.filter(is_liked=True).count(),
+                    'total_comments': post.comments.count(),
+                })
+                
+            # Create a list of posts with their like status for the main feed (Current user) 
             posts_with_like_status = []
             for post in all_posts:
 
@@ -47,6 +82,8 @@ class HomePageView(View):
 
             return render(request, self.template_name, {
                 'posts_with_like_status': posts_with_like_status,
+                'latest_posts_with_status': latest_posts_with_like_status_and_comments,
+                'trending_posts_with_data': trending_posts_with_data,
                 'communities': communities,
             })
 

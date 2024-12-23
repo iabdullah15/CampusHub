@@ -9,16 +9,26 @@ body {
   overflow-y: auto;
   padding: 20px;
   margin-left: 350px;
+  padding-bottom: 5rem;
 }
 
 .post-card {
   border: none;
+  border-radius: 15px;
 }
 
-.back-link {
-  color: black;
+.card-title:hover{
   text-decoration: none;
-  border: none;
+}
+
+.post-detail-heading {
+  color: black;
+  font-size: 0.9rem;
+
+}
+
+.post-detail-heading-time {
+    font-size: .75rem;
 }
 
 .list-group-item:hover {
@@ -35,7 +45,7 @@ body {
 }
 
 .interaction-button {
-  background-color: #e5ebee;
+  background-color: #f4f6f7;
   border-radius: 15px;
   padding: 0.5rem;
   margin-right: 10px;
@@ -74,7 +84,7 @@ body {
 
 #CommentSubmitButton,
 #CancelButton {
-  width: 15%;
+  width: 40%;
 }
 
 .comment-card,
@@ -86,6 +96,11 @@ body {
 
 .comment-interaction-container {
   margin-top: 1rem;
+}
+
+.comment-body-title:hover,
+.reply-comment-body-title:hover {
+  text-decoration: none;
 }
 
 .reply-link {
@@ -102,4 +117,64 @@ body {
   width: 60%;
   margin-top: 1rem;
   margin-left: 10%;
+}
+
+.sticky-comment-container {
+  position: fixed;
+  bottom: 0;
+  width: 100%; /* Adjust based on sidebar width */
+  max-width: 900px; /* Ensure it doesn't exceed the main content width */
+  margin-left: auto;
+  margin-right: 30rem;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 15px;
+  border-radius: 20px;
+}
+
+.post-comment-container {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1600px) {
+  .sticky-comment-container {
+    width: 40%;
+    padding: 10px;
+    margin-right: 28%;
+  }
+}
+
+@media (max-width: 1250px) {
+  .sticky-comment-container {
+    width: 40%;
+    padding: 10px;
+    margin-right: 20%;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .sticky-comment-container {
+    width: 60%;
+    padding: 10px;
+  }
+}
+
+.outer-comments-container {
+  padding-top: 2rem;
+  padding-bottom: 0.5rem;
+  background-color: #fff;
+  border-radius: 15px;
+}
+
+label[for="id_reply_body"] {
+  display: none;
+}
+
+label[for="CommentFormControlTextarea1"] {
+  display: none;
 }
