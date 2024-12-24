@@ -1,0 +1,15 @@
+/* colors.css */
+:root {
+  /* Primary Colors */
+  --primary-color: #0077b6; /* Modern Blue */
+  --secondary-color: #90e0ef; /* Light Aqua */
+  --accent-color: #ff6b6b; /* Vibrant Red */
+  --tw-bg-opacity: 1;
+  --nav-link-bg: rgb(239 240 244 / var(--tw-bg-opacity, 1));
+
+  /* Neutral Colors */
+  --background-color: #f8f9fa; /* Soft White */
+  --text-color: #212529; /* Dark Grey */
+  --text-secondary-color: #F1F1F1; /* Soft Off-White for Secondary Text */
+  --border-color: #e0e0e0; /* Light Gray */
+}

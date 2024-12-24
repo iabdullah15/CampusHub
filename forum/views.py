@@ -77,7 +77,8 @@ class HomePageView(View):
                     post=post, user=request.user, is_liked=True).exists()
                 posts_with_like_status.append({
                     'post': post,
-                    'is_liked_by_user': is_liked_by_user
+                    'is_liked_by_user': is_liked_by_user,
+                    'total_comments':post.comments.count(),
                 })
 
             return render(request, self.template_name, {
@@ -363,6 +364,7 @@ class CreatePostWithPollView(View):
             # Format content for moderation
             title = post_form.cleaned_data.get('title')
             body = post_form.cleaned_data.get('body')
+            print(body)
             image = post_form.cleaned_data.get('image')
             print(f"Image : {image}")
 
@@ -517,13 +519,135 @@ class UpdatePostWithPollView(View):
             'post': post,
         })
 
+    # def post(self, request, post_id: int):
+    #     print(request.POST)
+
+    #     post = get_object_or_404(Post, id=post_id, author=request.user)
+    #     poll = get_object_or_404(Poll, post=post)
+    #     post_form = PostForm(request.POST, request.FILES, instance=post)
+    #     poll_choice_formset = PollChoiceFormSet(
+    #         request.POST, queryset=poll.choices.all()
+    #     )
+
+    #     if post_form.is_valid() and poll_choice_formset.is_valid():
+    #         author = request.user
+
+    #         # Check if the user is suspended
+    #         if author.is_suspended and author.suspension_end_date:
+    #             if timezone.now() < author.suspension_end_date:
+    #                 messages.error(
+    #                     request,
+    #                     f"Your account is suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}. You cannot edit posts."
+    #                 )
+    #                 return redirect('forum:profile', username=author.username)
+
+    #         # Save the post form
+    #         post_form.save()
+
+    #         # Process poll choices
+    #         choices = []
+    #         for form in poll_choice_formset:
+    #             if form.cleaned_data.get('DELETE'):
+    #                 form.instance.delete()
+    #                 continue  # Skip deleted choices
+
+    #             choice_text = form.cleaned_data.get('choice_text')
+    #             if choice_text:
+    #                 # Explicitly set the poll for new choices
+    #                 if form.instance.pk is None:
+    #                     form.instance.poll = poll
+    #                 choices.append(form.instance)
+    #                 form.save()
+
+    #         if len(choices) < 2:
+    #             messages.error(
+    #                 request, 'Please provide at least two choices for the poll.')
+    #             return render(request, self.template_name, {
+    #                 'post_form': post_form,
+    #                 'poll_choice_formset': poll_choice_formset,
+    #             })
+
+    #         # Format content for moderation
+    #         title = post_form.cleaned_data.get('title')
+    #         body = post_form.cleaned_data.get('body')
+    #         image = post_form.cleaned_data.get('image')
+    #         choices_content = '\n'.join(
+    #             [choice.choice_text for choice in choices])
+    #         content = f'{title}\n\n{body}\n\nChoices:\n{choices_content}'
+
+    #         # Text Moderation
+    #         final_action, actions = moderate_post(post_content=content)
+
+    #         # Image Moderation
+    #         image_final_action = 'Accepted'
+    #         image_nsfw_score = None
+
+    #         if image:
+    #             image_nsfw_score = moderate_img(image)
+    #             if image_nsfw_score >= 0.5 and image_nsfw_score <= 0.6:
+    #                 image_final_action = 'Warning Issued'
+    #                 author.warning_count += 1
+    #                 author.save()
+    #             elif image_nsfw_score > 0.6:
+    #                 image_final_action = 'Rejected'
+
+    #         # Decide moderation actions
+    #         if final_action == 'Reject' or image_final_action == 'Rejected':
+    #             author.rejection_count += 1
+    #             author.save()
+
+    #             if author.rejection_count >= 5 and not author.is_suspended:
+    #                 author.is_suspended = True
+    #                 author.suspension_end_date = timezone.now() + timedelta(days=7)
+    #                 author.save()
+    #                 messages.error(
+    #                     request,
+    #                     f"Your post was rejected due to guideline violations. Your account has been suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}."
+    #                 )
+    #             else:
+    #                 messages.error(
+    #                     request,
+    #                     "Your post was rejected due to guideline violations. Please review the community guidelines."
+    #                 )
+
+    #             return render(request, self.template_name, {
+    #                 'post_form': post_form,
+    #                 'poll_choice_formset': poll_choice_formset,
+    #             })
+
+    #         elif final_action == 'Accept' and image_final_action == 'Accepted':
+    #             messages.success(request, 'Post updated successfully!')
+    #             return redirect('forum:post_detail', pk=post.pk)
+
+    #         elif final_action == 'Issue Warning' or image_final_action == 'Warning Issued':
+    #             author.warning_count += 1
+    #             author.save()
+    #             messages.warning(
+    #                 request,
+    #                 "Your post was updated but contains content that may violate guidelines. Please review the community guidelines."
+    #             )
+    #             return redirect('forum:post_detail', pk=post.pk)
+    #     else:
+    #         # Log errors to understand why it fails
+    #         print("Post Form Errors:", post_form.errors)
+    #         print("Formset Errors:", poll_choice_formset.errors)
+    #         messages.error(request, 'There was an error in your submission.')
+
+    #     return render(request, self.template_name, {
+    #         'post': post,
+    #         'post_form': post_form,
+    #         'poll_choice_formset': poll_choice_formset,
+    #     })
+
     def post(self, request, post_id: int):
+
         post = get_object_or_404(Post, id=post_id, author=request.user)
         poll = get_object_or_404(Poll, post=post)
         post_form = PostForm(request.POST, request.FILES, instance=post)
-        poll_choice_formset = PollChoiceFormSet(
-            request.POST, queryset=poll.choices.all()
-        )
+        poll_choice_formset = PollChoiceFormSet(request.POST, queryset=poll.choices.all())
+
+        # Log POST data for debugging
+        print("Received POST data:", request.POST)
 
         if post_form.is_valid() and poll_choice_formset.is_valid():
             author = request.user
@@ -533,94 +657,103 @@ class UpdatePostWithPollView(View):
                 if timezone.now() < author.suspension_end_date:
                     messages.error(
                         request,
-                        f"Your account is suspended until {author.suspension_end_date.strftime(
-                            '%Y-%m-%d %H:%M:%S')}. You cannot edit posts."
+                        f"Your account is suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}. You cannot edit posts."
                     )
                     return redirect('forum:profile', username=author.username)
 
-            # Process poll choices
-            choices = []
-            for form in poll_choice_formset:
-                if form.cleaned_data.get('DELETE'):
-                    form.instance.delete()
-                    continue  # Skip deleted choices
-                choice_text = form.cleaned_data.get('choice_text')
-                if choice_text:
-                    choices.append(form.instance)
-                    form.save()
+            with transaction.atomic():  # Use transaction for atomic operations
+                # Save the post form
+                post_form.save()
 
-            if len(choices) < 2:
-                messages.error(
-                    request, 'Please provide at least two choices for the poll.')
-                return render(request, self.template_name, {
-                    'post_form': post_form,
-                    'poll_choice_formset': poll_choice_formset,
-                })
+                # Process poll choices
+                choices = []
+                for form in poll_choice_formset:
+                    if form.cleaned_data.get('DELETE'):  # Handle deletion
+                        if form.instance.pk:
+                            form.instance.delete()
+                        continue
 
-            # Format content for moderation
-            title = post_form.cleaned_data.get('title')
-            body = post_form.cleaned_data.get('body')
-            image = post_form.cleaned_data.get('image')
-            choices_content = '\n'.join(
-                [choice.choice_text for choice in choices])
-            content = f'{title}\n\n{body}\n\nChoices:\n{choices_content}'
+                    # Handle new or updated choices
+                    choice_text = form.cleaned_data.get('choice_text')
+                    if choice_text:
+                        if form.instance.pk is None:
+                            form.instance.poll = poll
+                        form.save()
+                        choices.append(form.instance)
 
-            # Text Moderation
-            final_action, actions = moderate_post(post_content=content)
+                # Ensure at least two choices remain
+                if len(choices) < 2:
+                    messages.error(
+                        request, 'You must have at least two choices for the poll.'
+                    )
+                    return render(request, self.template_name, {
+                        'post_form': post_form,
+                        'poll_choice_formset': poll_choice_formset,
+                    })
 
-            # Image Moderation
-            image_final_action = 'Accepted'
-            image_nsfw_score = None
+                # Format content for moderation
+                title = post_form.cleaned_data.get('title')
+                body = post_form.cleaned_data.get('body')
+                image = post_form.cleaned_data.get('image')
+                choices_content = '\n'.join([choice.choice_text for choice in choices])
+                content = f'{title}\n\n{body}\n\nChoices:\n{choices_content}'
 
-            if image:
-                image_nsfw_score = moderate_img(image)
-                if image_nsfw_score >= 0.5 and image_nsfw_score <= 0.6:
-                    image_final_action = 'Warning Issued'
+                # Text Moderation
+                final_action, actions = moderate_post(post_content=content)
+
+                # Image Moderation
+                image_final_action = 'Accepted'
+                image_nsfw_score = None
+
+                if image:
+                    image_nsfw_score = moderate_img(image)
+                    if 0.5 <= image_nsfw_score <= 0.6:
+                        image_final_action = 'Warning Issued'
+                        author.warning_count += 1
+                        author.save()
+                    elif image_nsfw_score > 0.6:
+                        image_final_action = 'Rejected'
+
+                # Decide moderation actions
+                if final_action == 'Reject' or image_final_action == 'Rejected':
+                    author.rejection_count += 1
+                    author.save()
+
+                    if author.rejection_count >= 5 and not author.is_suspended:
+                        author.is_suspended = True
+                        author.suspension_end_date = timezone.now() + timedelta(days=7)
+                        author.save()
+                        messages.error(
+                            request,
+                            f"Your post was rejected due to guideline violations. Your account has been suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}."
+                        )
+                    else:
+                        messages.error(
+                            request,
+                            "Your post was rejected due to guideline violations. Please review the community guidelines."
+                        )
+
+                    return render(request, self.template_name, {
+                        'post_form': post_form,
+                        'poll_choice_formset': poll_choice_formset,
+                    })
+
+                elif final_action == 'Accept' and image_final_action == 'Accepted':
+                    messages.success(request, 'Poll updated successfully!')
+                    return redirect('forum:post_detail', pk=post.pk)
+
+                elif final_action == 'Issue Warning' or image_final_action == 'Warning Issued':
                     author.warning_count += 1
                     author.save()
-                elif image_nsfw_score > 0.6:
-                    image_final_action = 'Rejected'
-
-            # Decide moderation actions
-            if final_action == 'Reject' or image_final_action == 'Rejected':
-                author.rejection_count += 1
-                author.save()
-
-                if author.rejection_count >= 5 and not author.is_suspended:
-                    author.is_suspended = True
-                    author.suspension_end_date = timezone.now() + timedelta(days=7)
-                    author.save()
-                    messages.error(
+                    messages.warning(
                         request,
-                        f"Your post was rejected due to guideline violations. Your account has been suspended until {
-                            author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}."
+                        "Your post was updated but contains content that may violate guidelines. Please review the community guidelines."
                     )
-                else:
-                    messages.error(
-                        request,
-                        "Your post was rejected due to guideline violations. Please review the community guidelines."
-                    )
-
-                return render(request, self.template_name, {
-                    'post_form': post_form,
-                    'poll_choice_formset': poll_choice_formset,
-                })
-
-            elif final_action == 'Accept' and image_final_action == 'Accepted':
-                post_form.save()
-                messages.success(request, 'Post updated successfully!')
-                return redirect('forum:post_detail', pk=post.pk)
-
-            elif final_action == 'Issue Warning' or image_final_action == 'Warning Issued':
-                author.warning_count += 1
-                author.save()
-                post_form.save()
-                messages.warning(
-                    request,
-                    "Your post was updated but contains content that may violate guidelines. Please review the community guidelines."
-                )
-                return redirect('forum:post_detail', pk=post.pk)
+                    return redirect('forum:post_detail', pk=post.pk)
         else:
+            # Log errors to understand why validation fails
+            print("Post Form Errors:", post_form.errors)
+            print("Formset Errors:", poll_choice_formset.errors)
             messages.error(request, 'There was an error in your submission.')
 
         return render(request, self.template_name, {
@@ -628,6 +761,7 @@ class UpdatePostWithPollView(View):
             'post_form': post_form,
             'poll_choice_formset': poll_choice_formset,
         })
+
 
 
 class Vote(View):
@@ -1064,6 +1198,7 @@ class ProfileView(View):
 
     def get(self, request: HttpRequest, username: str):
 
+        communities = PostCommunity.objects.all().order_by('community_name')
         user_posts = Post.objects.filter(
             author=request.user).order_by("-time_created")
         user_comments = PostComment.objects.filter(author=request.user)
@@ -1074,7 +1209,8 @@ class ProfileView(View):
             user=request.user)  # Use the custom form
 
         return render(request, self.template_name, {"posts": user_posts, "commented_posts": user_commented_posts,
-                                                    "profile_form": profile_form, "password_form": password_form})
+                                                    "profile_form": profile_form, "password_form": password_form, 
+                                                    "communities":communities,})
 
     def post(self, request, username):
         profile_form = UpdateProfileForm(

@@ -6,6 +6,8 @@ class PostCommunity(models.Model):
 
     community_name = models.CharField(max_length=50)
     community_sidebar_logo = models.ImageField(null=True, blank=True)
+    community_cover_image = models.ImageField(null=True, blank=True)
+    community_post_image = models.ImageField(null=True, blank=True)
 
     def __str__(self) -> str:
         return self.community_name

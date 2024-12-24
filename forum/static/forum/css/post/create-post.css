@@ -1,63 +1,170 @@
+/* Overall page background and text color */
 body {
-    background-color: rgb(248, 249, 250);
-    /* --bs-light-rgb: 248, 249, 250; */
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
+/* Container spacing remains the same */
 .create-post-container {
   margin-top: 7rem;
+  padding-bottom: 3rem;
 }
 
+/* Heading Text */
 .heading-text {
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-    color: gray;
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  /* Soft grey for subtle contrast; you can also use var(--text-color) if you prefer */
+  color: #6c757d;
 }
 
+/* Maintain max-width for form elements; just apply palette styles */
 .form-control,
 .select-container,
-.submit-btn-container,
 .select-text {
   max-width: 60%;
 }
 
+/* Community & Category <select> fields */
 .select-container select {
   max-width: 40%;
+  background-color: var(--text-secondary-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  border-radius: 0.3rem;
+  transition: border-color 0.2s ease;
+}
+.select-container select:focus {
+  border-color: var(--primary-color);
+  outline: none; /* Remove default focus outline if preferred */
 }
 
+/* Center the select containers and text */
 .select-container,
 .submit-btn-container,
-.select-text, .post-img-container {
+.select-text,
+.post-img-container {
   margin-left: auto;
   margin-right: auto;
 }
 
-#id_title, #id_body {
-    max-width: 100%;
-    border-radius: 20px;
+.add-poll-btn {
+  background-color: var(--primary-color); /* Modern Blue */
+  color: var(--text-secondary-color);     /* Soft Off-White for text */
+  border: none;                           /* Clean design */
+  padding: 10px 20px;                     /* Add some spacing */
+  font-size: 1rem;                        /* Keep text size consistent */
+  font-weight: 600;                       /* Bold text for emphasis */
+  border-radius: 8px;                     /* Smooth rounded corners */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for elevation */
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s; /* Smooth animations */
 }
 
+/* Optional: If you add an icon in this button, match its color to the text */
+.add-poll-btn i {
+  color: var(--text-secondary-color);
+  transition: color 0.3s;
+}
+
+/* Hover: shift background to secondary, text/icon to darker for contrast */
+.add-poll-btn:hover {
+  background-color: var(--secondary-color); /* Light Aqua on hover */
+  color: var(--text-color);                 /* Dark Grey for contrast */
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2); /* Slightly stronger shadow */
+  transform: translateY(-2px);             /* Lift effect */
+}
+.add-poll-btn:hover i {
+  color: var(--text-color);
+}
+
+/* Active: pressed effect */
+.add-poll-btn:active {
+  background-color: var(--secondary-color);
+  box-shadow: inset 0px 4px 6px rgba(0, 0, 0, 0.15); /* Pressed-in effect */
+  transform: translateY(0); /* Remove the lift */
+}
+
+
+/* Title & Body input fields */
+#id_title, 
 #id_body {
-    height: 100px;
+  max-width: 100%;
+  border-radius: 20px;
+  background-color: var(--text-secondary-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  transition: border-color 0.2s ease;
+}
+#id_title:focus, 
+#id_body:focus {
+  border-color: var(--primary-color);
+  outline: none;
 }
 
+/* Body text area height */
+#id_body {
+  height: 100px;
+}
+
+/* Floating labels remain centered */
 .form-floating {
-    width: 60%;  /* Let the input field take the full width */
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;  /* Center the content inside the container */
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
+/* Title container spacing */
 .post-title-container {
   margin-bottom: 5rem;
   margin-top: 3rem;
 }
 
+/* Image Upload Heading */
+.post-img-container .label-heading {
+  font-weight: 500;
+  font-size: 1.2rem;
+  text-align: left; /* Left-align if you prefer */
+  color: #6c757d;
+}
+
+/* Submit button container alignment */
 .submit-btn-container {
   text-align: right;
 }
 
-.label-heading {
-    font-weight: 500;
-    font-size: 1.2rem;
+/* Matching "new-post-btn" style for consistency */
+.submit-btn-container .btn {
+  background-color: var(--primary-color);        /* Modern Blue */
+  color: var(--text-secondary-color);            /* Off-white text */
+  border: none;                                  /* Clean design */
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);     /* Soft shadow */
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+}
+
+.submit-btn-container .btn:hover {
+  background-color: var(--secondary-color);       /* Light Aqua */
+  color: var(--text-color);                       /* Dark Grey text for contrast */
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.submit-btn-container .btn:active {
+  background-color: var(--secondary-color);
+  box-shadow: inset 0px 4px 6px rgba(0, 0, 0, 0.15);
+  transform: translateY(0);
+}
+
+/* Toast styling if you want to incorporate the palette */
+#toastMessage.bg-dark {
+  background-color: #000 !important;
+}
+#toastMessage .toast-body {
+  color: var(--text-secondary-color);
+  font-weight: 500;
 }

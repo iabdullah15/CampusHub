@@ -40,7 +40,7 @@
         
         <!-- Category Field -->
         <div class="select-text mb-4">
-            <a class="btn btn-dark" href="{% url 'forum:create_poll' %}">Add Poll</a>
+            <a class="btn add-poll-btn" href="{% url 'forum:create_poll' %}">Add Poll</a>
         </div>
 
         <form action="{% url 'forum:create_post' %}" method="post" enctype="multipart/form-data">
@@ -97,7 +97,7 @@
             </div>
 
                         <!-- Image Upload Field -->
-            <div class="post-img-container form-floating">
+            <div class="post-img-container form-floating">  
 
                 <div class="form-group mb-4">
                     <h4 class="mb-4 label-heading text-start">Upload image</h4>
@@ -112,7 +112,7 @@
 
                 <!-- Submit Button -->
                 <div class="submit-btn-container mt-4">
-                    <button type="submit" class="btn btn-outline-dark">Post</button>
+                    <button type="submit" class="btn">Post</button>
                 </div>
             </div>
         </form>

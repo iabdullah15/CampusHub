@@ -28,7 +28,7 @@
         <h5>Feed</h5>
         <ul class="nav flex-column">
           <li class="nav-item">
-            <a class="nav-link active left-sidebar-link" href="{% url 'forum:home' %}">
+            <a class="nav-link active left-sidebar-link feed-link" href="{% url 'forum:home' %}">
               <i class="fa-solid fa-house fa-lg"></i> Home</a
             >
           </li>
@@ -42,9 +42,30 @@
         <ul class="nav flex-column">
           {% if communities %}
             {% for community in communities %}
-              <li class="nav-item">
-                <a class="nav-link left-sidebar-link" href="{% url 'forum:community_page' community.id %}"> {% if community.community_sidebar_logo %} <img width="30" src="{{ community.community_sidebar_logo.url }}" alt="">{% endif %} {{community.community_name}} </a>
-              </li>
+            <li class="nav-item">
+              <a class="nav-link left-sidebar-link" href="{% url 'forum:community_page' community.id %}">
+                <!-- Parent container to separate the image (left) and text (right) -->
+                <div class="row align-items-center">
+                  <!-- Left Container: Logo (auto-width) -->
+                  <div class="col-auto">
+                    {% if community.community_sidebar_logo %}
+                      <img
+                        src="{{ community.community_sidebar_logo.url }}"
+                        alt="Community Logo"
+                        width="30"
+                        style="max-width: 100%; height: auto;"
+                      />
+                    {% endif %}
+                  </div>
+            
+                  <!-- Right Container: Community Name (flexes to fill remaining space) -->
+                  <div class="col">
+                    {{ community.community_name }}
+                  </div>
+                </div>
+              </a>
+            </li>
+            
             {% endfor %}
           {% endif %}
         </ul>
@@ -76,7 +97,7 @@
         
         <div class="feed-header d-flex justify-content-between align-items-center mb-4">
           <h4 class="feed-title mb-0">Feed</h4>
-          <a href="{% url 'forum:create_post' %}" class="btn btn-dark"><i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i>  New Post</a>
+          <a href="{% url 'forum:create_post' %}" class="btn new-post-btn"><i class="fa-solid fa-plus fa-xs new-post-icon"></i>  New Post</a>
         </div>
 
           <!-- Offcanvas -->
@@ -115,9 +136,6 @@
                     <a class="nav-link active left-sidebar-link" href="#"
                       >My Feed</a
                     >
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link left-sidebar-link" href="#">Polls</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link left-sidebar-link" href="#">Popular</a>
@@ -288,13 +306,21 @@
                 <!-- Ellipsis dropdown on the far right -->
                 <div class="ms-auto">
                   <div class="post-option-icon-container dropdown">
-                    <i
+                    <!-- <i
                       class="fa-solid fa-ellipsis post-options-icon fa-lg"
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
-                    ></i>
+                    ></i> -->
+                      <!-- Wrap the ellipsis icon in a div -->
+                    <div
+                      class="ellipsis-icon-wrapper"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <i class="fa-solid fa-ellipsis post-options-icon fa-lg"></i>
+                    </div>
                     <!-- Dropdown Menu -->
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
+                    <ul class="dropdown-menu dropdown-menu-end post-dropdown">
                       {% if request.user == post_with_status.post.author %}
                       <li>
                         <form
@@ -308,17 +334,19 @@
                         </form>
                       </li>
                       {% endif %}
-          
+                      {% if not request.user == post_with_status.post.author %}
+
                       <li>
                         <!-- Trigger for Modal -->
                         <button
-                          class="dropdown-item btn btn-link text-light report-post-button"
+                          class="dropdown-item btn btn-link report-post-button"
                           data-bs-toggle="modal"
                           data-bs-target="#reportPostModal-{{ post_with_status.post.id }}"
                         >
                           <i class="fa-solid fa-flag"></i> Report
                         </button>
                       </li>
+                      {% endif %}
                     </ul>
                   </div>
                 </div>
@@ -574,7 +602,7 @@
                         class="link-dark"
                         href="{% url 'forum:post_detail' post_with_status.post.id %}"
                       >
-                        9 comments
+                        {{post_with_status.total_comments}} comments
                       </a>
                     </small>
                   </span>
@@ -616,7 +644,7 @@
               aria-controls="tab1-content"
               aria-selected="true"
             >
-              Latest
+            <i class="fa-solid fa-clock fa-lg"></i>  Latest
             </button>
             <button
               class="nav-link choice-chip"
@@ -628,7 +656,7 @@
               aria-controls="tab2-content"
               aria-selected="false"
             >
-              Trending
+            <i class="fa-solid fa-arrow-trend-up fa-lg"></i> Trending
             </button>
           </div>
         

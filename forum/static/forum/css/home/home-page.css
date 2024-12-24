@@ -26,6 +26,28 @@ body {
   border-right: 1px solid #e5e5e5;
 }
 
+/* Match the hover styles of the ellipsis icon wrapper */
+.feed-link {
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+/* Hover effect (light gray) */
+.feed-link:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+/* Active state uses the same light gray background */
+.nav-link.active {
+  --tw-bg-opacity: 1;
+  --nav-link-bg: rgb(239 240 244 / var(--tw-bg-opacity, 1));
+  background-color: var(--nav-link-bg);
+  /* Optionally change text color or weight to indicate active */
+  color: var(--text-color);
+  font-weight: 500;
+}
+
 .left-sidebar-link {
   color: black;
 }
@@ -42,11 +64,50 @@ body {
   margin-left: 600px;
 }
 
+/* Button Styles */
+.new-post-btn {
+  background-color: var(--primary-color); /* Modern Blue */
+  color: var(--text-secondary-color); /* Soft Off-White for Text */
+  border: none; /* Clean design */
+  padding: 10px 20px; /* Add some spacing */
+  font-size: 1rem; /* Slightly larger text */
+  font-weight: 600; /* Bold text for emphasis */
+  border-radius: 8px; /* Smooth rounded corners */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for elevation */
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s; /* Smooth animations */
+}
+
+/* Icon inside the button */
+.new-post-btn i {
+  color: var(--text-secondary-color); /* Match text color */
+  transition: color 0.3s; /* Smooth transition for the icon color */
+}
+
+.new-post-btn:hover {
+  background-color: var(--secondary-color); /* Vibrant Red on Hover */
+  color: var(--text-color); /* Dark Grey text on Hover for contrast */
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+  transform: translateY(-2px); /* Slight lift effect */
+}
+
+/* Icon color on hover */
+.new-post-btn:hover i {
+  color: var(--text-color); /* Ensure the icon matches the new text color */
+}
+
+.new-post-btn:active {
+  background-color: var(--secondary-color); /* Light Aqua on Active */
+  box-shadow: inset 0px 4px 6px rgba(0, 0, 0, 0.15); /* Pressed-in effect */
+  transform: translateY(0); /* Remove lift effect */
+}
+
+
 /* Main feed content */
 
 .feed-header {
   width: 60%;
 }
+
 
 .user-post-card {
   width: 60%;
@@ -97,13 +158,31 @@ body {
   gap: 1rem; /* Optional: control spacing between the two subtitles */
 }
 
+.ellipsis-icon-wrapper {
+  padding-top: 5px;          /* Optional: Add some padding */
+  padding-bottom: 5px;
+  padding-right: 10px;
+  border-radius: 8px;    /* Optional: Make corners rounded */
+  transition: background-color 0.2s ease;
+}
+
+.ellipsis-icon-wrapper:hover {
+  background-color: #f8f9fa; /* A light grayish shade */
+  cursor: pointer;
+}
+
 .post-options-icon {
   margin-left: 10px; /* Add some space between the title and the icon */
 }
 
+
+
 .post-option-icon-container:hover {
   cursor: pointer; /* Optional: cursor change to indicate the icon is interactive */
-  opacity: 0.5;
+}
+
+.post-dropdown:hover {
+  opacity: 1;
 }
 
 .subtitle-link {
@@ -170,20 +249,23 @@ body {
 }
 
 .choice-chip {
-  border: 1px solid #ddd;
-  background-color: #f8f9fa;
-  color: #333;
+  border: 1px solid var(--border-color); /* Light Gray Border */
+  background-color: var(--background-color); /* Soft White Background */
+  color: var(--text-color); /* Dark Grey Text */
   padding: 10px 20px;
+  border-radius: 8px; /* Rounded corners for a modern look */
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .choice-chip:hover {
-  background-color: #e9ecef;
+  background-color: var(--secondary-color); /* Light Aqua on Hover */
+  color: var(--primary-color); /* Modern Blue Text on Hover */
 }
 
 .choice-chip.active {
-  background-color: #212529!important;
-  color: #fff!important;
-  border-color: #212529!important;
+  background-color: var(--primary-color)!important; /* Modern Blue Active Background */
+  color: var(--text-secondary-color)!important; /* White Text for Active */
+  border-color: var(--primary-color)!important; /* Border Matches Active Background */
 }
+

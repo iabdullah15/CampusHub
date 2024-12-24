@@ -4,150 +4,230 @@
 {% load widget_tweaks %}
 
 {% block title %}
-<title>Edit Poll</title>
+    <title>Edit Poll</title>
 {% endblock %}
 
 {% block css %}
-<link rel="stylesheet" href="{% static 'forum/css/post/create-poll.css' %}">
+    <link rel="stylesheet" href="{% static 'forum/css/post/create-poll.css' %}">
 {% endblock %}
 
 {% block main %}
 <div class="create-post-container container">
+    <!-- Page Heading -->
     <h4 class="heading-text mb-4">Edit Poll</h4>
 
-    <!-- Display Form Errors -->
+    <!-- Toast Container (same structure as create poll) -->
     <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center w-100">
         {% if messages %}
             {% for message in messages %}
-            <div id="form-error" class="toast align-items-center text-light bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="60000">
+            <div
+              id="form-error"
+              class="toast align-items-center text-light bg-dark border-0"
+              role="alert"
+              aria-live="assertive"
+              aria-atomic="true"
+              data-bs-delay="60000"
+            >
                 <div class="d-flex">
-                    <div class="toast-body">{{ message }}</div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    <div class="toast-body">
+                        {{ message }}
+                    </div>
+                    <button
+                      type="button"
+                      class="btn-close btn-close-white me-2 m-auto"
+                      data-bs-dismiss="toast"
+                      aria-label="Close"
+                    ></button>
                 </div>
             </div>
             {% endfor %}
         {% endif %}
     </div>
 
+    <!-- Edit Poll Form -->
     <form method="post" action="{% url 'forum:edit_poll' post.id %}" enctype="multipart/form-data">
         {% csrf_token %}
+        
+        <!-- Community Field -->
+        <div class="select-text">
+            <h4 class="mb-4 label-heading">Select your community</h4>
+        </div>
         <div class="select-container mb-4">
             {{ post_form.community|add_class:"form-select mb-3" }}
+            <ul class="errorlist">
+                {% for error in post_form.community.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Category Field -->
+        <div class="select-text">
+            <h4 class="mb-4 label-heading">Select Category</h4>
         </div>
         <div class="select-container mb-4">
             {{ post_form.category|add_class:"form-select mb-3" }}
+            <ul class="errorlist">
+                {% for error in post_form.category.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
         </div>
-        <div class="form-floating mb-4">
+
+        <!-- Title Field (Floating Label) -->
+        <div class="form-floating mb-4 post-title-container">
             {{ post_form.title|add_class:"form-control" }}
             <label for="id_title">Title</label>
-        </div>
-        <div class="form-floating mb-4">
-            {{ post_form.body|add_class:"form-control" }}
-            <label for="id_body">Body</label>
+            <ul class="errorlist">
+                {% for error in post_form.title.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
         </div>
 
+        <!-- Body Field (Floating Label) -->
+        <div class="post-body-container">
+            <div class="form-floating mb-4">
+                {{ post_form.body|add_class:"form-control" }}
+                <label for="id_body">Body</label>
+                <ul class="errorlist">
+                    {% for error in post_form.body.errors %}
+                      <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Poll Choices Heading -->
         <h4 class="heading-text mb-4">Poll Choices</h4>
-
+        
         {% if poll_choice_formset.non_form_errors %}
-            <div id="toastMessage" class="toast align-items-center text-light bg-dark border-0 mt-3 mb-5" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="60000">
+            <div
+              id="toastMessage"
+              class="toast align-items-center text-light bg-dark border-0 mt-3 mb-5"
+              role="alert"
+              aria-live="assertive"
+              aria-atomic="true"
+              data-bs-delay="60000"
+            >
                 <div class="d-flex">
                     <div class="toast-body">
                         {{ poll_choice_formset.non_form_errors }}
                     </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    <button
+                      type="button"
+                      class="btn-close btn-close-white me-2 m-auto"
+                      data-bs-dismiss="toast"
+                      aria-label="Close"
+                    ></button>
                 </div>
             </div>
         {% endif %}
 
+        <!-- Poll Choices Container -->
         <div class="options-container">
             <div id="formset-container">
                 {{ poll_choice_formset.management_form }}
                 {% for form in poll_choice_formset %}
-                    <div class="mb-3 d-flex align-items-center" id="form-{{ forloop.counter0 }}">
-                        <div class="inline-block">
-                            {{ form.choice_text }}
-                        </div>
-                        <!-- Include Hidden ID Field -->
-                        {{ form.id }}
-                        <button type="button" class="btn remove-form-button ms-2" onclick="removeForm(this.parentElement)">
-                            <i class="fa-solid fa-trash fa-lg" style="color: #f04747;"></i>
-                        </button>
-                        {{ form.DELETE }}
-                    </div>
+                  <div class="mb-3 d-flex align-items-center" id="form-{{ forloop.counter0 }}">
+                      <div class="inline-block">
+                          {{ form.choice_text }}
+                      </div>
+                      <!-- Include hidden ID Field -->
+                      {{ form.id }}
+                      <button
+                        type="button"
+                        class="btn remove-form-button ms-2"
+                        onclick="removeForm(this.parentElement)"
+                      >
+                        <i class="fa-solid fa-trash fa-md" style="color: #f04747;"></i>
+                      </button>
+                      {{ form.DELETE }}
+                  </div>
                 {% endfor %}
             </div>
-            <button type="button" class="btn btn-dark">Add Choice</button>
+            <!-- "Add Choice" Button -->
+            <button type="button" class="btn btn-dark add-choice-btn">Add Choice</button>
         </div>
 
         <!-- Image Upload Field -->
-        <div class="post-img-container form-floating">
+        <div class="post-img-container form-floating mt-3">
             <div class="form-group mb-4">
                 <h4 class="mb-4 label-heading text-start">Upload image</h4>
                 {{ post_form.image|add_class:"form-control" }}
                 <ul class="errorlist">
-                    {% for error in form.image.errors %}
+                    {% for error in post_form.image.errors %}
                         <li>{{ error }}</li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
-        <button type="submit" class="btn btn-outline-dark mt-4">Update Poll</button>
+
+        <!-- Submit Button -->
+        <div class="submit-btn-container mt-4">
+            <button type="submit" class="btn btn-outline-dark">Update Poll</button>
+        </div>
     </form>
 </div>
 
+<!-- JavaScript to handle adding/removing forms (mirrors create poll) -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const totalFormsInput = document.getElementById("id_form-TOTAL_FORMS");
         const formContainer = document.getElementById('formset-container');
-        let formIndex = parseInt(totalFormsInput.value, 10); // Start with the current number of forms
-
+        let formIndex = parseInt(totalFormsInput.value, 10);
+    
         function addForm() {
             const newForm = document.createElement('div');
             newForm.classList.add('mb-3', 'd-flex', 'align-items-center');
             newForm.id = `form-${formIndex}`;
-
+    
             const emptyFormTemplate = `{{ poll_choice_formset.empty_form|safe|escapejs }}`;
             const newFormHtml = emptyFormTemplate.replace(/__prefix__/g, formIndex);
-
+    
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = newFormHtml;
-
+    
             const inputField = tempDiv.querySelector('input[name$="choice_text"]');
             inputField.classList.add('form-control');
-
+    
             const idField = tempDiv.querySelector('input[name$="id"]');
-            idField.value = ""; // Empty ID for new choices
-
+            idField.value = "";
+    
             const inputDiv = document.createElement('div');
             inputDiv.classList.add('inline-block');
             inputDiv.appendChild(inputField);
-
+    
             const deleteButton = document.createElement('button');
             deleteButton.type = 'button';
             deleteButton.classList.add('btn', 'remove-form-button', 'ms-2');
-            deleteButton.innerHTML = '<i class="fa-solid fa-trash fa-lg" style="color: #f04747;"></i>';
+            deleteButton.innerHTML = '<i class="fa-solid fa-trash fa-md" style="color: #f04747;"></i>';
             deleteButton.onclick = () => removeForm(newForm);
-
+    
             newForm.appendChild(inputDiv);
             newForm.appendChild(deleteButton);
-            newForm.appendChild(idField);
-
+    
+            const deleteField = tempDiv.querySelector('input[name$="-DELETE"]');
+            if (deleteField) {
+                newForm.appendChild(deleteField);
+            }
+    
             formContainer.appendChild(newForm);
-
             formIndex++;
             totalFormsInput.value = formIndex;
         }
-
-        function removeForm(formElement) {
+    
+        window.removeForm = function (formElement) {
             const deleteField = formElement.querySelector('input[name$="-DELETE"]');
             if (deleteField) {
                 deleteField.value = 'on';
             }
-            formElement.style.display = 'none!important';
+            formElement.style.display = 'none';
             formElement.classList.add('d-none');
-        }
-
-        document.querySelector('.btn.btn-dark').addEventListener('click', addForm);
+        };
+    
+        document.querySelector('.btn.btn-dark.add-choice-btn').addEventListener('click', addForm);
     });
+    
 </script>
 {% endblock %}

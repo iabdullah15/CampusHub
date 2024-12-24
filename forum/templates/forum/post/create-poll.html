@@ -112,18 +112,18 @@
                             {{ form.choice_text }}
                         </div>
                         <button type="button" class="btn remove-form-button ms-2" onclick="removeForm(this.parentElement)">
-                            <i class="fa-solid fa-trash fa-lg" style="color: #f04747;"></i>
+                            <i class="fa-solid fa-trash fa-md" style="color: #f04747;"></i>
                         </button>
                         {{ form.DELETE }}
                     </div>
                 {% endfor %}
             </div>
-            <button type="button" class="btn btn-dark">Add Choice</button>
+            <button type="button" class="btn btn-dark add-choice-btn">Add Choice</button>
             
         </div>
 
         <!-- Image Upload Field -->
-        <div class="post-img-container form-floating">
+        <div class="post-img-container form-floating mt-3">
 
             <div class="form-group mb-4">
                 <h4 class="mb-4 label-heading text-start">Upload image</h4>
@@ -177,7 +177,7 @@
             const deleteButton = document.createElement('button');
             deleteButton.type = 'button';
             deleteButton.classList.add('btn', 'remove-form-button', 'ms-2');
-            deleteButton.innerHTML = '<i class="fa-solid fa-trash fa-lg" style="color: #f04747;"></i>';
+            deleteButton.innerHTML = '<i class="fa-solid fa-trash fa-md" style="color: #f04747;"></i>';
             deleteButton.onclick = () => removeForm(newForm);
     
             // Append the input field and delete button to the new form container

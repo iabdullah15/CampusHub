@@ -1,28 +1,43 @@
 body {
-  background-color: rgb(248, 249, 250);
-  /* --bs-light-rgb: 248, 249, 250; */
+  background-color: var(--background-color); /* Soft White */
+  color: var(--text-color); /* Dark Grey */
 }
 
 .create-post-container {
-margin-top: 7rem;
+  margin-top: 7rem;
+  padding-bottom: 3rem;
+
 }
 
+/* Heading Text */
 .heading-text {
   width: 60%;
   margin-left: auto;
   margin-right: auto;
-  color: gray;
+  color: var(--text-color); /* Dark Grey */
 }
 
+/* Select Containers */
 .select-container,
 .submit-btn-container,
 .select-text,
 .options-container {
-max-width: 60%;
+  max-width: 60%;
 }
 
 .select-container select {
-max-width: 40%;
+  max-width: 40%;
+  background-color: var(--text-secondary-color); /* Off-White */
+  border: 1px solid var(--border-color); /* Light Gray */
+  color: var(--text-color); /* Dark Grey */
+  border-radius: 8px;
+  padding: 10px;
+  transition: border-color 0.3s ease;
+}
+
+.select-container select:focus {
+  border-color: var(--primary-color); /* Modern Blue */
+  outline: none;
 }
 
 .select-container,
@@ -30,45 +45,111 @@ max-width: 40%;
 .select-text,
 .options-container,
 .post-img-container {
-margin-left: auto;
-margin-right: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
+/* Title & Body Fields */
 #id_title, #id_body {
   max-width: 100%;
   border-radius: 20px;
+  background-color: var(--text-secondary-color); /* Off-White */
+  border: 1px solid var(--border-color); /* Light Gray */
+  color: var(--text-color); /* Dark Grey */
 }
 
 #id_body {
   height: 100px;
 }
 
+#id_title:focus, #id_body:focus {
+  border-color: var(--primary-color); /* Modern Blue */
+  outline: none;
+}
+
+/* Floating Labels */
 .form-floating {
-  width: 60%;  /* Let the input field take the full width */
+  width: 60%;  
   margin-left: auto;
   margin-right: auto;
-  text-align: center;  /* Center the content inside the container */
+  text-align: center;
 }
 
+.form-floating label {
+  color: var(--text-color); /* Dark Grey */
+  font-size: 0.9rem;
+}
+
+/* Title Container */
 .post-title-container {
-margin-bottom: 5rem;
-margin-top: 3rem;
+  margin-bottom: 5rem;
+  margin-top: 3rem;
 }
 
+/* Submit Button */
 .submit-btn-container {
-text-align: right;
+  text-align: right;
 }
 
-.label-heading {
-  font-weight: 500;
-  font-size: 1.2rem;
+.submit-btn-container .btn {
+  background-color: var(--primary-color);        /* Modern Blue */
+  color: var(--text-secondary-color);           /* Off-White Text */
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
 }
 
+.submit-btn-container .btn:hover {
+  background-color: var(--secondary-color);      /* Light Aqua */
+  color: var(--text-color);                      /* Dark Grey */
+}
+
+.submit-btn-container .btn:active {
+  background-color: var(--secondary-color);
+}
+
+/* Poll Choice Buttons */
+.add-choice-btn {
+  background-color: var(--primary-color);        /* Modern Blue */
+  color: var(--text-secondary-color);           /* Off-White Text */
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.add-choice-btn:hover {
+  background-color: var(--secondary-color);      /* Light Aqua */
+  color: var(--text-color);                      /* Dark Grey */
+}
+
+.add-choice-btn:active {
+  background-color: var(--secondary-color);
+}
+
+.remove-form-button {
+  background-color: transparent;
+  border: none;
+  color: var(--accent-color);                    /* Vibrant Red */
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.remove-form-button:hover {
+  color: var(--primary-color);                   /* Modern Blue */
+}
+
+/* Error List */
 .errorlist {
   padding: 0;
+  color: var(--accent-color); /* Vibrant Red */
 }
 
 .errorlist li {
   list-style-type: none;
 }
-
