@@ -43,7 +43,7 @@
           {% if communities %}
             {% for community in communities %}
               <li class="nav-item">
-                <a class="nav-link left-sidebar-link" href="{% url 'forum:community_page' community.id %}"> <img width="30" src="{% static 'forum/img/software.png' %}" alt=""> {{community.community_name}} </a>
+                <a class="nav-link left-sidebar-link" href="{% url 'forum:community_page' community.id %}"> {% if community.community_sidebar_logo %} <img width="30" src="{{ community.community_sidebar_logo.url }}" alt="">{% endif %} {{community.community_name}} </a>
               </li>
             {% endfor %}
           {% endif %}
@@ -241,21 +241,52 @@
 
           <div class="user-post-card card">
             <div class="card-body user-post-card-body">
-              <!-- Title and Dropdown -->
-              <div class="card-title-container d-flex justify-content-between align-items-center mt-4 mb-2">
-                <!-- Post Title -->
-                <h5 class="card-title mb-0">
-                  <a class="user-post-link" href="{% url 'forum:post_detail' post_with_status.post.id %}">
-                    {{ post_with_status.post.title }}
-                  </a>
-                </h5>
           
-                <!-- Time and Ellipsis Dropdown -->
-                <div class="d-flex align-items-center ms-auto">
-                  <!-- Time -->
-                  <p class="text-muted me-3 mb-0">{{ post_with_status.post.time_created|naturaltime }}</p>
+              <!-- Top Row: Placeholder + (category/time, community/username) + ellipsis -->
+              <div class="d-flex align-items-center my-3">
+                <!-- Small circle placeholder image -->
+                <img
+                  src="https://via.placeholder.com/40"
+                  alt="Placeholder"
+                  class="rounded-circle me-3"
+                  style="width: 40px; height: 40px; object-fit: cover;"
+                />
           
-                  <!-- Ellipsis Dropdown -->
+                <!-- Flex column for category/time and community/username -->
+                <div class="d-flex flex-column">
+                  <!-- Upper row: category + time_created -->
+                  <div class="d-flex mb-1">
+                    {% if post_with_status.post.category %}
+                      <h6 class="card-subtitle mb-0 me-2 post-detail-heading">
+                        {{ post_with_status.post.category }}
+                      </h6>
+                    {% endif %}
+                    <small class="card-subtitle mb-0 text-body-secondary post-detail-heading-time">
+                      {{ post_with_status.post.time_created|naturaltime }}
+                    </small>
+                  </div>
+          
+                  <!-- Lower row: community + author.username -->
+                  <div class="d-flex">
+                    {% if post_with_status.post.community %}
+                      <small class="card-subtitle mb-0 text-muted me-2">
+                        <a
+                          class="subtitle-link"
+                          href="{% url 'forum:community_page' post_with_status.post.community.id %}"
+                          style="text-decoration: none;"
+                        >
+                          {{ post_with_status.post.community }}
+                        </a>
+                      </small>
+                    {% endif %}
+                    <small class="card-subtitle mb-0 text-muted">
+                      {{ post_with_status.post.author.username }}
+                    </small>
+                  </div>
+                </div>
+          
+                <!-- Ellipsis dropdown on the far right -->
+                <div class="ms-auto">
                   <div class="post-option-icon-container dropdown">
                     <i
                       class="fa-solid fa-ellipsis post-options-icon fa-lg"
@@ -266,7 +297,10 @@
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
                       {% if request.user == post_with_status.post.author %}
                       <li>
-                        <form action="{% url 'forum:delete_post' post_with_status.post.id %}" method="POST">
+                        <form
+                          action="{% url 'forum:delete_post' post_with_status.post.id %}"
+                          method="POST"
+                        >
                           {% csrf_token %}
                           <button type="submit" class="dropdown-item text-danger">
                             <i class="fa-solid fa-trash me-2"></i>Delete Post
@@ -274,7 +308,7 @@
                         </form>
                       </li>
                       {% endif %}
-
+          
                       <li>
                         <!-- Trigger for Modal -->
                         <button
@@ -285,169 +319,39 @@
                           <i class="fa-solid fa-flag"></i> Report
                         </button>
                       </li>
-                      
                     </ul>
                   </div>
                 </div>
               </div>
-
-                          <!-- Modal -->
+              <!-- End of Top Row -->
+          
+              <!-- Post Title (with link to detail page) -->
+              <h5 class="card-title mb-0 post-title">
+                <a
+                  class="user-post-link"
+                  href="{% url 'forum:post_detail' post_with_status.post.id %}"
+                >
+                  {{ post_with_status.post.title }}
+                </a>
+              </h5>
+          
+              <!-- Report Modal (triggered by the ellipsis dropdown) -->
               <div
-              class="modal fade"
-              id="reportPostModal-{{ post_with_status.post.id }}"
-              tabindex="-1"
-              aria-labelledby="reportPostModalLabel-{{ post_with_status.post.id }}"
-              aria-hidden="true"
-              >
-              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h1
-                      class="modal-title fs-5"
-                      id="reportPostModalLabel-{{ post_with_status.post.id }}"
-                    >
-                      Report Post
-                    </h1>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
-                  </div>
-                  <form
-                    class="report-post-form"
-                    data-post-id="{{ post_with_status.post.id }}"
-                  >
-                    {% csrf_token %}
-                    <div class="modal-body">
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          name="reason-{{ post_with_status.post.id }}"
-                          id="reason-inappropriate-{{ post_with_status.post.id }}"
-                          value="inappropriate"
-                          checked
-                        />
-                        <label
-                          class="form-check-label"
-                          for="reason-inappropriate-{{ post_with_status.post.id }}"
-                        >
-                          Inappropriate Content
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          name="reason-{{ post_with_status.post.id }}"
-                          id="reason-spam-{{ post_with_status.post.id }}"
-                          value="spam"
-                        />
-                        <label
-                          class="form-check-label"
-                          for="reason-spam-{{ post_with_status.post.id }}"
-                        >
-                          Spam
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          name="reason-{{ post_with_status.post.id }}"
-                          id="reason-other-{{ post_with_status.post.id }}"
-                          value="other"
-                        />
-                        <label
-                          class="form-check-label"
-                          for="reason-other-{{ post_with_status.post.id }}"
-                        >
-                          Other
-                        </label>
-                      </div>
-                      <div
-                        id="otherReasonInputContainer-{{ post_with_status.post.id }}"
-                        class="mt-3"
-                        style="display: none;"
-                      >
-                        <label for="otherReasonInput-{{ post_with_status.post.id }}" class="form-label"
-                          >Please specify:</label
-                        >
-                        <input
-                          name="comment"
-                          type="text"
-                          id="otherReasonInput-{{ post_with_status.post.id }}"
-                          class="form-control"
-                          placeholder="Enter your reason here"
-                        />
-                      </div>
-                    </div>
-                    <div class="modal-footer">
-                      <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                      >
-                        Close
-                      </button>
-                      <button type="submit" class="btn btn-primary">Submit Report</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-              </div>
-              <!-- Community and Category -->
-              <div class="d-flex align-items-center custom-subtitle-container">
-                <h6 class="card-subtitle mb-0 text-body-secondary">{{ post_with_status.post.author.username }}</h6>
-              </div>
-              <!-- Community and Category -->
-              <div class="d-flex align-items-center custom-subtitle-container mt-2">
-                {% if post_with_status.post.community %}
-                <h6 class="card-subtitle mb-0 text-body-secondary"><a class="subtitle-link" href="{% url 'forum:community_page' post_with_status.post.community.id %}">{{ post_with_status.post.community }}</a></h6>
-                {% endif %}
-                {% if post_with_status.post.community and post_with_status.post.category %}
-                <h6 class="card-subtitle mb-0 text-body-secondary mx-2">-</h6>
-                {% endif %}
-                {% if post_with_status.post.category %}
-                <h6 class="card-subtitle mb-0 text-body-secondary">{{ post_with_status.post.category }}</h6>
-                {% endif %}
-                {% if post_with_status.post.poll %}
-                <h6 class="card-subtitle mb-0 text-body-secondary mx-2">-</h6>
-                <h6 class="card-subtitle mb-0 text-body-secondary">Poll</h6>
-                {% endif %}
-              </div>
-          
-              <!-- Post Body -->
-              <p class="card-text mt-3">{{ post_with_status.post.body|truncatewords:20 }}</p>
-          
-              <!-- Thumbnail -->
-              {% if post_with_status.post.image %}
-              <div class="container-fluid mt-5 thumbnail-container">
-                <img
-                  src="{{ post_with_status.post.image.url }}"
-                  alt="Thumbnail"
-                  class="img-thumbnail"
-                  data-bs-toggle="modal"
-                  data-bs-target="#imageModal-{{ post_with_status.post.id }}"
-                  style="cursor: pointer"
-                />
-              </div>
-              {% endif %}
-          
-              <!-- Modal -->
-              {% if post_with_status.post.image %}
-              <div
-                class="modal modal-md fade"
-                id="imageModal-{{ post_with_status.post.id }}"
+                class="modal fade"
+                id="reportPostModal-{{ post_with_status.post.id }}"
                 tabindex="-1"
-                aria-labelledby="imageModalLabel"
+                aria-labelledby="reportPostModalLabel-{{ post_with_status.post.id }}"
                 aria-hidden="true"
               >
-                <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                   <div class="modal-content">
                     <div class="modal-header">
+                      <h1
+                        class="modal-title fs-5"
+                        id="reportPostModalLabel-{{ post_with_status.post.id }}"
+                      >
+                        Report Post
+                      </h1>
                       <button
                         type="button"
                         class="btn-close"
@@ -455,45 +359,231 @@
                         aria-label="Close"
                       ></button>
                     </div>
-                    <div class="modal-body">
-                      <img
-                        src="{{ post_with_status.post.image.url }}"
-                        alt="Full-size Image"
-                        class="img-fluid"
-                      />
+                    <form
+                      class="report-post-form"
+                      data-post-id="{{ post_with_status.post.id }}"
+                    >
+                      {% csrf_token %}
+                      <div class="modal-body">
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="reason-{{ post_with_status.post.id }}"
+                            id="reason-inappropriate-{{ post_with_status.post.id }}"
+                            value="inappropriate"
+                            checked
+                          />
+                          <label
+                            class="form-check-label"
+                            for="reason-inappropriate-{{ post_with_status.post.id }}"
+                          >
+                            Inappropriate Content
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="reason-{{ post_with_status.post.id }}"
+                            id="reason-spam-{{ post_with_status.post.id }}"
+                            value="spam"
+                          />
+                          <label
+                            class="form-check-label"
+                            for="reason-spam-{{ post_with_status.post.id }}"
+                          >
+                            Spam
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="reason-{{ post_with_status.post.id }}"
+                            id="reason-other-{{ post_with_status.post.id }}"
+                            value="other"
+                          />
+                          <label
+                            class="form-check-label"
+                            for="reason-other-{{ post_with_status.post.id }}"
+                          >
+                            Other
+                          </label>
+                        </div>
+                        <div
+                          id="otherReasonInputContainer-{{ post_with_status.post.id }}"
+                          class="mt-3"
+                          style="display: none;"
+                        >
+                          <label
+                            for="otherReasonInput-{{ post_with_status.post.id }}"
+                            class="form-label"
+                          >
+                            Please specify:
+                          </label>
+                          <input
+                            name="comment"
+                            type="text"
+                            id="otherReasonInput-{{ post_with_status.post.id }}"
+                            class="form-control"
+                            placeholder="Enter your reason here"
+                          />
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          data-bs-dismiss="modal"
+                        >
+                          Close
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                          Submit Report
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <!-- End Modal -->
+          
+              <!-- If you still want a line or spacing between the top info and the rest -->
+          
+              <!-- Additional Subtitle Row (if needed) 
+                   Note: If you used the top row to show category/time/community/username
+                   you might not need this. Included just in case.
+              -->
+              <!-- 
+              <div class="d-flex align-items-center custom-subtitle-container">
+                <h6 class="card-subtitle mb-0 text-body-secondary">
+                  {{ post_with_status.post.author.username }}
+                </h6>
+              </div>
+              -->
+          
+              <!-- Post Body (truncated words) -->
+              <p class="card-text mt-3">
+                {{ post_with_status.post.body|truncatewords:20 }}
+              </p>
+          
+              <!-- Thumbnail -->
+              {% if post_with_status.post.image %}
+                <div class="container-fluid mt-5 thumbnail-container">
+                  <img
+                    src="{{ post_with_status.post.image.url }}"
+                    alt="Thumbnail"
+                    class="img-thumbnail"
+                    data-bs-toggle="modal"
+                    data-bs-target="#imageModal-{{ post_with_status.post.id }}"
+                    style="cursor: pointer"
+                  />
+                </div>
+              {% endif %}
+          
+              <!-- Image Modal -->
+              {% if post_with_status.post.image %}
+                <div
+                  class="modal modal-md fade"
+                  id="imageModal-{{ post_with_status.post.id }}"
+                  tabindex="-1"
+                  aria-labelledby="imageModalLabel"
+                  aria-hidden="true"
+                >
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button
+                          type="button"
+                          class="btn-close"
+                          data-bs-dismiss="modal"
+                          aria-label="Close"
+                        ></button>
+                      </div>
+                      <div class="modal-body">
+                        <img
+                          src="{{ post_with_status.post.image.url }}"
+                          alt="Full-size Image"
+                          class="img-fluid"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
               {% endif %}
           
               <!-- Interaction Section -->
-              <div class="row pt-4 interaction-row">
-                <div class="interaction-container col-2" data-liked="{% if post_with_status.is_liked_by_user %}true{% else %}false{% endif %}" data-post-id="{{ post_with_status.post.id }}">
+              <div
+                class="row pt-4 interaction-row"
+              >
+                <div
+                  class="interaction-container col-2"
+                  data-liked="{% if post_with_status.is_liked_by_user %}true{% else %}false{% endif %}"
+                  data-post-id="{{ post_with_status.post.id }}"
+                >
                   <!-- Like Button -->
-                  <div id="like-button-{{ post_with_status.post.id }}" {% if post_with_status.is_liked_by_user %}style="display: none;"{% endif %}>
-                    <span class="interaction-button like-btn" data-url="{% url 'forum:like-post' post_with_status.post.id %}">
+                  <div
+                    id="like-button-{{ post_with_status.post.id }}"
+                    {% if post_with_status.is_liked_by_user %}
+                      style="display: none;"
+                    {% endif %}
+                  >
+                    <span
+                      class="interaction-button like-btn"
+                      data-url="{% url 'forum:like-post' post_with_status.post.id %}"
+                    >
                       <i class="fa-regular fa-heart fa-lg like-icon"></i>
-                      <small id="like-count-{{ post_with_status.post.id }}" class="like-{{ post_with_status.post.id }} text-muted">{{ post_with_status.post.total_likes }} likes</small>
+                      <small
+                        id="like-count-{{ post_with_status.post.id }}"
+                        class="like-{{ post_with_status.post.id }} text-muted"
+                      >
+                        {{ post_with_status.post.total_likes }} likes
+                      </small>
                     </span>
                   </div>
+          
                   <!-- Unlike Button -->
-                  <div id="unlike-button-{{ post_with_status.post.id }}" {% if not post_with_status.is_liked_by_user %}style="display: none;"{% endif %}>
-                    <span class="interaction-button unlike-btn" data-url="{% url 'forum:like-post' post_with_status.post.id %}">
+                  <div
+                    id="unlike-button-{{ post_with_status.post.id }}"
+                    {% if not post_with_status.is_liked_by_user %}
+                      style="display: none;"
+                    {% endif %}
+                  >
+                    <span
+                      class="interaction-button unlike-btn"
+                      data-url="{% url 'forum:like-post' post_with_status.post.id %}"
+                    >
                       <i class="fa-solid fa-heart fa-lg unlike-icon"></i>
-                      <small id="like-count-{{ post_with_status.post.id }}" class="like-{{ post_with_status.post.id }} text-muted">{{ post_with_status.post.total_likes }} likes</small>
+                      <small
+                        id="like-count-{{ post_with_status.post.id }}"
+                        class="like-{{ post_with_status.post.id }} text-muted"
+                      >
+                        {{ post_with_status.post.total_likes }} likes
+                      </small>
                     </span>
                   </div>
                 </div>
+          
                 <div class="col-4">
                   <span class="interaction-button">
                     <i class="fa-regular fa-comment fa-lg"></i>
-                    <small class="text-muted"><a style="text-decoration: none;" class="link-dark" href="{% url 'forum:post_detail' post_with_status.post.id %}">9 comments</a></small>
+                    <small class="text-muted">
+                      <a
+                        style="text-decoration: none;"
+                        class="link-dark"
+                        href="{% url 'forum:post_detail' post_with_status.post.id %}"
+                      >
+                        9 comments
+                      </a>
+                    </small>
                   </span>
                 </div>
               </div>
+          
             </div>
           </div>
+          
           
 
 
@@ -555,7 +645,7 @@
                   <!-- Top row: username & time -->
                   <div class="d-flex justify-content-between text-muted mb-2">
                     <span>@{{ post_with_data.post.author.username }}</span>
-                    <span>10 minutes ago</span>
+                    <span>{{ post_with_data.post.time_created|naturaltime }}</span>
                   </div>
 
                   <!-- Middle row: post title -->
@@ -587,7 +677,7 @@
                     <!-- Top row: username & time -->
                     <div class="d-flex justify-content-between text-muted mb-2">
                       <span>@{{ post_with_data.post.author.username }}</span>
-                      <span>10 minutes ago</span>
+                      <span>{{ post_with_data.post.time_created|naturaltime }}</span>
                     </div>
   
                     <!-- Middle row: post title -->

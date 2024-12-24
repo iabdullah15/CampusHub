@@ -79,8 +79,18 @@ body {
   flex: 1; /* This makes sure the title takes up available space */
 }
 
-.card-title:hover {
+.post-title:hover {
   text-decoration: underline;
+}
+
+.post-detail-heading {
+  color: black;
+  font-size: 0.9rem;
+
+}
+
+.post-detail-heading-time {
+    font-size: .75rem;
 }
 
 .custom-subtitle-container {

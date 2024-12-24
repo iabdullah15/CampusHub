@@ -5,6 +5,7 @@ from django.conf import settings
 class PostCommunity(models.Model):
 
     community_name = models.CharField(max_length=50)
+    community_sidebar_logo = models.ImageField(null=True, blank=True)
 
     def __str__(self) -> str:
         return self.community_name
