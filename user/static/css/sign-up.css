@@ -1,87 +1,128 @@
+/* Overall Page Styling */
 body {
-    font-family: "Montserrat", sans-serif;
+  font-family: "Montserrat", sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
-.sign-up-container{
-
+/* Container for the sign-up page */
+.sign-up-container {
+  /* No layout changes, just ensuring minimal background or styling if needed */
+  background-color: var(--background-color);
 }
 
+/* Column for the sign-up form */
 .sign-up-column {
-    margin-top: 5rem;
-    text-align: center;
+  margin-top: 5rem;
+  text-align: center;
 }
 
-.sign-up-heading>h1 {
-    font-weight: 700;
-    font-size: 2rem;
+/* Heading text */
+.sign-up-heading > h1 {
+  font-weight: 700;
+  font-size: 2rem;
+  color: var(--text-color); /* Emphasize the heading with your brand color */
 }
 
-.email-field, .password-field, .horizontal-line, .submit-btn-container, .username-field {
-    width: 55%;
-    margin-left: auto;
-    margin-right: auto;
+/* Form controls: email, username, password, etc. */
+.email-field,
+.password-field,
+.username-field,
+.horizontal-line,
+.submit-btn-container {
+  width: 55%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: var(
+    --text-secondary-color
+  ); /* Off-white background inside form fields */
+  border: 1px solid var(--border-color);
+  border-radius: 4px; /* Slightly rounded corners for modern look */
+  color: var(--text-color);
+  transition: border-color 0.2s ease;
+}
+.email-field:hover,
+.password-field:hover,
+.username-field:hover {
+  border-color: var(--primary-color); /* Subtle highlight on hover */
+}
+.email-field::placeholder {
+  opacity: 0.5;
+  color: var(--text-color);
 }
 
-.email-field::placeholder{
-    opacity: 0.5;
+/* Submit button */
+.submit-btn-container .submit-btn {
+  background-color: var(--primary-color);
+  color: var(--text-secondary-color);
+  border: none;
+  font-weight: 600;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.submit-btn-container .submit-btn:hover {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Sign-in link styling */
 .sign-in-link {
-    font-weight: bold;
+  font-weight: bold;
 }
-
 .sign-in-text {
-    color: brown;
-    text-decoration: none;
-    font-weight: 500;
+  color: var(--accent-color); /* Vibrant Red or pick another palette color */
+  text-decoration: none;
+  font-weight: 500;
+  transition: text-decoration 0.2s ease, color 0.2s ease;
+}
+.sign-in-text:hover {
+  text-decoration: underline;
+  color: var(--primary-color);
 }
 
-.sign-in-text:hover{
-    text-decoration: underline;
-}
-
+/* Error messages remain red but can be updated if desired */
 .errorlist {
-    margin-top: 1rem;
-    width: 55%;
+  margin-top: 1rem;
+  width: 55%;
 }
-
 .errorlist li {
-    list-style: none !important;
+  list-style: none !important;
+  color: var(--accent-color); /* or leave as red for clarity */
 }
 
-
+/* Carousel column (left side) */
 .carousel-column {
-    padding: 0;
-    padding-bottom: 500px;
-    background-color: rgb(255, 254, 252);
+  padding: 0;
+  padding-bottom: 500px;
 }
 
-.community-img-carousel{
-
-    width: 90%;
-    height: 600px;
-    object-fit: contain;
+/* Community images in carousel */
+.community-img-carousel {
+  width: 90%;
+  height: 600px;
+  object-fit: contain;
 }
 
-
-
+/* Responsive adjustments */
 @media (max-width: 1250px) {
-
-    .carousel-column {
-        display: none;
-    }
-
-    .sign-up-column{
-        flex: 0 0 auto;
-        width: 100%;
-    }
-
+  .carousel-column {
+    display: none;
+  }
+  .sign-up-column {
+    flex: 0 0 auto;
+    width: 100%;
+  }
 }
 
 @media (max-width: 800px) {
-    .email-field, .password-field, .horizontal-line, .submit-btn-container, .username-field {
-        width: 80%;
-        margin-left: auto;
-        margin-right: auto;
-    }
+  .email-field,
+  .password-field,
+  .horizontal-line,
+  .submit-btn-container,
+  .username-field {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

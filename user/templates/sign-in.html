@@ -19,6 +19,12 @@
       username_field.placeholder = 'example@ucp.edu.pk';
       username_field.classList.add('form-control', 'email-field');
       password_field.classList.add('form-control', 'password-field');
+
+      var toastEl = document.getElementById('reportToastMessage');
+      var toast = new bootstrap.Toast(toastEl);
+      {% if messages %}
+        toast.show();
+      {% endif %}
     });
   </script>
   {% endblock %}
@@ -59,6 +65,18 @@
           </div>
 
           <form method="post">
+
+            <!-- Display Non-Field Errors -->
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger alert-container">
+                <ul class="errorlist">
+                  {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
             {% csrf_token %}
             <div class="mb-3">
               <label for="exampleInputEmail1" class="form-label"
@@ -112,6 +130,5 @@
     </div>
 
     {% endif %}
-
 
   {% endblock %}

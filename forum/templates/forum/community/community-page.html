@@ -75,7 +75,7 @@
             <div class="community-img-container position-relative">
               <!-- Community Cover Image -->
               <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhOt8yVPy6GGZ4tjCXHpImPPqpNoEwJGeE2Q&s"
+               {% if community.community_post_image %} src="{{community.community_post_image.url}}" {% endif %}
                 alt="Cover Image"
                 class="card-img-top img-fluid community-img cover-img"
               />
@@ -84,7 +84,9 @@
               <div class="community-avatar-wrapper">
                 <!-- Replace with your community's avatar field if available -->
                 <img
-                  src="https://static.teamblind.com/img/channel/logo/us/b1e3df0c750436.png"
+                {% if community.community_cover_image %}
+                  src="{{community.community_cover_image.url}}"
+                {% endif %}
                   alt="Community Avatar"
                   class="community-avatar-img"
                 />

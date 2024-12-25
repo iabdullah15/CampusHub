@@ -224,7 +224,7 @@ GS_BUCKET_NAME = 'campushub_bucket'
 
 
 # Toggle to use GCS for static files or local files
-USE_GCS_FOR_STATIC = False
+USE_GCS_FOR_STATIC = True
 
 if USE_GCS_FOR_STATIC:
     # Configure Google Cloud Storage settings

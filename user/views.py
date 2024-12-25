@@ -92,11 +92,17 @@ class CustomLoginView(LoginView):
         login(self.request, form.get_user())
         # Add debug logging
         user_department = form.get_user().department
-        print("Department:", user_department)  # Log department to verify its value
         
         if not user_department:
-            print("Redirecting to onboarding as department is not set.")
             return redirect('user:onboarding')  # Redirect to onboarding
         
         # If all checks pass, let the user sign in
         return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        # Add debug logging for form errors
+        print("Form Invalid Errors:", form.errors)
+
+        # Optionally add error messages for the user
+        messages.error(self.request, "Invalid username or password. Please try again.")
+        return super().form_invalid(form)

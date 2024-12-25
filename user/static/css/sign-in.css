@@ -1,120 +1,179 @@
 body {
-    font-family: "Montserrat", sans-serif;
+  font-family: "Montserrat", sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
-
-.description-container{
-    background-color: #121212;
-    color: white;
-    padding-bottom: 10rem;
+/***********************************************
+   * LEFT COLUMN (Description Container)
+  ***********************************************/
+.description-container {
+  background-color: #121212;
+  color: #fff;
+  padding-bottom: 10rem;
 }
-
 .description-heading {
-    font-weight: 600;
+  font-weight: 600;
 }
-
-
 .description-btn {
-    margin-top: 2rem;
-
+  margin-top: 2rem;
+  border-color: #fff; /* Outline light to contrast dark background */
+  color: #fff;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .second-description-heading-container {
-    margin-top: 2rem;
-    width: 70%;
+  margin-top: 2rem;
+  width: 70%;
 }
 
-.second-description-heading-container>h3{
-    font-size: 3rem;
-    font-weight: 600;
+.second-description-heading-container > h3 {
+  font-size: 3rem;
+  font-weight: 600;
+}
+.second-description-heading-container > p {
+  font-size: 1rem;
 }
 
-.second-description-heading-container>p{
-    font-size: 1rem;
+/***********************************************
+   * RIGHT COLUMN (Sign-In Form)
+  ***********************************************/
+.sign-up-container {
 }
-
-
-.sign-up-container{
-
-}
-
 .sign-up-column {
-    margin-top: 5rem;
-    text-align: center;
+  margin-top: 5rem;
+  text-align: center;
 }
 
-.sign-up-heading>h1 {
-    font-weight: 700;
-    font-size: 2rem;
+/* Heading text */
+.sign-up-heading > h1 {
+  font-weight: 700;
+  font-size: 2rem;
 }
 
-.email-field, .password-field, .horizontal-line, .submit-btn-container {
-    width: 55%;
-    margin-left: auto;
-    margin-right: auto;
+/* Form Fields: Email, Password */
+.email-field,
+.password-field,
+.horizontal-line,
+.submit-btn-container {
+  width: 55%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: var(
+    --text-secondary-color
+  ); /* Off-white field background */
+  border-radius: 4px;
+  transition: border-color 0.2s ease;
 }
 
-.email-field::placeholder{
-    opacity: 0.5;
+.submit-btn-container {
+    background-color: var(--background-color);
 }
 
+.email-field::placeholder {
+  opacity: 0.5;
+  color: var(--text-color);
+}
+.email-field:hover,
+.password-field:hover {
+  border-color: var(--primary-color); /* Subtle highlight on hover */
+}
+
+/* Submit Button */
+.submit-btn-container .btn {
+  background-color: var(--primary-color);
+  color: var(--text-secondary-color);
+  border: none;
+  font-weight: 600;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.submit-btn-container .btn:hover {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/***********************************************
+   * Links & Text
+  ***********************************************/
 .sign-in-link {
-    font-weight: bold;
+  font-weight: bold;
 }
-
 .forgot-password-text {
-    color: blue;
-    text-decoration: none;
-    font-weight: 500;
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
-
-.forgot-password-text:hover{
-    text-decoration: underline;
+.forgot-password-text:hover {
+  text-decoration: underline;
+  color: var(--primary-color);
 }
-
 .sign-in-text {
-    color: brown;
-    text-decoration: none;
-    font-weight: 500;
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+.sign-in-text:hover {
+  text-decoration: underline;
+  color: var(--primary-color);
 }
 
-.sign-in-text:hover{
-    text-decoration: underline;
+/***********************************************
+   * Error Messages
+  ***********************************************/
+.alert-container {
+    width: 55%;
+    margin-right: auto;
+    margin-left: auto;
 }
 
+.errorlist {
+  text-align: center;
+  margin-top: 1rem;
+  width: 100%;
+  color: var(--accent-color);
+  padding-left: 0;
+}
+.errorlist li {
+  list-style: none !important;
+}
 
-/* Media queries */
+/***********************************************
+   * Media Queries (No Layout Changes)
+  ***********************************************/
 @media (min-width: 767.98px) and (max-width: 849.98px) {
-    .second-description-heading-container {
-        width: 100%;
-    }
-
-
+  .second-description-heading-container {
+    width: 100%;
+  }
 }
 @media (min-width: 767.98px) and (max-width: 1300px) {
-    .email-field, .password-field, .horizontal-line, .submit-btn-container {
-        width: 90%;
-    }
-
-    .description-column{
-        flex: 0 0 auto;
-        width: 50.33333333%;
-    }
-
+  .email-field,
+  .password-field,
+  .horizontal-line,
+  .submit-btn-container {
+    width: 90%;
+  }
+  .description-column {
+    flex: 0 0 auto;
+    width: 50.33333333%;
+  }
 }
-
-
-
 @media (max-width: 767.98px) {
-    .email-field, .password-field, .horizontal-line, .submit-btn-container {
-        width: 75%;
-    }
-
+  .email-field,
+  .password-field,
+  .horizontal-line,
+  .submit-btn-container {
+    width: 75%;
+  }
 }
-
 @media (max-width: 400px) {
-    .email-field, .password-field, .horizontal-line, .submit-btn-container {
-        width: 100%;
-    }
-
+  .email-field,
+  .password-field,
+  .horizontal-line,
+  .submit-btn-container {
+    width: 100%;
+  }
 }
