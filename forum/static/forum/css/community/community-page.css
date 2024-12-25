@@ -1,5 +1,60 @@
+/* Existing layout classes remain, but we add and modify as follows */
+
+/*********************************************
+ * COVER IMAGE AND AVATAR OVERLAP STYLING
+*********************************************/
+
+/* Keep your existing .community-img as the cover style if you like */
+.community-img.cover-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover; /* Ensures cover image is cropped nicely */
+}
+
+/* Wrapper that allows the avatar to overlap the cover image */
+.community-img-container {
+  position: relative; /* So the avatar can be absolutely placed */
+}
+
+/* The circle avatar wrapper */
+.community-avatar-wrapper {
+  position: absolute;
+  /* Place it near the bottom of the cover image */
+  bottom: -40px; /* The negative margin creates the overlap */
+  left: 8%;
+  transform: translateX(-50%);
+
+  width: 80px;
+  height: 80px;
+
+  /* Round shape */
+  border-radius: 50%;
+  overflow: hidden;
+
+  /* Optional border or box-shadow for emphasis */
+  border: 2px solid #fff; 
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  background-color: #fff; /* ensures a clean circle background */
+}
+
+/* The avatar image inside the wrapper */
+.community-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Give the card body extra top margin so it doesn’t collide with the avatar */
+.community-card-body {
+  margin-top: 3rem; /* Adjust as needed for more or less overlap */
+}
+
+/*********************************************
+ * OTHER EXISTING STYLES
+*********************************************/
+
 .main-feed {
-  /* Adjust for navbar and sidebars width */
   margin-top: 30px;
   margin-right: 50px;
   margin-left: 600px;
@@ -9,14 +64,17 @@
   padding: 20px;
 }
 
+/* ...your existing .user-post-card, .user-post-link, .card-title-container, etc. */
+/* Kept intact with no changes unless you specifically want them altered. */
+
 .user-post-card {
   width: 60%;
   margin-bottom: 2rem;
-  max-height: 500px; /* Set your desired max height */
-  overflow: hidden; /* Ensures content beyond max-height doesn't overflow */
-  text-overflow: ellipsis; /* Adds ellipsis for overflowing text */
-  display: flex; /* Ensures proper layout */
-  flex-direction: column; /* Aligns content vertically */
+  max-height: 500px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  flex-direction: column;
 }
 
 .user-post-card-body {
@@ -35,8 +93,8 @@
 }
 
 .card-title {
-  margin: 0; /* Ensure the title and icon are aligned properly */
-  flex: 1; /* This makes sure the title takes up available space */
+  margin: 0;
+  flex: 1;
 }
 
 .card-title:hover {
@@ -52,15 +110,15 @@
 }
 
 .custom-subtitle-container {
-  gap: 1rem; /* Optional: control spacing between the two subtitles */
+  gap: 1rem;
 }
 
 .post-options-icon {
-  margin-left: 10px; /* Add some space between the title and the icon */
+  margin-left: 10px;
 }
 
 .post-option-icon-container:hover {
-  cursor: pointer; /* Optional: cursor change to indicate the icon is interactive */
+  cursor: pointer;
   opacity: 0.5;
 }
 
@@ -77,16 +135,35 @@
   cursor: pointer !important;
 }
 
+/* Updated or removed old .community-img rules, 
+   if it was conflicting. We replaced with .community-img.cover-img 
+   to show the cover. */
 .community-img {
-  width: 100%;
-  height: 200px;
+  /* Remove old fixed width/height if it conflicts. 
+     Or keep if you prefer the existing styling. */
 }
 
+/* The card for the community */
 .community-card {
   width: 60%;
   margin-bottom: 3rem;
 }
 
+
+
+/* Sidebars */
+
+.right-sidebar {
+  position: fixed;
+  top: 85px; /* Adjust for navbar height */
+  bottom: 0;
+  width: 400px;
+  right: 0;
+  overflow-y: auto;
+  border-left: 1px solid #e5e5e5;
+}
+
+/* Responsive media query */
 @media (max-width: 1250px) {
   .community-card {
     width: 100%;
