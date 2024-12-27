@@ -229,6 +229,32 @@ body {
   background-color: #f8f9fa; /* Optional: Adds a background color to fill space */
 }
 
+.poll-info {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem; /* Adjust spacing above/below the poll info */
+  padding: 20px;
+}
+
+.poll-left .poll-icon,
+.poll-left .poll-label {
+  color: var(--primary-color); /* Use your brand’s primary color */
+  font-weight: 500;            /* Slightly bolder text for emphasis */
+}
+
+/* Vertical divider between "Poll" and the participant count */
+.poll-divider {
+  width: 1px;
+  height: 1.2rem;             /* Slightly taller than text line-height */
+  background-color: var(--border-color);
+}
+
+/* Participant count styling */
+.poll-participants {
+  color: var(--text-color);
+  font-size: 0.95rem;         /* Adjust to match your card’s text size */
+}
+
 
 
 /* Sidebars */
@@ -268,4 +294,5 @@ body {
   color: var(--text-secondary-color)!important; /* White Text for Active */
   border-color: var(--primary-color)!important; /* Border Matches Active Background */
 }
+
 

@@ -51,13 +51,8 @@
       <h5>Feed</h5>
       <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link active left-sidebar-link" href="{% url 'forum:home' %}">
+          <a class="nav-link left-sidebar-link" href="{% url 'forum:home' %}">
             <i class="fa-solid fa-house fa-lg"></i> Home</a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link left-sidebar-link" href="#"
-            ><i class="fa-solid fa-square-poll-vertical fa-lg"></i> Polls</a
           >
         </li>
         <li class="nav-item">
@@ -70,9 +65,27 @@
       <ul class="nav flex-column">
         {% if communities %}
           {% for community in communities %}
-            <li class="nav-item">
-              <a class="nav-link left-sidebar-link" href="{% url 'forum:community_page' community.id %}"> {{community.community_name}} </a>
-            </li>
+          <li class="nav-item">
+            <a class="nav-link left-sidebar-link" href="{% url 'forum:community_page' community.id %}">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  {% if community.community_sidebar_logo %}
+                    <img
+                      src="{{ community.community_sidebar_logo.url }}"
+                      alt="Community Logo"
+                      width="30"
+                      style="max-width: 100%; height: auto;"
+                    />
+                  {% endif %}
+                </div>
+          
+                <div class="col">
+                  {{ community.community_name }}
+                </div>
+              </div>
+            </a>
+          </li>
+          
           {% endfor %}
         {% endif %}
       </ul>
@@ -105,7 +118,11 @@
           <div class="d-flex align-items-center">
             <!-- Small circle placeholder image -->
             <img
-              src="https://via.placeholder.com/40"
+            {% if post.community.community_post_image %}
+            src="{{post.community.community_post_image.url}}"
+            {% else %}
+            src="https://via.placeholder.com/40"
+            {% endif %}  
               alt="Placeholder"
               class="rounded-circle me-3"
               style="width: 40px; height: 40px; object-fit: cover;"
@@ -442,84 +459,6 @@
                   </div>
                 </div>
 
-                <!-- <div class="comment-replies-container">
-                  {% for reply in comment_with_status.comment.comment_reply.all %}
-                    <div class="card comment-reply-card">
-                      <div class="card-body">
-
-                        <div class="d-flex align-items-center">
-                          <h6 class="card-title">
-                            Department <span>{{ reply.author.username }}</span>
-                            <span>{{ reply.time_created|naturaltime }}
-                          </h6>
-                          {% if request.user == reply.author %}
-                          <div
-                            class="post-option-icon-container dropdown ms-auto"
-                          >
-                            <i
-                              class="fa-solid fa-ellipsis post-options-icon fa-lg"
-                              data-bs-toggle="dropdown"
-                              aria-expanded="false"
-                            ></i>
-
-                              <ul class="dropdown-menu">
-                                <li>
-                                  <a class="dropdown-item edit-reply-btn" href="#">
-                                    <i class="fa-solid fa-pencil me-2"></i>Edit
-                                  </a>
-                                </li>
-                                <li>
-                                  <a
-                                    class="dropdown-item delete-reply-btn"
-                                    href="#"
-                                  >
-                                    <i class="fa-solid fa-trash me-2"></i>Delete
-                                  </a>
-                                </li>
-                              </ul>
-
-                          </div>
-                          {% endif %}
-                        </div>
-
-
-                        <p class="card-text">
-                          {{ reply.reply_body }}
-                        </p>
-
-                        <div class="edit-reply-form mt-3" style="display: none">
-                          <textarea
-                            class="form-control edit-reply-textarea comment-textarea"
-                            rows="3"
-                          ></textarea>
-                          <div class="edit-btn-container mt-2">
-                            <button
-                              class="btn btn-outline-dark submit-reply-edit-btn"
-                            >
-                              Submit
-                            </button>
-                            <button
-                              class="btn btn-outline-dark cancel-reply-edit-btn"
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
-
-                      </div>
-
-                    </div>
-
-
-                    <div class="comment-reply-interaction-container">
-                      <span class="interaction-button mt-2">
-                        <i class="fa-regular fa-heart fa-lg heart-icon"></i> 9
-                      </span>
-                    </div>
-
-
-                  {% endfor %}
-                </div> -->
 
                 <div class="comment-replies-container">
                   {% for reply in comment_with_status.comment.comment_reply.all %}
@@ -587,13 +526,7 @@
       {% endif %}
     </div>
 
-    <!-- <div class="right-sidebar bg-light">
-      <h5 class="mt-3 ms-3">Most Read</h5>
-      <hr />
-      <div class="card right-sidebar-card">
 
-      </div>
-    </div> -->
   </div>
 
 
@@ -604,6 +537,8 @@
 
   {% endif %}
 
-  
+  {% include 'forum/post/delete-comment-modal.html' %}
+  {% include 'forum/post/delete-comment-reply-modal.html' %}
+
 
 {% endblock %}

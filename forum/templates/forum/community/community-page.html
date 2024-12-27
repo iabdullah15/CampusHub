@@ -25,7 +25,7 @@
           <h5>Feed</h5>
           <ul class="nav flex-column">
             <li class="nav-item">
-              <a class="nav-link active left-sidebar-link" href="{% url 'forum:home' %}">
+              <a class="nav-link left-sidebar-link" href="{% url 'forum:home' %}">
                 <i class="fa-solid fa-house fa-lg"></i> Home</a
               >
             </li>
@@ -112,15 +112,19 @@
           <div class="user-post-card card">
             <div class="card-body user-post-card-body">
           
-              <!-- Top Row: Placeholder + (category/time, community/username) + ellipsis -->
-              <div class="d-flex align-items-center my-3">
-                <!-- Small circle placeholder image -->
-                <img
+                <!-- Top Row: Placeholder + (category/time, community/username) + ellipsis -->
+                <div class="d-flex align-items-center my-3">
+                  <!-- Small circle placeholder image -->
+                  <img
+                  {% if post_with_status.post.community.community_post_image %}
+                  src="{{post_with_status.post.community.community_post_image.url}}"
+                  {% else %}
                   src="https://via.placeholder.com/40"
-                  alt="Placeholder"
-                  class="rounded-circle me-3"
-                  style="width: 40px; height: 40px; object-fit: cover;"
-                />
+                  {% endif %}  
+                    alt="Placeholder"
+                    class="rounded-circle me-3"
+                    style="width: 40px; height: 40px; object-fit: cover;"
+                  />
           
                 <!-- Flex column for category/time and community/username -->
                 <div class="d-flex flex-column">
@@ -449,13 +453,23 @@
                   <span class="interaction-button">
                     <i class="fa-regular fa-comment fa-lg"></i>
                     <small class="text-muted">
-                      <a
-                        style="text-decoration: none;"
-                        class="link-dark"
-                        href="{% url 'forum:post_detail' post_with_status.post.id %}"
-                      >
-                        {{post_with_status.total_comments}} comments
-                      </a>
+                      {% if post_with_status.comments %}
+                        <a
+                          style="text-decoration: none;"
+                          class="link-dark"
+                          href="{% url 'forum:post_detail' post_with_status.post.id %}"
+                        >
+                          {{post_with_status.comments}} comments
+                        </a>
+                        {% else %}
+                        <a
+                          style="text-decoration: none;"
+                          class="link-dark"
+                          href="{% url 'forum:post_detail' post_with_status.post.id %}"
+                        >
+                          0 comments
+                        </a>
+                      {% endif %}
                     </small>
                   </span>
                 </div>

@@ -14,7 +14,7 @@ body {
 /* Column for the sign-up form */
 .sign-up-column {
   margin-top: 5rem;
-  text-align: center;
+  /* text-align: center; */
 }
 
 /* Heading text */
@@ -25,14 +25,34 @@ body {
 }
 
 /* Form controls: email, username, password, etc. */
+
+.field-label {
+  font-weight: 500;
+}
+
+.helper-text {
+  font-weight: 400;
+}
+
+.email-container,
+.username-container,
+.pass-container,
+.sign-up-heading,
+.submit-btn-container,
+.sign-in-link {
+  width: 55%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+
 .email-field,
 .password-field,
 .username-field,
 .horizontal-line,
 .submit-btn-container {
-  width: 55%;
-  margin-left: auto;
-  margin-right: auto;
+
   background-color: var(
     --text-secondary-color
   ); /* Off-white background inside form fields */
@@ -116,11 +136,12 @@ body {
 }
 
 @media (max-width: 800px) {
-  .email-field,
-  .password-field,
-  .horizontal-line,
+  .email-container,
+  .username-container,
+  .pass-container,
+  .sign-up-heading,
   .submit-btn-container,
-  .username-field {
+  .sign-in-link  {
     width: 80%;
     margin-left: auto;
     margin-right: auto;

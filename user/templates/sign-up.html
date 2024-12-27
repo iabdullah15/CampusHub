@@ -86,8 +86,8 @@
 
           <form method="post">
             {% csrf_token %}
-            <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label"
+            <div class="mb-3 email-container">
+              <label for="exampleInputEmail1" class="form-label field-label"
                 >Please use your UCP email address</label
               >
               {{ form.email }}
@@ -98,14 +98,14 @@
                 {% endfor %}
               </ul>
             {% endif %}
-              <div id="emailHelp" class="form-text">
+              <div id="emailHelp" class="form-text helper-text">
                 We'll never share your email with anyone else.
               </div>
             </div>
 
 
-            <div class="mb-3">
-              <label for="exampleInputUserName" class="form-label"
+            <div class="mb-3 username-container">
+              <label for="exampleInputUserName" class="form-label field-label"
                 >Username</label
               >
               {{ form.username }}
@@ -117,13 +117,10 @@
                 </ul>
               {% endif %}
 
-              <div id="emailHelp" class="form-text">
-                We'll never share your username with anyone else.
-              </div>
             </div>
 
-            <div class="mb-3">
-              <label for="exampleInputPassword1" class="form-label"
+            <div class="mb-3 pass-container">
+              <label for="exampleInputPassword1" class="form-label field-label"
                 >Password</label
               >
 
@@ -137,8 +134,8 @@
           {% endif %}
 
             </div>
-            <div class="mb-3">
-              <label for="exampleInputPassword2" class="form-label"
+            <div class="mb-3 pass-container">
+              <label for="exampleInputPassword2" class="form-label field-label"
                 >Confirm Password</label
               >
 

@@ -33,31 +33,32 @@ class HomePageView(View):
 
             communities = PostCommunity.objects.all().order_by('community_name')
             all_posts = Post.objects.all().order_by("-time_created")
-            
+
             seven_days_ago = timezone.now() - timedelta(days=7)
-            latest_posts = Post.objects.filter(time_created__gte=seven_days_ago)
+            latest_posts = Post.objects.filter(
+                time_created__gte=seven_days_ago)
 
             # Latest Posts with like and comment count
             latest_posts_with_like_status_and_comments = []
 
             for post in latest_posts:
-                print(post)
-                like_count = post.likes.filter(is_liked=True).count()  # Using the related name 'likes'
+                # Using the related name 'likes'
+                like_count = post.likes.filter(is_liked=True).count()
                 comment_count = post.comments.count()  # Using the related name 'comments'
 
                 latest_posts_with_like_status_and_comments.append({
                     'post': post,
-                    'total_likes': like_count,                    
+                    'total_likes': like_count,
                     'total_comments': comment_count
                 })
-                
-                
+
             # Fetch trending posts for the last 10 days
             ten_days_ago = timezone.now() - timedelta(days=10)
             trending_posts = (
                 Post.objects.filter(time_created__gte=ten_days_ago)
                 .annotate(total_interactions=Count('likes', filter=F('likes__is_liked')) + Count('comments'))
-                .order_by('-total_interactions')[:10]  # Top 10 posts by total interactions
+                # Top 10 posts by total interactions
+                .order_by('-total_interactions')[:10]
             )
 
             trending_posts_with_data = []
@@ -68,18 +69,29 @@ class HomePageView(View):
                     'total_likes': post.likes.filter(is_liked=True).count(),
                     'total_comments': post.comments.count(),
                 })
-                
-            # Create a list of posts with their like status for the main feed (Current user) 
+
+            # Create a list of posts with their like status for the main feed (Current user)
             posts_with_like_status = []
             for post in all_posts:
 
                 is_liked_by_user = PostLikes.objects.filter(
                     post=post, user=request.user, is_liked=True).exists()
-                posts_with_like_status.append({
+
+                post_data = {
                     'post': post,
                     'is_liked_by_user': is_liked_by_user,
-                    'total_comments':post.comments.count(),
-                })
+                    'total_comments': post.comments.count(),
+                }
+                # Check if the post contains a poll and add total votes
+                poll = Poll.objects.filter(post=post).first()  # Use `filter` to safely check
+                if poll:
+                    total_votes = PollVote.objects.filter(poll=poll).count()
+                    print(f"{poll} with votes {total_votes}")
+                    post_data['total_votes'] = total_votes
+                else:
+                    print("No poll for this post")
+                    
+                posts_with_like_status.append(post_data)
 
             return render(request, self.template_name, {
                 'posts_with_like_status': posts_with_like_status,
@@ -118,7 +130,8 @@ class PostSearchView(View):
                 post=post, user=request.user, is_liked=True).exists()
             posts_with_like_status.append({
                 'post': post,
-                'is_liked_by_user': is_liked_by_user
+                'is_liked_by_user': is_liked_by_user,
+                'total_comments': post.comments.count()
             })
 
         return render(request, self.template_name, {
@@ -519,132 +532,14 @@ class UpdatePostWithPollView(View):
             'post': post,
         })
 
-    # def post(self, request, post_id: int):
-    #     print(request.POST)
-
-    #     post = get_object_or_404(Post, id=post_id, author=request.user)
-    #     poll = get_object_or_404(Poll, post=post)
-    #     post_form = PostForm(request.POST, request.FILES, instance=post)
-    #     poll_choice_formset = PollChoiceFormSet(
-    #         request.POST, queryset=poll.choices.all()
-    #     )
-
-    #     if post_form.is_valid() and poll_choice_formset.is_valid():
-    #         author = request.user
-
-    #         # Check if the user is suspended
-    #         if author.is_suspended and author.suspension_end_date:
-    #             if timezone.now() < author.suspension_end_date:
-    #                 messages.error(
-    #                     request,
-    #                     f"Your account is suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}. You cannot edit posts."
-    #                 )
-    #                 return redirect('forum:profile', username=author.username)
-
-    #         # Save the post form
-    #         post_form.save()
-
-    #         # Process poll choices
-    #         choices = []
-    #         for form in poll_choice_formset:
-    #             if form.cleaned_data.get('DELETE'):
-    #                 form.instance.delete()
-    #                 continue  # Skip deleted choices
-
-    #             choice_text = form.cleaned_data.get('choice_text')
-    #             if choice_text:
-    #                 # Explicitly set the poll for new choices
-    #                 if form.instance.pk is None:
-    #                     form.instance.poll = poll
-    #                 choices.append(form.instance)
-    #                 form.save()
-
-    #         if len(choices) < 2:
-    #             messages.error(
-    #                 request, 'Please provide at least two choices for the poll.')
-    #             return render(request, self.template_name, {
-    #                 'post_form': post_form,
-    #                 'poll_choice_formset': poll_choice_formset,
-    #             })
-
-    #         # Format content for moderation
-    #         title = post_form.cleaned_data.get('title')
-    #         body = post_form.cleaned_data.get('body')
-    #         image = post_form.cleaned_data.get('image')
-    #         choices_content = '\n'.join(
-    #             [choice.choice_text for choice in choices])
-    #         content = f'{title}\n\n{body}\n\nChoices:\n{choices_content}'
-
-    #         # Text Moderation
-    #         final_action, actions = moderate_post(post_content=content)
-
-    #         # Image Moderation
-    #         image_final_action = 'Accepted'
-    #         image_nsfw_score = None
-
-    #         if image:
-    #             image_nsfw_score = moderate_img(image)
-    #             if image_nsfw_score >= 0.5 and image_nsfw_score <= 0.6:
-    #                 image_final_action = 'Warning Issued'
-    #                 author.warning_count += 1
-    #                 author.save()
-    #             elif image_nsfw_score > 0.6:
-    #                 image_final_action = 'Rejected'
-
-    #         # Decide moderation actions
-    #         if final_action == 'Reject' or image_final_action == 'Rejected':
-    #             author.rejection_count += 1
-    #             author.save()
-
-    #             if author.rejection_count >= 5 and not author.is_suspended:
-    #                 author.is_suspended = True
-    #                 author.suspension_end_date = timezone.now() + timedelta(days=7)
-    #                 author.save()
-    #                 messages.error(
-    #                     request,
-    #                     f"Your post was rejected due to guideline violations. Your account has been suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}."
-    #                 )
-    #             else:
-    #                 messages.error(
-    #                     request,
-    #                     "Your post was rejected due to guideline violations. Please review the community guidelines."
-    #                 )
-
-    #             return render(request, self.template_name, {
-    #                 'post_form': post_form,
-    #                 'poll_choice_formset': poll_choice_formset,
-    #             })
-
-    #         elif final_action == 'Accept' and image_final_action == 'Accepted':
-    #             messages.success(request, 'Post updated successfully!')
-    #             return redirect('forum:post_detail', pk=post.pk)
-
-    #         elif final_action == 'Issue Warning' or image_final_action == 'Warning Issued':
-    #             author.warning_count += 1
-    #             author.save()
-    #             messages.warning(
-    #                 request,
-    #                 "Your post was updated but contains content that may violate guidelines. Please review the community guidelines."
-    #             )
-    #             return redirect('forum:post_detail', pk=post.pk)
-    #     else:
-    #         # Log errors to understand why it fails
-    #         print("Post Form Errors:", post_form.errors)
-    #         print("Formset Errors:", poll_choice_formset.errors)
-    #         messages.error(request, 'There was an error in your submission.')
-
-    #     return render(request, self.template_name, {
-    #         'post': post,
-    #         'post_form': post_form,
-    #         'poll_choice_formset': poll_choice_formset,
-    #     })
-
+ 
     def post(self, request, post_id: int):
 
         post = get_object_or_404(Post, id=post_id, author=request.user)
         poll = get_object_or_404(Poll, post=post)
         post_form = PostForm(request.POST, request.FILES, instance=post)
-        poll_choice_formset = PollChoiceFormSet(request.POST, queryset=poll.choices.all())
+        poll_choice_formset = PollChoiceFormSet(
+            request.POST, queryset=poll.choices.all())
 
         # Log POST data for debugging
         print("Received POST data:", request.POST)
@@ -657,7 +552,8 @@ class UpdatePostWithPollView(View):
                 if timezone.now() < author.suspension_end_date:
                     messages.error(
                         request,
-                        f"Your account is suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}. You cannot edit posts."
+                        f"Your account is suspended until {author.suspension_end_date.strftime(
+                            '%Y-%m-%d %H:%M:%S')}. You cannot edit posts."
                     )
                     return redirect('forum:profile', username=author.username)
 
@@ -695,7 +591,8 @@ class UpdatePostWithPollView(View):
                 title = post_form.cleaned_data.get('title')
                 body = post_form.cleaned_data.get('body')
                 image = post_form.cleaned_data.get('image')
-                choices_content = '\n'.join([choice.choice_text for choice in choices])
+                choices_content = '\n'.join(
+                    [choice.choice_text for choice in choices])
                 content = f'{title}\n\n{body}\n\nChoices:\n{choices_content}'
 
                 # Text Moderation
@@ -725,7 +622,8 @@ class UpdatePostWithPollView(View):
                         author.save()
                         messages.error(
                             request,
-                            f"Your post was rejected due to guideline violations. Your account has been suspended until {author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}."
+                            f"Your post was rejected due to guideline violations. Your account has been suspended until {
+                                author.suspension_end_date.strftime('%Y-%m-%d %H:%M:%S')}."
                         )
                     else:
                         messages.error(
@@ -761,7 +659,6 @@ class UpdatePostWithPollView(View):
             'post_form': post_form,
             'poll_choice_formset': poll_choice_formset,
         })
-
 
 
 class Vote(View):
@@ -1163,7 +1060,8 @@ class CommunityView(View):
                     post=post, user=request.user, is_liked=True).exists()
                 posts_with_like_status.append({
                     'post': post,
-                    'is_liked_by_user': is_liked_by_user
+                    'is_liked_by_user': is_liked_by_user,
+                    'comments': post.comments.count(),
                 })
 
             return render(request, self.template_name, {
@@ -1209,8 +1107,8 @@ class ProfileView(View):
             user=request.user)  # Use the custom form
 
         return render(request, self.template_name, {"posts": user_posts, "commented_posts": user_commented_posts,
-                                                    "profile_form": profile_form, "password_form": password_form, 
-                                                    "communities":communities,})
+                                                    "profile_form": profile_form, "password_form": password_form,
+                                                    "communities": communities, })
 
     def post(self, request, username):
         profile_form = UpdateProfileForm(
