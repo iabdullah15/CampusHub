@@ -39,6 +39,13 @@
     src="https://code.jquery.com/jquery-3.7.1.js"
     integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
     crossorigin="anonymous"></script>
+    <style>
+      .notification-item.read {
+        background-color: #f8f9fa; /* Light grey background for read notifications */
+        color: #6c757d; /* Muted text color */
+      }
+      
+    </style>
     
     {% endblock %}
     
@@ -48,7 +55,49 @@
 
     {% block js %}
     {% endblock %}
-
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const notificationItems = document.querySelectorAll(".notification-item");
+    
+        notificationItems.forEach((item) => {
+            item.addEventListener("click", function () {
+                const notificationId = item.getAttribute("data-notification-id");
+    
+                if (notificationId) {
+                    fetch(`/notifications/mark-read/${notificationId}/`, {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                        },
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.success) {
+                                // Mark the notification as read visually
+                                item.classList.add("read");
+    
+                                // Update the notification badge count
+                                const badge = document.querySelector(".notification-badge");
+                                if (badge) {
+                                    let count = parseInt(badge.textContent, 10);
+                                    if (count > 0) {
+                                        badge.textContent = count - 1;
+                                        if (count - 1 === 0) {
+                                            badge.remove(); // Remove badge if no unread notifications
+                                        }
+                                    }
+                                }
+                            } else {
+                                console.error(data.error);
+                            }
+                        })
+                        .catch((error) => console.error("Error:", error));
+                }
+            });
+        });
+    });
+    
+    </script>
     <link rel="stylesheet" href="{% static 'forum/css/color-palette/colors.css' %}">
 </head>
 <body>

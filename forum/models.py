@@ -166,3 +166,52 @@ class Report(models.Model):
 
     def __str__(self):
         return f"{self.user.username} reported {self.post.title}"
+    
+    
+    
+from django.db import models
+from django.conf import settings
+from django.utils.timezone import now
+
+
+class Notification(models.Model):
+    
+    def get_notification_content(self):
+        if self.category == self.Category.POST_LIKED:
+            return f"{self.sender.username} liked your post: {self.post.title}"
+        elif self.category == self.Category.POST_COMMENTED:
+            return f"{self.sender.username} commented on your post: {self.post.title}"
+        elif self.category == self.Category.COMMENT_LIKED:
+            return f"{self.sender.username} liked your comment: {self.comment.comment_body}"
+        elif self.category == self.Category.COMMENT_REPLIED:
+            return f"{self.sender.username} replied to your comment: {self.comment.comment_body}"
+        return "You have a new notification"
+    
+    class Category(models.TextChoices):
+        POST_LIKED = "post_liked", "Post Liked"
+        POST_COMMENTED = "post_commented", "Post Commented"
+        COMMENT_LIKED = "comment_liked", "Comment Liked"
+        COMMENT_REPLIED = "comment_replied", "Comment Replied"
+
+    recipient = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications"
+    )
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    category = models.CharField(max_length=20, choices=Category.choices)
+    post = models.ForeignKey('forum.Post', on_delete=models.CASCADE, null=True, blank=True)
+    comment = models.ForeignKey(
+        'forum.PostComment', on_delete=models.CASCADE, null=True, blank=True
+    )
+    reply = models.ForeignKey(
+        'forum.PostCommentReply', on_delete=models.CASCADE, null=True, blank=True
+    )
+    is_read = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(default=now)
+
+    def __str__(self):
+        return f"Notification for {self.recipient.username} - {self.get_category_display()}"
+
+    class Meta:
+        ordering = ['-timestamp']

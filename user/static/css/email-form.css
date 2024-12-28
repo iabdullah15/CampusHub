@@ -1,11 +1,37 @@
-.password-reset-container, .heading-container{
-    width: 30%;
+.password-reset-container,
+.heading-container {
+  width: 30%;
 }
 
 .heading-container {
-    margin-top: 5rem;
+  margin-top: 5rem;
 }
 
-.password-reset-container{
-    margin-top: 3rem;
+.password-reset-container {
+  margin-top: 3rem;
+}
+
+.form-label {
+  font-weight: 500;
+}
+
+/* Button Styling */
+.btn-outline-dark {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-outline-dark:hover {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+}
+
+/* Input Field Hover and Focus Effect */
+.form-control:hover,
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.1rem rgba(0, 119, 182, 0.25); /* Modern Blue with reduced opacity */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }

@@ -1,0 +1,26 @@
+{% extends 'forum/base/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+<title>All Notifications</title>
+{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+  <h2>All Notifications</h2>
+  {% if notifications %}
+  <ul class="list-group">
+    {% for notification in notifications %}
+      <li class="list-group-item {% if not notification.is_read %}list-group-item-warning{% endif %}">
+        {{ notification.get_notification_content }}
+        <span class="text-muted float-end">{{ notification.timestamp|naturaltime }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+  
+  {% else %}
+    <p class="text-muted">You have no notifications.</p>
+  {% endif %}
+</div>
+{% endblock %}

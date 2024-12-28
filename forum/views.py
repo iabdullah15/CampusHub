@@ -12,7 +12,7 @@ from django.db import transaction, models
 from datetime import timedelta
 from django.utils import timezone
 
-
+from .models import Notification
 from .models import PostCommunity, Post, PostComment, PostCategory, PostLikes, PostCommentReply, CommentLike, Poll, PollChoice, PollVote, Report
 from .forms import PostForm, PostCommentForm, PostCommentReplyForm, UpdateProfileForm, CustomPasswordChangeForm, PollChoiceFormSet
 
@@ -21,6 +21,25 @@ from .helpers import ask_assistant, moderate_post, moderate_img
 from user.models import CustomUser
 from django.db.models import Q, Count, F, Sum
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+
+
+def mark_notification_as_read(request, notification_id):
+    if request.user.is_authenticated:
+        try:
+            notification = Notification.objects.get(id=notification_id, recipient=request.user)
+            notification.is_read = True
+            notification.save()
+            return JsonResponse({'success': True})
+        except Notification.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Notification not found'}, status=404)
+    return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
+
+
+@login_required
+def all_notifications(request):
+    notifications = Notification.objects.filter(recipient=request.user).order_by('-timestamp')
+    return render(request, 'forum/notifications/all_notifications.html', {'notifications': notifications})
 
 
 class HomePageView(View):
@@ -1301,3 +1320,7 @@ class DeleteCommentReplyView(View):
             return JsonResponse({'success': True, 'message': 'Reply deleted successfully.'})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+
+

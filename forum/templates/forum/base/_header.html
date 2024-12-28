@@ -1,5 +1,9 @@
+{% load static %}
+{% load humanize %}
 <header class="navbar">
-  <h1 class="mb-0" id="nav-title"><a href="{% url 'forum:home' %}">CampusHub</a></h1>
+  <h1 class="mb-0" id="nav-title">
+    <a href="{% url 'forum:home' %}">CampusHub</a>
+  </h1>
   <form class="me-auto search-bar-form" role="search" method="get" action="{% url 'forum:post_search' %}">
     <input
       class="form-control search-posts me-2"
@@ -8,14 +12,74 @@
       placeholder="Search"
       aria-label="Search"
     />
-    <button class="btn search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+    <button class="btn search-btn">
+      <i class="fa-solid fa-magnifying-glass"></i>
+    </button>
   </form>
   <nav>
-    <ul class="mb-0">
-      <li class="nav-item dropstart">
+    <ul class="mb-0 d-flex align-items-center">
+<!-- Notifications Dropdown -->
+<li class="nav-item dropdown">
+  <a
+    class="nav-link position-relative"
+    href="#"
+    role="button"
+    id="notificationDropdown"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+  >
+    <i class="fa-solid fa-bell fa-xl"></i>
+    <!-- Notification Badge -->
+    {% if unread_count > 0 %}
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        {{ unread_count }}
+      </span>
+    {% endif %}
+  </a>
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+    <li class="dropdown-header">Notifications</li>
+    <li><hr class="dropdown-divider" /></li>
+    {% if notifications %}
+    {% for notification in notifications %}
+    <li>
+      <a href="#" class="dropdown-item">
+        <div class="d-flex">
+          <div class="me-3">
+            {% if notification.category == 'post_liked' %}
+              <i class="fa-solid fa-heart text-danger"></i>
+            {% elif notification.category == 'post_commented' %}
+              <i class="fa-solid fa-comment text-primary"></i>
+            {% elif notification.category == 'comment_liked' %}
+              <i class="fa-solid fa-thumbs-up text-warning"></i>
+            {% elif notification.category == 'comment_replied' %}
+              <i class="fa-solid fa-reply text-success"></i>
+            {% endif %}
+          </div>
+          <div>
+            <p class="mb-0">{{ notification.get_notification_content }}</p>
+            <small class="text-muted">{{ notification.timestamp|naturaltime }}</small>
+          </div>
+        </div>
+      </a>
+    </li>
+    {% endfor %}
+    
+    {% else %}
+      <li class="text-center text-muted">No new notifications</li>
+    {% endif %}
+    <li>
+      <a href="{% url 'forum:all_notifications' %}" class="dropdown-item text-center text-primary">
+        View all notifications
+      </a>
+    </li>
+  </ul>
+</li>
+
+
+      <li class="nav-item dropstart ms-3">
         <a
           class="nav-link dropdown-toggle"
-          href="{% url 'forum:home' %}"
+          href="#"
           role="button"
           data-bs-toggle="dropdown"
           aria-expanded="false"
@@ -27,11 +91,13 @@
             <a class="dropdown-item" href="{% url 'forum:home' %}">Home</a>
           </li>
           {% if request.user.is_staff %}
-            <li>
-              <a class="dropdown-item" href="{% url 'forum:admin_panel' %}">Admin Panel</a>
-            </li>
+          <li>
+            <a class="dropdown-item" href="{% url 'forum:admin_panel' %}">Admin Panel</a>
+          </li>
           {% endif %}
-          <li><a class="dropdown-item" href="{% url 'forum:profile' request.user.username %}">Profile</a></li>
+          <li>
+            <a class="dropdown-item" href="{% url 'forum:profile' request.user.username %}">Profile</a>
+          </li>
           <li><hr class="dropdown-divider" /></li>
           <form method="post" action="{% url 'user:logout' %}">
             {% csrf_token %}
@@ -44,3 +110,58 @@
     </ul>
   </nav>
 </header>
+
+
+<!-- Notifications Dropdown -->
+<li class="nav-item dropdown">
+  <a
+    class="nav-link position-relative"
+    href="#"
+    role="button"
+    id="notificationDropdown"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+  >
+    <i class="fa-solid fa-bell fa-xl"></i>
+    <!-- Notification Badge -->
+    {% if unread_count > 0 %}
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        {{ unread_count }}
+      </span>
+    {% endif %}
+  </a>
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+    <li class="dropdown-header">Notifications</li>
+    <li><hr class="dropdown-divider" /></li>
+    {% if unread_notifications %}
+      {% for notification in unread_notifications %}
+        <li>
+          <a href="#" class="dropdown-item">
+            <div class="d-flex">
+              <div class="me-3">
+                {% if notification.notification_type == 'like' %}
+                  <i class="fa-solid fa-heart text-danger"></i>
+                {% elif notification.notification_type == 'comment' %}
+                  <i class="fa-solid fa-comment text-primary"></i>
+                {% elif notification.notification_type == 'reply' %}
+                  <i class="fa-solid fa-reply text-success"></i>
+                {% endif %}
+              </div>
+              <div>
+                <p class="mb-0">{{ notification.content }}</p>
+                <small class="text-muted">{{ notification.timestamp|naturaltime }}</small>
+              </div>
+            </div>
+          </a>
+        </li>
+      {% endfor %}
+    {% else %}
+      <li class="text-center text-muted">No new notifications</li>
+    {% endif %}
+    <li>
+      <a href="{% url 'forum:all_notifications' %}" class="dropdown-item text-center text-primary">
+        View all notifications
+      </a>
+    </li>
+  </ul>
+</li>
