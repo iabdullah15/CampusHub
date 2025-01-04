@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      MYSQL_DATABASE: campushub
+      MYSQL_USER: DjangoAdmin
+      MYSQL_PASSWORD: jov1lHTW4KefK2q
+      MYSQL_ROOT_PASSWORD: NRtMeEpJ2001+-
+    ports:
+      - "3307:3306"  # Expose MySQL on port 3307 instead of 3306
+
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  web:
+    build: .
+    container_name: django_container
+    command: ["/app/wait_for_db.sh", "db", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  db_data:

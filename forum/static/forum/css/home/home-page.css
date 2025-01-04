@@ -13,7 +13,7 @@ body {
 .content-wrapper {
   display: flex;
   flex: 1;
-  margin-top: 56px; /* Height of the navbar */
+  /* margin-top: 56px; Height of the navbar  */
 }
 
 /* left sidebar */

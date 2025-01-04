@@ -19,6 +19,7 @@ django-widget-tweaks = "*"
 django-storages = "*"
 google-cloud-storage = "*"
 pillow = "*"
+google-api-python-client = "*"
 
 [dev-packages]
 

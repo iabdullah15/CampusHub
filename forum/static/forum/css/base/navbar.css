@@ -41,7 +41,8 @@
 }
 
 .search-posts {
-  width: 30rem!important;
+  width: 20rem!important;
+  border-radius: 2rem;
 }
 
 @media (max-width: 700px) {

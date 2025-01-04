@@ -102,6 +102,7 @@ DATABASES = {
         "USER": "DjangoAdmin",
         "PASSWORD": "jov1lHTW4KefK2q",
         "HOST": "localhost",
+        # "HOST": "db",  # This must match the service name in docker-compose.yml
         "PORT": "3306",
         'OPTIONS': {
             'charset': 'utf8mb4',
