@@ -23,10 +23,10 @@
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
-    
-    
     <script src="https://kit.fontawesome.com/8992edd612.js" crossorigin="anonymous"></script>
+    
     <link rel="stylesheet" href="{% static 'forum/css/base/navbar.css' %}">
+
     {% block fonts %}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -39,13 +39,6 @@
     src="https://code.jquery.com/jquery-3.7.1.js"
     integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
     crossorigin="anonymous"></script>
-    <style>
-      .notification-item.read {
-        background-color: #f8f9fa; /* Light grey background for read notifications */
-        color: #6c757d; /* Muted text color */
-      }
-      
-    </style>
     
     {% endblock %}
     
@@ -98,6 +91,7 @@
     });
     
     </script>
+    <script src="{% static 'forum/js/notification/mark-as-read.js' %}"></script>
     <link rel="stylesheet" href="{% static 'forum/css/color-palette/colors.css' %}">
 </head>
 <body>

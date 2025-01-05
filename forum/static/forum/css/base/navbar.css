@@ -45,6 +45,12 @@
   border-radius: 2rem;
 }
 
+.notification-item.read {
+  background-color: #f8f9fa;
+  color: #6c757d;
+}
+
+
 @media (max-width: 700px) {
   .search-bar-form {
     display: none;

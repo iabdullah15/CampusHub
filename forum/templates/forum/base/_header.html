@@ -18,64 +18,67 @@
   </form>
   <nav>
     <ul class="mb-0 d-flex align-items-center">
-<!-- Notifications Dropdown -->
-<li class="nav-item dropdown">
-  <a
-    class="nav-link position-relative"
-    href="#"
-    role="button"
-    id="notificationDropdown"
-    data-bs-toggle="dropdown"
-    aria-expanded="false"
-  >
-    <i class="fa-solid fa-bell fa-xl"></i>
-    <!-- Notification Badge -->
-    {% if unread_count > 0 %}
-      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-        {{ unread_count }}
-      </span>
-    {% endif %}
-  </a>
-  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
-    <li class="dropdown-header">Notifications</li>
-    <li><hr class="dropdown-divider" /></li>
-    {% if notifications %}
-    {% for notification in notifications %}
-    <li>
-      <a href="#" class="dropdown-item">
-        <div class="d-flex">
-          <div class="me-3">
-            {% if notification.category == 'post_liked' %}
-              <i class="fa-solid fa-heart text-danger"></i>
-            {% elif notification.category == 'post_commented' %}
-              <i class="fa-solid fa-comment text-primary"></i>
-            {% elif notification.category == 'comment_liked' %}
-              <i class="fa-solid fa-thumbs-up text-warning"></i>
-            {% elif notification.category == 'comment_replied' %}
-              <i class="fa-solid fa-reply text-success"></i>
-            {% endif %}
-          </div>
-          <div>
-            <p class="mb-0">{{ notification.get_notification_content }}</p>
-            <small class="text-muted">{{ notification.timestamp|naturaltime }}</small>
-          </div>
-        </div>
-      </a>
-    </li>
-    {% endfor %}
-    
-    {% else %}
-      <li class="text-center text-muted">No new notifications</li>
-    {% endif %}
-    <li>
-      <a href="{% url 'forum:all_notifications' %}" class="dropdown-item text-center text-primary">
-        View all notifications
-      </a>
-    </li>
-  </ul>
-</li>
+      <!-- Notifications Dropdown -->
+      <li class="nav-item dropdown">
+        <a
+          class="nav-link position-relative"
+          href="#"
+          role="button"
+          id="notificationDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <i class="fa-solid fa-bell fa-xl"></i>
+          <!-- Notification Badge -->
+          {% if unread_count > 0 %}
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              {{ unread_count }}
+            </span>
+          {% endif %}
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+          <li class="dropdown-header">Notifications</li>
+          <li><hr class="dropdown-divider" /></li>
+          {% if notifications %}
+            {% for notification in notifications %}
+              <li>
+                <a 
+                  href="#" 
+                  class="dropdown-item notification-item" 
+                  data-notification-id="{{ notification.id }}"
+                >
+                  <div class="d-flex">
+                    <div class="me-3">
+                      {% if notification.category == 'post_liked' %}
+                        <i class="fa-solid fa-heart text-danger"></i>
+                      {% elif notification.category == 'post_commented' %}
+                        <i class="fa-solid fa-comment text-primary"></i>
+                      {% elif notification.category == 'comment_liked' %}
+                        <i class="fa-solid fa-thumbs-up text-warning"></i>
+                      {% elif notification.category == 'comment_replied' %}
+                        <i class="fa-solid fa-reply text-success"></i>
+                      {% endif %}
+                    </div>
+                    <div>
+                      <p class="mb-0">{{ notification.get_notification_content }}</p>
+                      <small class="text-muted">{{ notification.timestamp|naturaltime }}</small>
+                    </div>
+                  </div>
+                </a>
+              </li>
+            {% endfor %}
+          {% else %}
+            <li class="text-center text-muted">No new notifications</li>
+          {% endif %}
+          <li>
+            <a href="{% url 'forum:all_notifications' %}" class="dropdown-item text-center text-primary">
+              View all notifications
+            </a>
+          </li>
+        </ul>
+      </li>
 
-
+      <!-- User Dropdown -->
       <li class="nav-item dropstart ms-3">
         <a
           class="nav-link dropdown-toggle"
@@ -110,58 +113,3 @@
     </ul>
   </nav>
 </header>
-
-
-<!-- Notifications Dropdown -->
-<li class="nav-item dropdown">
-  <a
-    class="nav-link position-relative"
-    href="#"
-    role="button"
-    id="notificationDropdown"
-    data-bs-toggle="dropdown"
-    aria-expanded="false"
-  >
-    <i class="fa-solid fa-bell fa-xl"></i>
-    <!-- Notification Badge -->
-    {% if unread_count > 0 %}
-      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-        {{ unread_count }}
-      </span>
-    {% endif %}
-  </a>
-  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
-    <li class="dropdown-header">Notifications</li>
-    <li><hr class="dropdown-divider" /></li>
-    {% if unread_notifications %}
-      {% for notification in unread_notifications %}
-        <li>
-          <a href="#" class="dropdown-item">
-            <div class="d-flex">
-              <div class="me-3">
-                {% if notification.notification_type == 'like' %}
-                  <i class="fa-solid fa-heart text-danger"></i>
-                {% elif notification.notification_type == 'comment' %}
-                  <i class="fa-solid fa-comment text-primary"></i>
-                {% elif notification.notification_type == 'reply' %}
-                  <i class="fa-solid fa-reply text-success"></i>
-                {% endif %}
-              </div>
-              <div>
-                <p class="mb-0">{{ notification.content }}</p>
-                <small class="text-muted">{{ notification.timestamp|naturaltime }}</small>
-              </div>
-            </div>
-          </a>
-        </li>
-      {% endfor %}
-    {% else %}
-      <li class="text-center text-muted">No new notifications</li>
-    {% endif %}
-    <li>
-      <a href="{% url 'forum:all_notifications' %}" class="dropdown-item text-center text-primary">
-        View all notifications
-      </a>
-    </li>
-  </ul>
-</li>
