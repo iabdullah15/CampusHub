@@ -41,11 +41,10 @@
           <li><hr class="dropdown-divider" /></li>
           {% if notifications %}
             {% for notification in notifications %}
-              <li>
-                <a 
-                  href="#" 
-                  class="dropdown-item notification-item" 
-                  data-notification-id="{{ notification.id }}"
+              <li class="notification-list-item">
+                <a
+                  href="#"
+                  class="dropdown-item notification-item {% if not notification.is_read %}unread{% else %}read{% endif %}"
                 >
                   <div class="d-flex">
                     <div class="me-3">
@@ -76,6 +75,7 @@
             </a>
           </li>
         </ul>
+        
       </li>
 
       <!-- User Dropdown -->

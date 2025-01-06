@@ -1,5 +1,14 @@
+:root {
+    --primary-color: #0077b6; /* Modern Blue */
+    --secondary-color: #90e0ef; /* Light Aqua */
+    --accent-color: #ff6b6b; /* Vibrant Red */
+    --background-color: #f8f9fa; /* Soft White */
+    --text-color: #212529; /* Dark Grey */
+    --border-color: #e0e0e0; /* Light Gray */
+}
+
 body {
-    background-color: #f7f1e5;
+    background-color: var(--background-color);
 }
 
 .onboarding-container {
@@ -11,24 +20,36 @@ body {
 }
 
 h2 {
-    font-family: 'Arial', sans-serif;
-    color: #4f3a7b;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: var(--primary-color);
 }
 
 .form-floating label {
-    color: #4f3a7b;
+    color: var(--text-color);
 }
 
 .form-control, .form-select {
     border-radius: 30px;
-    border: 1px solid #4f3a7b;
+    border: 1px solid var(--border-color);
 }
 
 .form-control:focus, .form-select:focus {
     box-shadow: none;
-    border-color: #4f3a7b;
+    border-color: var(--primary-color);
 }
 
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+}
 
 .gif-container img {
     max-width: 100%;
