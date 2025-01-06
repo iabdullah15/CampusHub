@@ -16,8 +16,6 @@
   font-size: 1.5em;
 }
 
-
-
 .navbar li {
   list-style: none;
   display: inline-block;
@@ -45,10 +43,34 @@
   border-radius: 2rem;
 }
 
-.notification-item.read {
-  background-color: #f8f9fa;
-  color: #6c757d;
+.notification-list-item {
+  display: block!important; 
 }
+
+/* Unread Notifications */
+.notification-item.unread {
+  background-color: #fff5cc; /* Light yellow for unread notifications */
+  border-left: 4px solid #f0ad4e; /* Emphasis border for unread notifications */
+}
+
+/* Read Notifications */
+.notification-item.read {
+  background-color: #f8f9fa; /* Light grey for read notifications */
+  color: #6c757d; /* Muted text for read notifications */
+}
+
+/* Hover Effect for All Notifications */
+.notification-item:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+/* Adjust Bootstrap Default Styles */
+.list-group-item-warning {
+  background-color: #fff5cc !important; /* Match the unread notification style */
+  border-left: 4px solid #f0ad4e !important;
+}
+
 
 
 @media (max-width: 700px) {

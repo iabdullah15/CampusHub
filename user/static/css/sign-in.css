@@ -8,10 +8,30 @@ body {
    * LEFT COLUMN (Description Container)
   ***********************************************/
 .description-container {
-  background-color: #121212;
+  position: relative; /* Needed for the pseudo-element to position absolutely */
+  background-color: #121212; /* Keep your black background */
   color: #fff;
-  padding-bottom: 10rem;
+  padding-bottom: 45rem;
 }
+
+/* The pseudo-element overlay */
+.description-container::before {
+  content: "";
+  position: absolute;
+  inset: 0; /* Fill the entire container */
+  display: block;
+  background: url("https://countrydevelopers.com.pk/wp-content/uploads/2019/02/UCP-Main-Campus-11-1024x683.jpg") center/cover no-repeat;
+  opacity: 0.2; /* Adjust for how faint/strong you want the image */
+  pointer-events: none; /* So clicks interact with the underlying content */
+  z-index: 0; /* Ensures the image is behind the text */
+}
+
+/* Ensure textual content is above the pseudo-element */
+.description-container > * {
+  position: relative;
+  z-index: 1;
+}
+
 .description-heading {
   font-weight: 600;
 }
@@ -24,7 +44,7 @@ body {
 
 .second-description-heading-container {
   margin-top: 2rem;
-  width: 70%;
+  width: 90%;
 }
 
 .second-description-heading-container > h3 {
@@ -67,7 +87,7 @@ body {
 }
 
 .submit-btn-container {
-    background-color: var(--background-color);
+  background-color: var(--background-color);
 }
 
 .email-field::placeholder {
@@ -125,9 +145,9 @@ body {
    * Error Messages
   ***********************************************/
 .alert-container {
-    width: 55%;
-    margin-right: auto;
-    margin-left: auto;
+  width: 55%;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .errorlist {

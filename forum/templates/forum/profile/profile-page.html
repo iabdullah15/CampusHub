@@ -1,6 +1,7 @@
 {% extends 'forum/base/base.html' %} 
 {% load static %} 
 {% load humanize %} 
+{% load widget_tweaks %}
 
 {% block title %}
 <title>Profile</title>
@@ -193,7 +194,7 @@
                     
                     <div class="mb-3">
                         <label for="usernameInputField" class="form-label">Username</label>
-                        {{ profile_form.username }}
+                        {{ profile_form.username |attr:"disabled"}}
                     </div>
                 
                     <div class="mb-3">

@@ -32,10 +32,7 @@ urlpatterns = [
     
     path('comments/delete/<int:comment_id>/', views.DeleteComment.as_view(), name='delete_comment'),
 
-    # Other URLs...
     path('replies/delete/<int:reply_id>/', views.DeleteCommentReplyView.as_view(), name='delete_reply'),
     path('notifications/all/', views.all_notifications, name='all_notifications'),
     path('notifications/mark-read/<int:notification_id>/', views.mark_notification_as_read, name='mark_notification_as_read'),
-
-
 ]
