@@ -92,7 +92,7 @@ class PostComment(models.Model):
 
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    comment_body = models.CharField(max_length=300)
+    comment_body = models.CharField(max_length=500)
     time_created = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name='comments')
@@ -105,7 +105,7 @@ class PostCommentReply(models.Model):
 
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    reply_body = models.CharField(max_length=100)
+    reply_body = models.CharField(max_length=500)
     time_created = models.DateTimeField(auto_now_add=True)
     comment = models.ForeignKey(
         PostComment, on_delete=models.CASCADE, related_name='comment_reply')
