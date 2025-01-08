@@ -42,7 +42,7 @@ def all_notifications(request):
     return render(request, 'forum/notifications/all_notifications.html', {'notifications': notifications})
 
 
-class HomePageView(View):
+class HomePageView(LoginRequiredMixin, View):
 
     template_name = "forum/home/home-v2.html"
 
@@ -123,7 +123,7 @@ class HomePageView(View):
             return redirect(reverse_lazy('user:sign-in'))
 
 
-class PostSearchView(View):
+class PostSearchView(LoginRequiredMixin,View):
 
     template_name = 'forum/post/post-search.html'
 
@@ -160,7 +160,7 @@ class PostSearchView(View):
         })
 
 
-class CreatePostView(View):
+class CreatePostView(LoginRequiredMixin, View):
 
     template_name = "forum/post/create-post.html"
 
@@ -284,7 +284,7 @@ class CreatePostView(View):
         return render(request, self.template_name, {'form': form})
 
 
-class EditPostView(View):
+class EditPostView(LoginRequiredMixin, View):
     template_name = "forum/post/edit-post.html"
 
     def get(self, request, post_id):
@@ -337,7 +337,7 @@ class EditPostView(View):
         return render(request, self.template_name, {'form': form, 'post': post})
 
 
-class CreatePostWithPollView(View):
+class CreatePostWithPollView(LoginRequiredMixin, View):
 
     template_name = 'forum/post/create-poll.html'
 
@@ -469,7 +469,7 @@ class CreatePostWithPollView(View):
                             poll=poll, choice_text=choice_text)
 
                     messages.success(
-                        request, 'Post with poll created successfully!')
+                        request, 'Poll created successfully!')
 
                 return redirect('forum:post_detail', pk=post.pk)
 
@@ -536,7 +536,7 @@ class CreatePostWithPollView(View):
         })
 
 
-class UpdatePostWithPollView(View):
+class UpdatePostWithPollView(LoginRequiredMixin, View):
     template_name = 'forum/post/edit-poll.html'
 
     def get(self, request: HttpRequest, post_id: int):
@@ -680,7 +680,7 @@ class UpdatePostWithPollView(View):
         })
 
 
-class Vote(View):
+class Vote(LoginRequiredMixin, View):
     def post(self, request, post_id, poll_id):
 
         choice_id = request.POST.get('choice_id')
@@ -717,7 +717,7 @@ class Vote(View):
             return JsonResponse({'success': False, 'error': 'Invalid poll or choice'}, status=400)
 
 
-class PostDetailView(View):
+class PostDetailView(LoginRequiredMixin, View):
 
     template_name = 'forum/post/post-detail.html'
 
@@ -825,7 +825,7 @@ class PostDetailView(View):
             return render(request, self.template_name, {})
 
 
-class PostCommentView(View):
+class PostCommentView(LoginRequiredMixin, View):
 
     def post(self, request: HttpRequest, post_id: int):
 
@@ -913,7 +913,7 @@ class PostCommentView(View):
         return render(request, 'forum/post/post_detail', {"post": post, "comment_form": form})
 
 
-class PostReplyView(View):
+class PostReplyView(LoginRequiredMixin, View):
 
     def post(self, request: HttpRequest, comment_id: int):
 
@@ -1002,7 +1002,7 @@ class PostReplyView(View):
         return render(request, 'forum/post/post_detail', {"post": comment.post, "comment_form": form})
 
 
-class LikePostView(View):
+class LikePostView(LoginRequiredMixin, View):
 
     def post(self, request, post_id):
 
@@ -1030,7 +1030,7 @@ class LikePostView(View):
         })
 
 
-class LikeCommentView(View):
+class LikeCommentView(LoginRequiredMixin, View):
 
     def post(self, request, comment_id):
         comment = get_object_or_404(PostComment, id=comment_id)
@@ -1060,7 +1060,7 @@ class LikeCommentView(View):
         })
 
 
-class CommunityView(View):
+class CommunityView(LoginRequiredMixin, View):
 
     template_name = 'forum/community/community-page.html'
 
@@ -1093,7 +1093,7 @@ class CommunityView(View):
             return render(request, self.template_name, {"error": "Community does not exist"})
 
 
-class CustomPasswordChangeView(PasswordChangeView):
+class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
     form_class = CustomPasswordChangeForm
     template_name = 'forum/profile/change_password.html'
 
@@ -1109,7 +1109,7 @@ class CustomPasswordChangeView(PasswordChangeView):
         return super().form_valid(form)
 
 
-class ProfileView(View):
+class ProfileView(LoginRequiredMixin, View):
 
     template_name = 'forum/profile/profile-page.html'
 
@@ -1155,7 +1155,7 @@ class ProfileView(View):
         })
 
 
-class AdminPanel(View):
+class AdminPanel(LoginRequiredMixin, View):
 
     def get(self, request: HttpRequest):
 
@@ -1195,7 +1195,7 @@ class AdminPanel(View):
             return redirect(reverse_lazy('forum:home'))
 
 
-class ViewReports(View):
+class ViewReports(LoginRequiredMixin, View):
 
     def get(self, request: HttpRequest, post_id):
 
@@ -1223,7 +1223,7 @@ class DeletePost(LoginRequiredMixin, View):
             return redirect(reverse_lazy('forum:profile', kwargs={'username': request.user.username}))
 
 
-class DisregardReports(View):
+class DisregardReports(LoginRequiredMixin, View):
 
     def post(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)
@@ -1260,7 +1260,7 @@ class ReportPost(LoginRequiredMixin, View):
         return JsonResponse({"success": True, "message": "Report submitted successfully."})
 
 
-class EditComment(View):
+class EditComment(LoginRequiredMixin, View):
     def post(self, request, comment_id):
         print("Received Comment ID:", comment_id)
 
@@ -1279,7 +1279,7 @@ class EditComment(View):
         return JsonResponse({'success': True, 'updated_body': comment.comment_body})
 
 
-class EditReply(View):
+class EditReply(LoginRequiredMixin, View):
     def post(self, request, reply_id):
         reply = get_object_or_404(
             PostCommentReply, id=reply_id, author=request.user)
@@ -1295,7 +1295,7 @@ class EditReply(View):
         return JsonResponse({'success': True, 'updated_body': reply.reply_body})
 
 
-class DeleteComment(View):
+class DeleteComment(LoginRequiredMixin, View):
     def post(self, request, comment_id):
         comment = get_object_or_404(PostComment, id=comment_id)
 
@@ -1309,7 +1309,7 @@ class DeleteComment(View):
         return JsonResponse({'success': True, 'message': 'Comment deleted successfully'})
 
 
-class DeleteCommentReplyView(View):
+class DeleteCommentReplyView(LoginRequiredMixin, View):
     def post(self, request, reply_id):
         # Ensure the user owns the reply
         reply = get_object_or_404(
