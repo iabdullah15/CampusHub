@@ -35,4 +35,5 @@ urlpatterns = [
     path('replies/delete/<int:reply_id>/', views.DeleteCommentReplyView.as_view(), name='delete_reply'),
     path('notifications/all/', views.all_notifications, name='all_notifications'),
     path('notifications/mark-read/<int:notification_id>/', views.mark_notification_as_read, name='mark_notification_as_read'),
+    path('guidelines/', views.community_guidelines, name='community_guidelines'),
 ]
