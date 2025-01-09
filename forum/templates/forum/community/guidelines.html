@@ -1,0 +1,132 @@
+{% extends "forum/base/base.html" %}
+
+{% block title %}
+    <title>Community Guidelines & Moderation Policy</title>
+{% endblock %}
+
+{% block css %}
+<style>
+  .guidelines-container {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: 2rem;
+    margin-top: 8rem;
+    margin-bottom: 5rem;
+    border-radius: 2rem;
+  }
+
+  .guidelines-heading {
+    color: var(--primary-color);
+  }
+
+  .policy-heading {
+    color: var(--accent-color);
+  }
+
+  .guidelines-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .guidelines-list li {
+    margin-bottom: 0.5rem;
+  }
+
+  .card-custom {
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+  }
+
+  .card-custom .card-header {
+    background-color: var(--primary-color);
+    color: var(--text-secondary-color);
+  }
+
+  .card-custom .card-body {
+    background-color: var(--secondary-color);
+  }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="container guidelines-container">
+  <h1 class="mb-4 guidelines-heading">Community Guidelines</h1>
+  <p class="guidelines-text">
+    Our community thrives on open and respectful discussions. To maintain a healthy environment, please adhere to the following guidelines:
+  </p>
+  <ul class="guidelines-list">
+    <li>Be respectful: No harassment, hate speech, or personal attacks.</li>
+    <li>Avoid profanity and toxic language that detracts from constructive dialogue.</li>
+    <li>Keep posts relevant to the community's topic and purpose.</li>
+    <li>Report any content or behavior that violates these guidelines.</li>
+    <li>Respect intellectual property rights and refrain from posting stolen or pirated material.</li>
+  </ul>
+
+  <hr class="my-5" />
+
+  <h1 class="mb-4 policy-heading">Moderation Policy</h1>
+  <p class="guidelines-text">
+    Our moderation system is designed to ensure a fair and safe platform for everyone. 
+    It involves text analysis, image checks, and a tiered approach to handling warnings and rejections.
+  </p>
+
+  <!-- Example card summarizing your moderation process -->
+  <div class="card card-custom mb-4">
+    <div class="card-header">
+      Text Moderation
+    </div>
+    <div class="card-body">
+      <p class="mb-1">
+        We use <strong>Perspective API</strong> (by Google and Jigsaw) to analyze user-generated text. 
+        If the text content is not in English, we attempt to translate it. If translation fails, we accept the content 
+        rather than unfairly rejecting it.
+      </p>
+      <p class="mb-1">
+        Scores from multiple attributes (e.g., Toxicity, Insult, Profanity, Threat) 
+        determine whether a post is <strong>Accepted</strong>, <strong>Issued a Warning</strong>, or <strong>Rejected</strong>.
+      </p>
+    </div>
+  </div>
+
+  <div class="card card-custom mb-4">
+    <div class="card-header">
+      Image Moderation
+    </div>
+    <div class="card-body">
+      <p class="mb-1">
+        We use <strong>Eden AI</strong> (Microsoft Content Moderator) to classify images as safe or NSFW. 
+        Images with a borderline NSFW score trigger a warning but can still be posted, while highly NSFW images 
+        lead to immediate rejection.
+      </p>
+    </div>
+  </div>
+
+  <div class="card card-custom mb-4">
+    <div class="card-header">
+      Warnings & Suspensions
+    </div>
+    <div class="card-body">
+      <p class="mb-1">
+        <strong>Warnings</strong>: Posts that violate guidelines but are not severe receive warnings. 
+        Multiple warnings can lead to suspension if the user continues to post problematic content.
+      </p>
+      <p class="mb-1">
+        <strong>Rejections</strong>: Posts with severe violations are outright rejected. 
+        Accruing a set number of rejections (e.g., 5) results in a <strong>7-day suspension</strong>.
+      </p>
+      <p class="mb-1">
+        If a user is suspended, they cannot create new posts until their suspension period ends. 
+        Attempting to post while suspended generates an error message.
+      </p>
+    </div>
+  </div>
+
+  <p class="guidelines-text">
+    <strong>Note:</strong> Our moderation policy is continually reviewed to ensure fairness and accuracy. 
+    We welcome feedback on how to improve the community experience.
+  </p>
+</div>
+{% endblock %}

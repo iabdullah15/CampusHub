@@ -23,6 +23,14 @@ from django.db.models import Q, Count, F, Sum
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
+def community_guidelines(request:HttpRequest):
+    
+    if request.user.is_authenticated:
+        
+        return render(request, 'forum/community/guidelines.html')
+    else:
+        return redirect(reverse_lazy('user:sign-in'))
+
 
 def mark_notification_as_read(request, notification_id):
     if request.user.is_authenticated:
