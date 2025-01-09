@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+from google.oauth2 import service_account
 from pathlib import Path
 from dotenv import load_dotenv
 from django.urls import reverse_lazy
@@ -149,7 +150,7 @@ STATIC_URL = 'static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATICFILES_DIRS = [
     BASE_DIR / "user" / "static",
@@ -160,6 +161,8 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = reverse_lazy('user:sign-in')  # Default login URL for all views
 
 
 mail = os.environ.get('MAIL')
@@ -210,12 +213,7 @@ EMAIL_HOST_USER = 'abduzubair2001@gmail.com'
 EMAIL_HOST_PASSWORD = "paea uypn hpyi honl"
 
 
-
-
 # GCP storage settings
-
-
-from google.oauth2 import service_account
 
 
 # Load credentials from the service account JSON file
@@ -271,7 +269,6 @@ else:
         },
     }
     STATIC_URL = '/static/'  # Serve local static files during development
-
 
 
 # Static and media files settings
