@@ -99,10 +99,15 @@
                 {{ community.community_name }}
               </h3>
               <h5 class="card-text community-description">Community Description:</h5>
+              {% if community.community_description %}
               <p class="card-text">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur eius
-                odio labore numquam nisi facilis sed nobis amet iste asperiores!
+                {{community.community_description}}
               </p>
+              {% else %}
+              <p class="card-text">
+                No description for this community
+              </p>
+              {% endif %}
             </div>
           </div>
           
