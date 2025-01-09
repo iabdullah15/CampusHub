@@ -153,18 +153,6 @@
           >Comments</a
         >
       </li>
-      <li class="nav-item profile-nav-tab" role="presentation">
-        <a
-          class="nav-link"
-          id="simple-tab-3"
-          data-bs-toggle="tab"
-          href="#simple-tabpanel-3"
-          role="tab"
-          aria-controls="simple-tabpanel-3"
-          aria-selected="false"
-          >Liked</a
-        >
-      </li>
     </ul>
     <div class="tab-content pt-5" id="tab-content">
       <div
@@ -639,95 +627,7 @@
       {% endif %}
         </div>
       </div>
-      <div
-        class="tab-pane"
-        id="simple-tabpanel-3"
-        role="tabpanel"
-        aria-labelledby="simple-tab-3"
-      >
-        <div class="liked-posts-container ms-3">
-          <h4 class="mb-4">Liked Posts</h4>
 
-          <div class="user-post-card card">
-            <div class="card-body">
-              <a class="user-post-link" href="">
-                <div class="card-title-container">
-                  <h5 class="card-title">
-                    At what net worth would you buy a $200K+ supercar?
-                  </h5>
-                  <i class="fa-solid fa-ellipsis post-options-icon"></i>
-                </div>
-                <p class="card-text">
-                  Currently $1.8M @ 30 M single and want to live it up in my
-                  30s...
-                </p>
-              </a>
-              <!-- Thumbnail -->
-              <div class="container-fluid mt-5">
-                <img
-                  src="random.jpg"
-                  alt="Thumbnail"
-                  class="img-thumbnail"
-                  data-bs-toggle="modal"
-                  data-bs-target="#likeImageModal"
-                  style="cursor: pointer"
-                />
-              </div>
-
-              <!-- Modal -->
-              <div
-                class="modal modal-lg fade"
-                id="likeImageModal"
-                tabindex="-1"
-                aria-labelledby="imageModalLabel"
-                aria-hidden="true"
-              >
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
-                    </div>
-                    <div class="modal-body">
-                      <img
-                        src="random.jpg"
-                        alt="Full-size Image"
-                        class="img-fluid"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <p class="card-text px-4 mt-3">
-                <small class="text-muted"
-                  >9 likes · 104 comments · 1,935 views</small
-                >
-              </p>
-              <div class="row px-4 interaction-row">
-                <div class="col-4">
-                  <i
-                    class="fa-solid fa-heart fa-xl like-btn interaction-btn"
-                  ></i>
-                  <small class="text-muted">9 likes</small>
-                </div>
-                <div class="col-4">
-                  <i class="fa-regular fa-message fa-xl interaction-btn"></i>
-                  <small class="text-muted">9 comments</small>
-                </div>
-                <div class="col-4">
-                  <i class="fa-regular fa-eye fa-xl interaction-btn"></i>
-                  <small class="text-muted">9 views</small>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </main>
