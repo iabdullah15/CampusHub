@@ -851,7 +851,7 @@ class PostCommentView(LoginRequiredMixin, View):
                     messages.error(
                         request,
                         f"Your account is suspended until {author.suspension_end_date.strftime(
-                            '%Y-%m-%d %H:%M:%S')}. You cannot create new posts."
+                            '%Y-%m-%d %H:%M:%S')}. You cannot comment on posts."
                     )
                     return redirect('forum:home')
                 else:
@@ -940,7 +940,7 @@ class PostReplyView(LoginRequiredMixin, View):
                     messages.error(
                         request,
                         f"Your account is suspended until {author.suspension_end_date.strftime(
-                            '%Y-%m-%d %H:%M:%S')}. You cannot create new posts."
+                            '%Y-%m-%d %H:%M:%S')}. You cannot reply to comments."
                     )
                     return redirect('forum:home')
                 else:
