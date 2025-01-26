@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-
+from django.urls import reverse
 
 class PostCommunity(models.Model):
 
@@ -186,6 +186,17 @@ class Notification(models.Model):
         elif self.category == self.Category.COMMENT_REPLIED:
             return f"{self.sender.username} replied to your comment: {self.comment.comment_body}"
         return "You have a new notification"
+    
+    def get_redirect_url(self):
+        if self.category == self.Category.POST_LIKED:
+            return reverse('forum:post_detail', kwargs={'pk': self.post.id})
+        elif self.category == self.Category.POST_COMMENTED:
+            return f"{reverse('forum:post_detail', kwargs={'pk': self.post.id})}#comment-{self.comment.id}"
+        elif self.category == self.Category.COMMENT_LIKED:
+            return f"{reverse('forum:post_detail', kwargs={'pk': self.comment.post.id})}#comment-{self.comment.id}"
+        elif self.category == self.Category.COMMENT_REPLIED:
+            return f"{reverse('forum:post_detail', kwargs={'pk': self.reply.comment.post.id})}#reply-{self.reply.id}"
+        return reverse('forum:home')  # Fallback for unknown categories
     
     class Category(models.TextChoices):
         POST_LIKED = "post_liked", "Post Liked"
