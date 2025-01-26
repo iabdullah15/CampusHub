@@ -112,7 +112,7 @@ body {
 .user-post-card {
   width: 60%;
   margin-bottom: 2rem;
-  max-height: 500px; /* Set your desired max height */
+  /* max-height: 500px; Set your desired max height */
   overflow: hidden; /* Ensures content beyond max-height doesn't overflow */
   text-overflow: ellipsis; /* Adds ellipsis for overflowing text */
   display: flex; /* Ensures proper layout */

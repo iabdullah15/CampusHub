@@ -24,8 +24,12 @@ RUN pipenv install --system --deploy
 # Copy the rest of the application code
 COPY . ./
 
+# Copy and make the wait-for-db script executable
+COPY wait_for_db.sh /app/wait_for_db.sh
+RUN chmod +x /app/wait_for_db.sh
+
 # Expose the port Django runs on
 EXPOSE 8000
 
 # Run the Django development server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["/app/wait_for_db.sh", "db", "python", "manage.py", "runserver", "0.0.0.0:8000"]

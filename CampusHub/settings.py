@@ -102,8 +102,8 @@ DATABASES = {
         "NAME": "campushub",
         "USER": "DjangoAdmin",
         "PASSWORD": "jov1lHTW4KefK2q",
-        "HOST": "localhost",
-        # "HOST": "db",  # This must match the service name in docker-compose.yml
+        # "HOST": "localhost",
+        "HOST": "db",  # This must match the service name in docker-compose.yml
         "PORT": "3306",
         'OPTIONS': {
             'charset': 'utf8mb4',
@@ -228,7 +228,7 @@ GS_BUCKET_NAME = 'campushub_bucket'
 
 
 # Toggle to use GCS for static files or local files
-USE_GCS_FOR_STATIC = False
+USE_GCS_FOR_STATIC = True
 
 if USE_GCS_FOR_STATIC:
     # Configure Google Cloud Storage settings

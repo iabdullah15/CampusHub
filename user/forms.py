@@ -3,10 +3,22 @@ from .models import CustomUser
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 
+# class CustomUserCreationForm(UserCreationForm):
+
+#     class Meta:
+
+#         model = CustomUser
+#         fields = {
+#             "email",
+#             "username",
+#             "password1",
+#             "password2",
+#         }
+
 class CustomUserCreationForm(UserCreationForm):
+    allowed_email_domain = None 
 
     class Meta:
-
         model = CustomUser
         fields = {
             "email",
@@ -15,6 +27,18 @@ class CustomUserCreationForm(UserCreationForm):
             "password2",
         }
 
+    def __init__(self, *args, **kwargs):
+        self.allowed_email_domain = kwargs.pop("allowed_email_domain", None)
+        super().__init__(*args, **kwargs)
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if self.allowed_email_domain:
+            if not email.endswith(f"@{self.allowed_email_domain}"):
+                raise forms.ValidationError(
+                    f"Only emails ending with @{self.allowed_email_domain} are allowed."
+                )
+        return email
 
 class CustomUserChangeForm(UserChangeForm):
 

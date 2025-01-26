@@ -20,8 +20,15 @@ User = get_user_model()
 
 
 class SignUpView(View):
+
+    allowed_email_domain = "ucp.edu.pk"  # Define the allowed domain locally
+
     def post(self, request: HttpRequest):
-        form = CustomUserCreationForm(request.POST)
+        # form = CustomUserCreationForm(request.POST)
+        form = CustomUserCreationForm(
+            request.POST, allowed_email_domain=self.allowed_email_domain
+        )
+
 
         if form.is_valid():
             user = form.save(commit=False)
